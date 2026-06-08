@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "HK Grotesk Wide";
+  src: url("/fonts/HKGroteskWide-Bold.woff2") format("woff2"),
+       url("/fonts/HKGroteskWide-ExtraBold.woff2") format("woff2");
+  font-weight: normal;
+}
+
+:root {
+  --color-cream: #F5F1E8;
+  --color-charcoal: #3F3F44;
+  --color-white: #FFFFFF;
+  --color-black: #0A0A0A;
+  --color-red: #C0392B;
+}
+
+* {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+*::before,
+*::after {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+  font-family: theme('fontFamily.body');
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}

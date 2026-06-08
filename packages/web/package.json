@@ -1,0 +1,29 @@
+{
+  "name": "@abg/web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.x",
+    "react-dom": "^18.x",
+    "react-router-dom": "^7.x",
+    "react-i18next": "^14.x",
+    "i18next": "^23.x",
+    "zustand": "^4.x",
+    "motion": "^11.x"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.x",
+    "tailwindcss": "^4.x",
+    "@tailwindcss/vite": "^4.x",
+    "typescript": "^5.x",
+    "vite": "^5.x",
+    "@types/react": "^18.x",
+    "@types/react-dom": "^18.x"
+  }
+}
