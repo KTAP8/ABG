@@ -3,6 +3,8 @@ import Home from './pages/Home'
 import DropPage from './pages/DropPage'
 import ProductDetail from './pages/ProductDetail'
 import Waitlist from './pages/Waitlist'
+import Archive from './pages/Archive'
+import About from './pages/About'
 
 export default function App() {
   return (
@@ -12,6 +14,8 @@ export default function App() {
         <Route path="/drop/:slug" element={<DropPage />} />
         <Route path="/products/:slug" element={<ProductDetail />} />
         <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/archive" element={<Archive />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </BrowserRouter>
   )
