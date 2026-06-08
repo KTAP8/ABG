@@ -18,7 +18,8 @@
       "Bash(file /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/logos/*.png)",
       "Bash(identify /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/logos/*.png)",
       "Bash(sips -g pixelWidth -g pixelHeight /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/logos/*.png)",
-      "Bash(sips -g pixelWidth -g pixelHeight /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/favicon/*.png)"
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/favicon/*.png)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx|sql|prisma\\)$\")"
     ]
   }
 }
