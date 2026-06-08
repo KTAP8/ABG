@@ -14,7 +14,11 @@
       "Bash(curl -s http://localhost:5173/drop/samyan-v1)",
       "Bash(git commit -m 'Make DropBanner clickable and navigable to drop page *)",
       "Bash(pkill -f \"node|vite|tsx|pnpm\")",
-      "Bash(git commit -m 'Add Phase 3: Archive and About pages *)"
+      "Bash(git commit -m 'Add Phase 3: Archive and About pages *)",
+      "Bash(file /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/logos/*.png)",
+      "Bash(identify /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/logos/*.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/logos/*.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/ktap8/Documents/work/ABG/ABG/packages/web/public/favicon/*.png)"
     ]
   }
 }

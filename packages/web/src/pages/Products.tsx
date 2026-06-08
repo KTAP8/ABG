@@ -35,10 +35,10 @@ export default function Products() {
       <main className="max-w-7xl mx-auto px-4 py-12">
         <div className="mb-12">
           <h1 className="font-display font-bold text-4xl md:text-5xl uppercase text-charcoal mb-2">
-            All Products
+            {t('products.title')}
           </h1>
           <p className="font-body text-sm text-charcoal opacity-75">
-            Browse everything available across all drops
+            {t('products.subtitle')}
           </p>
         </div>
 

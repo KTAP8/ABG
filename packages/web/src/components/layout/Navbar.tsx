@@ -8,7 +8,6 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navLinks = [
-    { label: t('nav.drops'), href: '/' },
     { label: 'Products', href: '/products' },
     { label: t('nav.archive'), href: '/archive' },
     { label: t('nav.about'), href: '/about' },
@@ -17,16 +16,20 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-cream border-b border-charcoal">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-cream bg-opacity-100 border-b border-charcoal" style={{ backgroundColor: '#F5F1E8' }}>
         <div className="flex h-14 items-center justify-between">
           
           {/* Logo / Left Cell */}
           <div className="flex items-center h-full px-4 border-r border-charcoal md:w-48 lg:w-64">
             <Link
               to="/"
-              className="font-display font-black text-lg uppercase text-charcoal hover:text-red transition-colors flex items-center gap-2"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              <span>ABG</span>
+              <img
+                src="/logos/ABG_logo_grey.png"
+                alt="ABG"
+                className="h-8 w-auto"
+              />
               <span className="font-mono text-[9px] font-normal tracking-wider opacity-60 border border-charcoal px-1 py-0.5 bg-charcoal/5 hidden sm:inline">
                 SYS_v1.0
               </span>

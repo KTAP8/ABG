@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm'
 
 const router: ExpressRouter = Router()
 
-// GET /api/drops - list upcoming + active drops
+// GET /api/drops - list upcoming + active drops with products
 router.get('/', async (_req, res, next) => {
   try {
     const result = await db
@@ -14,7 +14,42 @@ router.get('/', async (_req, res, next) => {
       .where(eq(drops.is_active, true))
       .orderBy(drops.drop_at)
 
-    res.json(result)
+    const dropsWithProducts = await Promise.all(
+      result.map(async (drop) => {
+        const productsData = await db
+          .select()
+          .from(products)
+          .where(eq(products.drop_id, drop.id))
+
+        const productsWithDetails = await Promise.all(
+          productsData.map(async (product) => {
+            const variants = await db
+              .select()
+              .from(product_variants)
+              .where(eq(product_variants.product_id, product.id))
+
+            const images = await db
+              .select()
+              .from(product_images)
+              .where(eq(product_images.product_id, product.id))
+              .orderBy(product_images.position)
+
+            return {
+              ...product,
+              variants,
+              images,
+            }
+          }),
+        )
+
+        return {
+          ...drop,
+          products: productsWithDetails,
+        }
+      }),
+    )
+
+    res.json(dropsWithProducts)
   } catch (error) {
     next(error)
   }
