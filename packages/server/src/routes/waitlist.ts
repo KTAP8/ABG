@@ -1,9 +1,9 @@
-import { Router } from 'express'
+import { Router, type Router as ExpressRouter } from 'express'
 import { db } from '../lib/db'
 import { waitlist } from '../lib/schema'
 import { z } from 'zod'
 
-const router = Router()
+const router: ExpressRouter = Router()
 
 const WaitlistInputSchema = z.object({
   email: z.string().email(),

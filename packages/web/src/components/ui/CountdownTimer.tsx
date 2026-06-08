@@ -7,7 +7,6 @@ interface CountdownTimerProps {
 
 export function CountdownTimer({ targetDate, className = '' }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState('')
-  const [isExpired, setIsExpired] = useState(false)
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -16,7 +15,6 @@ export function CountdownTimer({ targetDate, className = '' }: CountdownTimerPro
       const diff = target - now
 
       if (diff <= 0) {
-        setIsExpired(true)
         setTimeLeft('00:00:00:00')
         return
       }

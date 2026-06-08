@@ -23,7 +23,7 @@ async function seed() {
       })
       .returning()
 
-    const drop2 = await db
+    await db
       .insert(drops)
       .values({
         slug: 'summer-edition',

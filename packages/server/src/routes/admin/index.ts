@@ -1,7 +1,7 @@
-import { Router } from 'express'
+import { Router, type Router as ExpressRouter } from 'express'
 import { requireAdmin } from '../../middleware/auth'
 
-const router = Router()
+const router: ExpressRouter = Router()
 
 // All admin routes protected by requireAdmin middleware
 router.use(requireAdmin)

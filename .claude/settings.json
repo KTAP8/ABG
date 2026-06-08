@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --filter web exec tsc --noEmit)",
+      "Bash(pnpm --filter web build)",
+      "Bash(pnpm --filter server build)",
+      "Bash(pnpm build *)",
+      "Bash(curl -s -X POST http://localhost:4000/api/waitlist -H 'Content-Type: application/json' -d '{\"email\":\"verify@test.com\"}')",
+      "Bash(pnpm --filter server dev)",
+      "Bash(pkill -f \"pnpm|node|vite|tsx\")",
+      "Bash(pnpm --filter web dev)",
+      "Bash(curl -s -X POST http://localhost:4000/api/waitlist -H 'Content-Type: application/json' -d '{\"email\":\"final@test.com\"}')",
+      "Bash(git commit -m 'Fix TypeScript compilation and dev server configuration *)"
+    ]
+  }
+}

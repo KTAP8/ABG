@@ -1,9 +1,9 @@
-import { Router } from 'express'
+import { Router, type Router as ExpressRouter } from 'express'
 import { db } from '../lib/db'
 import { products, product_variants, product_images } from '../lib/schema'
 import { eq } from 'drizzle-orm'
 
-const router = Router()
+const router: ExpressRouter = Router()
 
 // GET /api/products/:slug - product detail + variants + images
 router.get('/:slug', async (req, res, next) => {

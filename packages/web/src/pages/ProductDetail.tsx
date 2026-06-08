@@ -9,11 +9,11 @@ import { OrderButton } from '../components/product/OrderButton'
 import { Accordion } from '../components/ui/Accordion'
 import { Modal } from '../components/ui/Modal'
 import { getProduct } from '../lib/api'
-import type { Product, ProductVariant, ProductImage } from '../lib/api'
+import type { Product, ProductVariant } from '../lib/api'
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const { i18n, t } = useTranslation()
+  const { i18n } = useTranslation()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
