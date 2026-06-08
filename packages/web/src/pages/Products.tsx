@@ -29,11 +29,12 @@ export default function Products() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream flex flex-col justify-between">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="mb-12">
+      <main className="flex-1 py-12">
+        {/* Centered, capped header */}
+        <div className="max-w-7xl mx-auto px-4 mb-12">
           <h1 className="font-display font-bold text-4xl md:text-5xl uppercase text-charcoal mb-2">
             {t('products.title')}
           </h1>
@@ -42,12 +43,17 @@ export default function Products() {
           </p>
         </div>
 
+        {/* Full-bleed products grid */}
         {loading ? (
-          <p className="font-body text-charcoal text-center py-12">Loading...</p>
+          <div className="max-w-7xl mx-auto px-4">
+            <p className="font-body text-charcoal text-center py-12">Loading...</p>
+          </div>
         ) : products.length > 0 ? (
-          <ProductGrid products={products} />
+          <div className="w-full">
+            <ProductGrid products={products} className="border-x-0" />
+          </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="max-w-7xl mx-auto px-4 text-center py-12">
             <p className="font-body text-charcoal opacity-60">
               No products available yet. Check back when the first drop launches.
             </p>
