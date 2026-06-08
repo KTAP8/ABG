@@ -4,7 +4,8 @@ import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 
 export default function About() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const isTh = i18n.language === 'th'
 
   // Fade-in-up transition settings for scroll animations
   const fadeInUp = {
@@ -145,23 +146,29 @@ export default function About() {
             <span className="opacity-60">{t('about.chapter1.ref')}</span>
             <h2 className="font-bold uppercase tracking-widest">{t('about.chapter1.title')}</h2>
           </div>
-          <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
-            <div className="space-y-4">
-              <span className="font-mono text-[9px] tracking-widest text-red font-bold block">// REGISTRY_TH</span>
-              <p className="font-medium">
-                {t('about.chapter1.text1', { lng: 'th' })}
-              </p>
-              <p className="opacity-80">
-                {t('about.chapter1.text2', { lng: 'th' })}
-              </p>
+          <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
+            {/* Technical Info Column */}
+            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-[9px] tracking-wider text-charcoal/60">
+              <div className="space-y-2">
+                <span className="text-red font-bold uppercase block">// INDEX_SYS_RECORD</span>
+                <div>SYS_REF: NAME_REGISTRY</div>
+                <div>STATUS: DEPLOYED</div>
+                <div>GLYPH_SET: LATIN_THAI</div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-dashed border-charcoal/25 hidden md:block">
+                [ACOUSTIC_GOATED_PROTOCOL]
+              </div>
             </div>
-            <div className="space-y-4 border-t md:border-t-0 md:border-l border-charcoal/20 pt-6 md:pt-0 md:pl-8">
-              <span className="font-mono text-[9px] tracking-widest text-charcoal/40 block">// REGISTRY_EN</span>
-              <p className="font-medium">
-                {t('about.chapter1.text1', { lng: 'en' })}
+            {/* Main Text Column */}
+            <div className="md:col-span-8 space-y-4">
+              <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
+                {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
+              </span>
+              <p className="font-medium text-sm md:text-base leading-snug">
+                {t('about.chapter1.text1')}
               </p>
-              <p className="opacity-80">
-                {t('about.chapter1.text2', { lng: 'en' })}
+              <p className="opacity-85">
+                {t('about.chapter1.text2')}
               </p>
             </div>
           </div>
@@ -176,23 +183,29 @@ export default function About() {
             <span className="opacity-60">{t('about.chapter2.ref')}</span>
             <h2 className="font-bold uppercase tracking-widest">{t('about.chapter2.title')}</h2>
           </div>
-          <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
-            <div className="space-y-4">
-              <span className="font-mono text-[9px] tracking-widest text-red font-bold block">// REGISTRY_TH</span>
-              <p className="font-medium">
-                {t('about.chapter2.text1', { lng: 'th' })}
-              </p>
-              <p className="opacity-80">
-                {t('about.chapter2.text2', { lng: 'th' })}
-              </p>
+          <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
+            {/* Technical Info Column */}
+            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-[9px] tracking-wider text-charcoal/60">
+              <div className="space-y-2">
+                <span className="text-red font-bold uppercase block">// INDEX_SYS_RECORD</span>
+                <div>SYS_REF: CAMPUS_REGISTRY</div>
+                <div>COORDINATES: 13.73N // 100.52E</div>
+                <div>ENVIRONMENT: SAMYAN_SANDBOX</div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-dashed border-charcoal/25 hidden md:block">
+                [GRID_LOCATION_SAMYAN_TH]
+              </div>
             </div>
-            <div className="space-y-4 border-t md:border-t-0 md:border-l border-charcoal/20 pt-6 md:pt-0 md:pl-8">
-              <span className="font-mono text-[9px] tracking-widest text-charcoal/40 block">// REGISTRY_EN</span>
-              <p className="font-medium">
-                {t('about.chapter2.text1', { lng: 'en' })}
+            {/* Main Text Column */}
+            <div className="md:col-span-8 space-y-4">
+              <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
+                {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
+              </span>
+              <p className="font-medium text-sm md:text-base leading-snug">
+                {t('about.chapter2.text1')}
               </p>
-              <p className="opacity-80">
-                {t('about.chapter2.text2', { lng: 'en' })}
+              <p className="opacity-85">
+                {t('about.chapter2.text2')}
               </p>
             </div>
           </div>
@@ -232,25 +245,16 @@ export default function About() {
 
             {/* Spec descriptions */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <span className="font-mono text-[9px] tracking-widest text-red font-bold block">// REGISTRY_TH</span>
-                  <p className="font-medium">
-                    {t('about.chapter3.text1', { lng: 'th' })}
-                  </p>
-                  <p className="opacity-80">
-                    {t('about.chapter3.text2', { lng: 'th' })}
-                  </p>
-                </div>
-                <div className="space-y-3 border-t md:border-t-0 md:border-l border-charcoal/20 pt-6 md:pt-0 md:pl-6">
-                  <span className="font-mono text-[9px] tracking-widest text-charcoal/40 block">// REGISTRY_EN</span>
-                  <p className="font-medium">
-                    {t('about.chapter3.text1', { lng: 'en' })}
-                  </p>
-                  <p className="opacity-80">
-                    {t('about.chapter3.text2', { lng: 'en' })}
-                  </p>
-                </div>
+              <div className="space-y-4">
+                <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
+                  {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
+                </span>
+                <p className="font-medium text-sm md:text-base leading-snug">
+                  {t('about.chapter3.text1')}
+                </p>
+                <p className="opacity-85">
+                  {t('about.chapter3.text2')}
+                </p>
               </div>
 
               {/* Monospace Bullet Specs */}
@@ -273,33 +277,39 @@ export default function About() {
             <span className="opacity-60">{t('about.chapter4.ref')}</span>
             <h2 className="font-bold uppercase tracking-widest">{t('about.chapter4.title')}</h2>
           </div>
-          <div className="p-6 md:p-8 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
-              <div className="space-y-4">
-                <span className="font-mono text-[9px] tracking-widest text-red font-bold block">// REGISTRY_TH</span>
-                <p className="font-medium">
-                  {t('about.chapter4.text1', { lng: 'th' })}
-                </p>
-                <p className="opacity-80">
-                  {t('about.chapter4.text2', { lng: 'th' })}
-                </p>
+          <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
+            {/* Technical Info Column */}
+            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-[9px] tracking-wider text-charcoal/60">
+              <div className="space-y-2">
+                <span className="text-red font-bold uppercase block">// INDEX_SYS_RECORD</span>
+                <div>SYS_REF: NODE_REGISTRY</div>
+                <div>NETWORK: WAITLIST_ONLINE</div>
+                <div>ACCESS_MODE: DECENTRALIZED</div>
               </div>
-              <div className="space-y-4 border-t md:border-t-0 md:border-l border-charcoal/20 pt-6 md:pt-0 md:pl-8">
-                <span className="font-mono text-[9px] tracking-widest text-charcoal/40 block">// REGISTRY_EN</span>
-                <p className="font-medium">
-                  {t('about.chapter4.text1', { lng: 'en' })}
-                </p>
-                <p className="opacity-80">
-                  {t('about.chapter4.text2', { lng: 'en' })}
-                </p>
+              <div className="mt-4 pt-4 border-t border-dashed border-charcoal/25 hidden md:block">
+                [BADDIE_NETWORK_CONNECT]
               </div>
             </div>
+            {/* Main Text Column */}
+            <div className="md:col-span-8 space-y-6">
+              <div className="space-y-4">
+                <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
+                  {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
+                </span>
+                <p className="font-medium text-sm md:text-base leading-snug">
+                  {t('about.chapter4.text1')}
+                </p>
+                <p className="opacity-85">
+                  {t('about.chapter4.text2')}
+                </p>
+              </div>
 
-            {/* Technical Manifesto Footer Banner */}
-            <div className="border-t border-charcoal/20 pt-6 mt-4 text-center select-none">
-              <span className="font-mono text-[10px] md:text-xs tracking-[0.2em] text-red font-bold block animate-pulse">
-                ★ {t('about.chapter4.footer')} ★
-              </span>
+              {/* Technical Manifesto Footer Banner */}
+              <div className="border-t border-charcoal/20 pt-6 mt-4 text-center select-none">
+                <span className="font-mono text-[10px] md:text-xs tracking-[0.2em] text-red font-bold block animate-pulse">
+                  ★ {t('about.chapter4.footer')} ★
+                </span>
+              </div>
             </div>
           </div>
         </motion.section>
