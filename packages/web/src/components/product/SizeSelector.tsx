@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { ProductVariant } from '../../lib/api'
 import { SizePill } from '../ui/SizePill'
-import { useTranslation } from 'react-i18next'
 
 interface SizeSelectorProps {
   variants: ProductVariant[]
@@ -9,7 +8,6 @@ interface SizeSelectorProps {
 }
 
 export function SizeSelector({ variants, onSelect }: SizeSelectorProps) {
-  const { t } = useTranslation()
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleSelect = (variant: ProductVariant) => {
@@ -19,10 +17,12 @@ export function SizeSelector({ variants, onSelect }: SizeSelectorProps) {
     }
   }
 
+  const selectedVariant = variants.find((v) => v.id === selectedId)
+
   return (
-    <div className="space-y-3">
-      <p className="font-body text-sm uppercase tracking-wide text-charcoal">
-        {t('product.orderbutton')}
+    <div className="space-y-4 border border-charcoal p-4 bg-cream">
+      <p className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
+        [SELECT_SIZE_SPEC]
       </p>
       <div className="flex flex-wrap gap-2">
         {variants.map((variant) => (
@@ -40,14 +40,11 @@ export function SizeSelector({ variants, onSelect }: SizeSelectorProps) {
           />
         ))}
       </div>
-      {selectedId && (
-        <div className="pt-2">
-          <p className="font-mono text-sm text-charcoal">
-            Stock:{' '}
-            {
-              variants.find((v) => v.id === selectedId)?.stock
-            }
-          </p>
+      {selectedVariant && (
+        <div className="pt-2 border-t border-charcoal/20 font-mono text-[9px] tracking-widest text-charcoal/70 space-y-1">
+          <div>// SKU: ABG-VAR-{selectedVariant.id.slice(0, 8).toUpperCase()}</div>
+          <div>// STATE: {selectedVariant.stock <= 15 ? 'LOW_STOCK_WARNING' : 'IN_STOCK'}</div>
+          <div>// QUANTITY: {selectedVariant.stock} UNITS REGISTERED</div>
         </div>
       )}
     </div>

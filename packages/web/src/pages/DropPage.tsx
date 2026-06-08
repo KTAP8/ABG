@@ -67,15 +67,15 @@ export default function DropPage() {
 
         {/* Pre-drop or Countdown */}
         {!isLive ? (
-          <>
+          <div className="space-y-6">
             <DropCountdown targetDate={drop.drop_at} />
-            <div className="my-8 border-t border-charcoal pt-8">
-              <h2 className="font-body text-sm uppercase tracking-wide text-charcoal mb-4">
-                Get notified when this drops
+            <div className="my-8 border border-charcoal p-6 bg-cream">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold mb-4">
+                $ sys.waitlist_registration_request()
               </h2>
               <WaitlistForm dropId={drop.id} />
             </div>
-          </>
+          </div>
         ) : null}
 
         {/* Product Grid */}
@@ -92,9 +92,9 @@ export default function DropPage() {
         )}
 
         {isEnded && (
-          <div className="text-center py-12">
-            <p className="font-body text-sm uppercase tracking-wide text-charcoal">
-              This drop has ended
+          <div className="text-center border border-charcoal/35 bg-charcoal/5 py-12">
+            <p className="font-mono text-xs uppercase tracking-widest text-charcoal/50 font-bold">
+              [SYSTEM_STATE: DROP_ARCHIVED // SALES_CLOSED]
             </p>
           </div>
         )}

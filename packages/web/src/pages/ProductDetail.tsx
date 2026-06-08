@@ -17,7 +17,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
+  const [, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [showSizeGuide, setShowSizeGuide] = useState(false)
 
   useEffect(() => {
@@ -92,17 +92,26 @@ export default function ProductDetail() {
 
           {/* Details */}
           <div className="space-y-6">
-            <div>
-              <h1 className="font-display font-bold text-3xl md:text-4xl uppercase text-charcoal mb-2">
-                {displayName}
-              </h1>
-              <p className="font-mono text-sm uppercase tracking-wide text-charcoal mb-4">
-                {priceDisplay}
-              </p>
+            <div className="border border-charcoal p-6 bg-cream space-y-4">
+              <div>
+                <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// MODEL_NOMENCLATURE</span>
+                <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal tracking-tighter mt-1">
+                  {displayName}
+                </h1>
+              </div>
+              
+              <div className="flex justify-between items-center border-t border-b border-charcoal/20 py-2">
+                <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// VALUE_REGISTRY</span>
+                <span className="font-mono text-sm uppercase font-bold text-charcoal">{priceDisplay}</span>
+              </div>
+
               {displayDescription && (
-                <p className="font-body text-sm leading-relaxed text-charcoal mb-4">
-                  {displayDescription}
-                </p>
+                <div className="space-y-1">
+                  <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// DESIGN_SPECIFICATION</span>
+                  <p className="font-body text-xs leading-relaxed text-charcoal">
+                    {displayDescription}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -114,17 +123,6 @@ export default function ProductDetail() {
               />
             )}
 
-            {/* Stock Info */}
-            {selectedVariant && (
-              <div className="py-4 border-t border-charcoal border-b border-charcoal">
-                <p className="font-mono text-sm text-charcoal">
-                  Stock: {selectedVariant.stock} {selectedVariant.stock <= 15 && selectedVariant.stock > 0 && (
-                    <span className="text-red"> (low)</span>
-                  )}
-                </p>
-              </div>
-            )}
-
             {/* Order Button */}
             <OrderButton
               googleFormUrl={product.google_form_url}
@@ -132,17 +130,20 @@ export default function ProductDetail() {
             />
 
             {/* Modals/Accordions */}
-            <div className="space-y-4 pt-4">
-              <button
-                onClick={() => setShowSizeGuide(true)}
-                className="font-body text-sm uppercase tracking-wide text-charcoal hover:underline"
-              >
-                Size Guide
-              </button>
+            <div className="border border-charcoal p-6 bg-cream space-y-4 font-mono text-xs">
+              <div className="flex justify-between items-center border-b border-charcoal/20 pb-2">
+                <span className="text-charcoal/50 uppercase tracking-widest text-[9px]">// FITMENT_SYSTEM</span>
+                <button
+                  onClick={() => setShowSizeGuide(true)}
+                  className="font-mono text-[10px] uppercase tracking-wider text-charcoal hover:text-red transition-colors cursor-pointer"
+                >
+                  [VIEW_SIZE_GUIDE]
+                </button>
+              </div>
               <Accordion
                 items={[
                   {
-                    title: 'Material',
+                    title: 'MATERIAL & SPECIFICATIONS',
                     content: materialContent,
                   },
                 ]}

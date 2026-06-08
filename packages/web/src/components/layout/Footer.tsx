@@ -8,39 +8,52 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Left */}
-          <div>
-            <p className="font-body text-sm leading-relaxed text-charcoal">
+          <div className="space-y-4">
+            <p className="font-mono text-xs leading-relaxed text-charcoal/70">
+              // ARCHIVE_REF: SAMYAN_CAMPUS_SYSTEM // TEXTILE_DOCUMENTATION.
+            </p>
+            <p className="font-body text-xs uppercase tracking-widest text-charcoal font-bold">
               {t('hero.sub')}
             </p>
           </div>
 
           {/* Right */}
           <div className="space-y-4">
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-body text-sm uppercase tracking-wide text-charcoal hover:underline block"
-            >
-              {t('footer.instagram')}
-            </a>
-            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder={t('footer.emailPlaceholder')}
-                className="flex-1 px-3 py-2 border border-charcoal bg-cream font-body text-sm text-charcoal placeholder-charcoal placeholder-opacity-50"
-              />
-              <button className="px-4 py-2 bg-charcoal text-cream font-body text-sm uppercase hover:bg-black transition-colors">
-                {t('footer.email')}
-              </button>
+            <div>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-xs uppercase tracking-widest text-charcoal hover:text-red transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>[LINK: INSTAGRAM]</span>
+              </a>
+            </div>
+            <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
+              <div className="font-mono text-[10px] uppercase tracking-wider text-charcoal opacity-60">
+                $ sys.join_loop_request()
+              </div>
+              <div className="flex border border-charcoal bg-transparent">
+                <span className="bg-charcoal text-cream font-mono text-xs px-3 flex items-center select-none">
+                  EMAIL &gt;
+                </span>
+                <input
+                  type="email"
+                  placeholder={t('footer.emailPlaceholder')}
+                  className="flex-1 px-3 py-2 bg-transparent font-mono text-xs text-charcoal placeholder-charcoal/40 focus:outline-none"
+                />
+                <button className="px-4 py-2 bg-charcoal text-cream font-body text-xs uppercase tracking-widest hover:bg-black transition-colors cursor-pointer border-l border-charcoal">
+                  {t('footer.email')}
+                </button>
+              </div>
             </form>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-charcoal pt-4 text-center">
-          <p className="font-body text-xs uppercase tracking-wide text-charcoal">
-            {t('footer.rights')}
+        <div className="border-t border-charcoal pt-6 text-center">
+          <p className="font-mono text-[9px] uppercase tracking-wider text-charcoal/60">
+            [SYS_STATE: OPERATIONAL] // {t('footer.rights')} 2026©
           </p>
         </div>
       </div>

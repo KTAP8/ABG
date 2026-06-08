@@ -25,23 +25,26 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/30 backdrop-blur-[2px]">
       <div
-        className="relative w-full max-w-2xl max-h-[80vh] overflow-auto bg-cream p-8 border border-charcoal"
+        className="relative w-full max-w-xl bg-cream border border-charcoal flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-2xl font-body text-charcoal hover:text-red"
-        >
-          ×
-        </button>
-        {title && (
-          <h2 className="mb-6 text-2xl font-display font-bold uppercase text-charcoal">
-            {title}
-          </h2>
-        )}
-        {children}
+        {/* Header Register */}
+        <div className="flex items-center justify-between border-b border-charcoal px-6 py-4 bg-cream font-mono text-xs">
+          <span>{title ? `[MODAL: ${title.toUpperCase()}]` : '[SYSTEM_DIALOG]'}</span>
+          <button
+            onClick={onClose}
+            className="text-[10px] uppercase font-bold tracking-widest text-charcoal hover:text-red transition-colors cursor-pointer"
+          >
+            [CLOSE]
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-auto max-h-[70vh] font-mono text-xs text-charcoal/80">
+          {children}
+        </div>
       </div>
       <div
         className="absolute inset-0 z-[-1]"

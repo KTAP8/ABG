@@ -29,39 +29,46 @@ export default function Archive() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-cream">
-      <Navbar />
+    <div className="min-h-screen bg-cream flex flex-col justify-between">
+      <div>
+        <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <div className="mb-12">
-          <h1 className="font-display font-bold text-4xl md:text-5xl uppercase text-charcoal mb-2">
-            {t('archive.title')}
-          </h1>
-          <p className="font-body text-sm text-charcoal opacity-75">
-            {t('archive.subtitle')}
-          </p>
-        </div>
-
-        {loading ? (
-          <p className="font-body text-charcoal text-center py-12">Loading...</p>
-        ) : drops.length > 0 ? (
-          <div className="space-y-4">
-            {drops.map((drop) => (
-              <DropCard
-                key={drop.id}
-                drop={drop}
-                isEnded={true}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="font-body text-charcoal opacity-60">
-              No past drops yet. Check back after the first drop launches.
+        <main className="max-w-4xl mx-auto px-4 py-16">
+          <div className="border border-charcoal p-6 bg-cream mb-12">
+            <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// REGISTRY_LEDGER</span>
+            <h1 className="font-display font-black text-3xl md:text-5xl uppercase text-charcoal mt-1">
+              {t('archive.title')}
+            </h1>
+            <p className="font-mono text-xs text-charcoal/70 mt-2">
+              // SPEC: {t('archive.subtitle').toUpperCase()} // ARCHIVE_LEDGER
             </p>
           </div>
-        )}
-      </main>
+
+          {loading ? (
+            <div className="py-24 text-center">
+              <span className="font-mono text-xs uppercase tracking-widest text-charcoal animate-pulse">
+                $ loading_archive_ledger_records...
+              </span>
+            </div>
+          ) : drops.length > 0 ? (
+            <div className="space-y-4">
+              {drops.map((drop) => (
+                <DropCard
+                  key={drop.id}
+                  drop={drop}
+                  isEnded={true}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 border border-dashed border-charcoal/30 bg-charcoal/5">
+              <p className="font-mono text-xs uppercase tracking-widest text-charcoal/60">
+                // NO ARCHIVED RECORDS AVAILABLE IN REGISTRY //
+              </p>
+            </div>
+          )}
+        </main>
+      </div>
 
       <Footer />
     </div>

@@ -15,12 +15,12 @@ export function DropNotes({ notes, notes_th }: DropNotesProps) {
   const displayNotes = i18n.language === 'th' ? notes_th || notes : notes
 
   return (
-    <div className="my-12 pt-8 border-t border-charcoal">
-      <p className="font-body text-xs uppercase tracking-wide text-charcoal mb-4">
-        {t('drop.notes.label')}
-      </p>
-      <p className="font-display font-bold text-lg md:text-2xl leading-relaxed text-charcoal max-w-2xl">
-        {displayNotes}
+    <div className="border border-charcoal p-6 bg-cream my-12">
+      <span className="font-mono text-[9px] uppercase tracking-widest text-charcoal/50 block mb-2">
+        // {t('drop.notes.label').toUpperCase()}RELEASE_LOG_MOCK
+      </span>
+      <p className="font-display font-black text-lg md:text-xl uppercase text-charcoal leading-relaxed max-w-3xl">
+        "{displayNotes}"
       </p>
     </div>
   )

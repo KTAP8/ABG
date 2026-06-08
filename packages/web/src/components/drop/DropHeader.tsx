@@ -19,20 +19,37 @@ export function DropHeader({ drop }: DropHeaderProps) {
   )
 
   const description = i18n.language === 'th' ? drop.description_th || drop.description : drop.description
+  const isUpcoming = new Date(drop.drop_at) > new Date()
 
   return (
-    <div className="space-y-4 mb-8">
-      <h1 className="font-display font-bold text-4xl md:text-6xl uppercase text-charcoal">
-        {drop.name}
-      </h1>
-      <p className="font-mono text-sm uppercase tracking-wide text-charcoal">
-        {dropDate}
-      </p>
-      {description && (
-        <p className="font-body text-base leading-relaxed text-charcoal max-w-2xl">
-          {description}
-        </p>
-      )}
+    <div className="border border-charcoal p-6 bg-cream mb-8 font-mono text-xs text-charcoal/80 space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between border-b border-charcoal pb-4 gap-4">
+        <div>
+          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block">DROP_IDENTIFIER</span>
+          <h1 className="font-display font-black text-3xl md:text-5xl uppercase text-charcoal tracking-tighter mt-1">
+            {drop.name}
+          </h1>
+        </div>
+        <div className="sm:text-right">
+          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block">LAUNCH_REGISTRY</span>
+          <span className="font-bold text-sm block mt-1">{dropDate}</span>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div className="md:col-span-2">
+          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block mb-1">MANIFESTO_DESCRIPTION</span>
+          <p className="font-body text-xs text-charcoal leading-relaxed">
+            {description}
+          </p>
+        </div>
+        <div className="md:text-right flex flex-col justify-end">
+          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block mb-1">REGISTRY_STATUS</span>
+          <span className="text-red font-bold animate-pulse uppercase">
+            {isUpcoming ? '[WAITLIST_OPEN]' : '[DROP_LIVE]'}
+          </span>
+        </div>
+      </div>
     </div>
   )
 }

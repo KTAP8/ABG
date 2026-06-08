@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { WaitlistForm } from '../components/forms/WaitlistForm'
-import { DropCountdown } from '../components/drop/DropCountdown'
+import { CountdownTimer } from '../components/ui/CountdownTimer'
 import { getDrops } from '../lib/api'
 import type { Drop } from '../lib/api'
 
@@ -29,42 +29,49 @@ export default function Waitlist() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-cream">
-      <Navbar />
+    <div className="min-h-screen bg-cream flex flex-col justify-between">
+      <div>
+        <Navbar />
 
-      <main className="max-w-2xl mx-auto px-4 py-12">
-        <h1 className="font-display font-bold text-4xl md:text-5xl uppercase text-charcoal mb-8">
-          {t('nav.waitlist')}
-        </h1>
+        <main className="max-w-xl mx-auto px-4 py-16">
+          <div className="border border-charcoal p-6 bg-cream mb-8">
+            <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// WAITLIST_REGISTRY</span>
+            <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal mt-1">
+              {t('nav.waitlist')}
+            </h1>
+          </div>
 
-        {loading ? (
-          <p className="font-body text-charcoal">Loading...</p>
-        ) : upcomingDrop ? (
-          <>
-            <div className="mb-8">
-              <h2 className="font-body text-sm uppercase tracking-wide text-charcoal mb-2">
-                Upcoming
-              </h2>
-              <h3 className="font-display font-bold text-2xl uppercase text-charcoal mb-4">
-                {upcomingDrop.name}
-              </h3>
-              <DropCountdown targetDate={upcomingDrop.drop_at} />
+          {loading ? (
+            <div className="p-8 text-center font-mono text-xs uppercase tracking-widest text-charcoal/60 animate-pulse">
+              $ loading_upcoming_records...
             </div>
-            <div className="border-t border-charcoal pt-8">
+          ) : upcomingDrop ? (
+            <div className="space-y-6">
+              <div className="border border-charcoal p-6 bg-cream space-y-4">
+                <div>
+                  <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// UPCOMING_SEQUENCE</span>
+                  <h3 className="font-display font-black text-xl md:text-2xl uppercase text-charcoal mt-1">
+                    {upcomingDrop.name}
+                  </h3>
+                </div>
+                <div className="border-t border-charcoal/20 pt-4">
+                  <CountdownTimer targetDate={upcomingDrop.drop_at} />
+                </div>
+              </div>
               <WaitlistForm dropId={upcomingDrop.id} />
             </div>
-          </>
-        ) : (
-          <>
-            <p className="font-display font-bold text-2xl uppercase text-charcoal mb-8">
-              {t('something.coming')}
-            </p>
-            <div className="border-t border-charcoal pt-8">
+          ) : (
+            <div className="space-y-6">
+              <div className="border border-charcoal p-6 bg-cream text-center">
+                <span className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
+                  [STATUS: {t('something.coming').toUpperCase()}]
+                </span>
+              </div>
               <WaitlistForm />
             </div>
-          </>
-        )}
-      </main>
+          )}
+        </main>
+      </div>
 
       <Footer />
     </div>

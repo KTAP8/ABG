@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react'
 interface CountdownTimerProps {
   targetDate: string // UTC ISO string
   className?: string
+  variant?: 'simple' | 'segmented'
 }
 
-export function CountdownTimer({ targetDate, className = '' }: CountdownTimerProps) {
+export function CountdownTimer({ targetDate, className = '', variant = 'segmented' }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState('')
 
   useEffect(() => {
@@ -35,9 +36,29 @@ export function CountdownTimer({ targetDate, className = '' }: CountdownTimerPro
     return () => clearInterval(interval)
   }, [targetDate])
 
+  const parts = timeLeft.split(':')
+  const labels = ['DAYS', 'HOURS', 'MINS', 'SECS']
+
+  if (variant === 'simple' || parts.length < 4) {
+    return (
+      <span className={`font-mono text-xs tracking-widest ${className}`}>
+        {timeLeft}
+      </span>
+    )
+  }
+
   return (
-    <div className={`font-mono text-lg tracking-widest ${className}`}>
-      {timeLeft}
+    <div className={`flex justify-center gap-3 ${className}`}>
+      {parts.map((part, idx) => (
+        <div key={idx} className="flex flex-col items-center">
+          <div className="border border-charcoal bg-transparent px-3 py-1.5 font-mono text-lg md:text-2xl font-bold text-charcoal min-w-[2.8rem] md:min-w-[3.5rem] text-center select-none">
+            {part}
+          </div>
+          <span className="font-mono text-[8px] tracking-wider text-charcoal/60 mt-1">
+            {labels[idx]}
+          </span>
+        </div>
+      ))}
     </div>
   )
 }

@@ -13,42 +13,57 @@ export function DropCard({ drop, isEnded }: DropCardProps) {
 
   const dropDate = new Date(drop.drop_at).toLocaleDateString('en-GB', {
     year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+    month: 'short',
+    day: '2-digit',
+  }).toUpperCase()
 
   return (
-    <div className="border border-charcoal">
+    <div className="border border-charcoal bg-cream">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full text-left hover:bg-charcoal hover:text-cream transition-colors p-4"
+        className="w-full text-left transition-colors p-4 md:p-6 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 select-none hover:bg-charcoal/5"
       >
-        <div className="space-y-2">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h3 className="font-display font-bold text-lg uppercase text-inherit">
-                {drop.name}
-              </h3>
-              <p className="font-mono text-xs uppercase tracking-wide text-inherit mt-1">
-                {dropDate}
-              </p>
-            </div>
-            {isEnded && (
-              <Badge variant="soldout">SOLD OUT</Badge>
-            )}
+        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 flex-1">
+          {/* Date Stamp */}
+          <div className="font-mono text-xs text-charcoal/60 min-w-[100px]">
+            [{dropDate}]
           </div>
-          <p className="font-body text-sm text-inherit opacity-75">
-            {drop.description || 'No description'}
-          </p>
+          {/* Drop Identifier */}
+          <div>
+            <h3 className="font-display font-black text-lg uppercase text-charcoal tracking-tight">
+              {drop.name}
+            </h3>
+            <span className="font-mono text-[9px] text-charcoal/50 uppercase block mt-0.5">
+              // REF: {drop.slug}
+            </span>
+          </div>
+        </div>
+
+        {/* Status indicator and action */}
+        <div className="flex items-center justify-between md:justify-end gap-6 border-t border-charcoal/10 pt-3 md:pt-0 md:border-t-0">
+          {isEnded && (
+            <Badge variant="soldout">ARCHIVED_OOS</Badge>
+          )}
+          <span className="font-mono text-xs font-bold text-charcoal">
+            {expanded ? '[-]' : '[+]'}
+          </span>
         </div>
       </button>
 
-      {expanded && drop.products && drop.products.length > 0 && (
-        <div className={`p-6 border-t border-charcoal ${isEnded ? 'opacity-50 pointer-events-none' : ''}`}>
-          <p className="font-body text-sm uppercase tracking-wide text-charcoal mb-6">
-            Products from this drop
-          </p>
-          <ProductGrid products={drop.products} />
+      {expanded && (
+        <div className="p-6 border-t border-charcoal bg-cream space-y-6">
+          <div className="border border-charcoal/20 p-4 font-mono text-[10px] text-charcoal/70 bg-charcoal/5 leading-relaxed">
+            <span className="font-bold block mb-1">// MANIFESTO_ARCHIVE_LOG:</span>
+            {drop.description || 'No registry description recorded.'}
+          </div>
+          {drop.products && drop.products.length > 0 && (
+            <div className={isEnded ? 'opacity-70 pointer-events-none' : ''}>
+              <p className="font-mono text-[9px] uppercase tracking-widest text-charcoal/50 mb-4 font-bold">
+                // PRODUCTS_REGISTERED_TO_THIS_DROP:
+              </p>
+              <ProductGrid products={drop.products} />
+            </div>
+          )}
         </div>
       )}
     </div>

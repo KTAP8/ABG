@@ -25,22 +25,25 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
 
   return (
     <div className="space-y-0 border-t border-charcoal">
-      {items.map((item, index) => (
-        <div key={index} className="border-b border-charcoal">
-          <button
-            onClick={() => toggleItem(index)}
-            className="w-full px-4 py-3 text-left font-body uppercase tracking-wide text-charcoal hover:bg-charcoal hover:text-cream transition-all flex justify-between items-center"
-          >
-            <span>{item.title}</span>
-            <span className="text-xl">{expandedIndices.includes(index) ? '−' : '+'}</span>
-          </button>
-          {expandedIndices.includes(index) && (
-            <div className="px-4 py-3 bg-cream text-charcoal font-body text-sm">
-              {item.content}
-            </div>
-          )}
-        </div>
-      ))}
+      {items.map((item, index) => {
+        const isExpanded = expandedIndices.includes(index)
+        return (
+          <div key={index} className="border-b border-charcoal">
+            <button
+              onClick={() => toggleItem(index)}
+              className="w-full py-3.5 text-left font-mono text-[10px] uppercase tracking-widest text-charcoal hover:text-red transition-colors flex justify-between items-center cursor-pointer"
+            >
+              <span>{item.title}</span>
+              <span className="font-bold text-xs">{isExpanded ? '[-]' : '[+]'}</span>
+            </button>
+            {isExpanded && (
+              <div className="pb-4 font-body text-xs text-charcoal/80 leading-relaxed">
+                {item.content}
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

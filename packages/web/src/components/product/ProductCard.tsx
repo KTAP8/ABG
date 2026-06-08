@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Product, ProductImage } from '../../lib/api'
 import { Badge } from '../ui/Badge'
+import { BlueprintPlaceholder } from '../ui/BlueprintPlaceholder'
 import { useTranslation } from 'react-i18next'
 
 interface ProductCardProps {
@@ -9,7 +10,6 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { t } = useTranslation()
-  const primaryImage = product.images?.[0]
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0
   const isSoldOut = totalStock === 0
 
@@ -19,16 +19,10 @@ export function ProductCard({ product }: ProductCardProps) {
   })}`
 
   return (
-    <Link to={`/products/${product.slug}`} className="group block">
-      <div className="aspect-[3/4] overflow-hidden bg-charcoal mb-3 relative">
-        {primaryImage && (
-          <img
-            src={primaryImage.url}
-            alt={primaryImage.alt_text || product.name}
-            className="w-full h-full object-cover group-hover:opacity-80 transition-opacity cursor-crosshair"
-          />
-        )}
-        <div className="absolute top-3 right-3">
+    <Link to={`/products/${product.slug}`} className="group block border border-charcoal p-3 bg-cream hover:bg-charcoal/5 transition-colors">
+      <div className="relative mb-3">
+        <BlueprintPlaceholder title={product.name} subtitle={priceDisplay} aspectRatio="3/4" />
+        <div className="absolute top-3 right-3 z-10">
           {isSoldOut ? (
             <Badge variant="soldout">{t('product.soldout')}</Badge>
           ) : totalStock <= 15 ? (
@@ -38,10 +32,15 @@ export function ProductCard({ product }: ProductCardProps) {
           ) : null}
         </div>
       </div>
-      <h3 className="font-body text-sm uppercase tracking-wide text-charcoal group-hover:underline">
-        {product.name}
-      </h3>
-      <p className="font-mono text-sm text-charcoal mt-1">{priceDisplay}</p>
+      <div className="flex justify-between items-start font-mono text-xs tracking-wider uppercase text-charcoal">
+        <span className="group-hover:text-red transition-colors font-bold">
+          {product.name}
+        </span>
+        <span className="opacity-80">{priceDisplay}</span>
+      </div>
+      <div className="mt-1 font-mono text-[9px] tracking-widest text-charcoal opacity-40 uppercase">
+        // REF: {product.slug}
+      </div>
     </Link>
   )
 }

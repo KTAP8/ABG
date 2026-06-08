@@ -9,11 +9,11 @@ export function DropCountdown({ targetDate }: DropCountdownProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="text-center py-8 md:py-12">
-      <p className="font-body text-sm uppercase tracking-wide text-charcoal mb-4">
-        {t('drop.countdown.label')}
+    <div className="border border-charcoal p-6 md:p-10 bg-cream text-center flex flex-col items-center justify-center space-y-4 mb-8">
+      <p className="font-mono text-xs uppercase tracking-widest text-charcoal/60">
+        // {t('drop.countdown.label').toUpperCase()}_SEQUENCE_ACTIVATED
       </p>
-      <CountdownTimer targetDate={targetDate} className="text-2xl md:text-4xl text-charcoal justify-center" />
+      <CountdownTimer targetDate={targetDate} className="justify-center" />
     </div>
   )
 }
