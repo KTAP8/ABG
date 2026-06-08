@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CountdownTimer } from '../ui/CountdownTimer'
 import { useTranslation } from 'react-i18next'
 import { getDrops } from '../../lib/api'
@@ -29,16 +30,19 @@ export function DropBanner() {
   if (!activeDrop) return null
 
   return (
-    <div className="sticky top-16 z-30 bg-cream border-b border-charcoal px-4 py-3 text-center">
+    <Link
+      to={`/drop/${activeDrop.slug}`}
+      className="sticky top-16 z-30 bg-cream border-b border-charcoal px-4 py-3 text-center hover:bg-charcoal hover:text-cream transition-colors"
+    >
       <div className="max-w-7xl mx-auto">
-        <p className="font-mono text-xs uppercase tracking-wide text-charcoal mb-1">
+        <p className="font-mono text-xs uppercase tracking-wide mb-1">
           {t('drop.countdown.label')}
         </p>
-        <CountdownTimer targetDate={activeDrop.drop_at} className="text-charcoal" />
-        <p className="font-display font-bold text-lg uppercase mt-2 text-charcoal">
+        <CountdownTimer targetDate={activeDrop.drop_at} className="inherit" />
+        <p className="font-display font-bold text-lg uppercase mt-2">
           {activeDrop.name}
         </p>
       </div>
-    </div>
+    </Link>
   )
 }
