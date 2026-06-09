@@ -17,9 +17,11 @@ export function BlueprintPlaceholder({
     'square': 'aspect-square',
   }[aspectRatio]
 
+  const hasBgClass = className.includes('bg-')
+
   return (
     <div
-      className={`relative w-full ${aspectClass} bg-cream border border-charcoal flex flex-col justify-between p-4 overflow-hidden tech-grid-bg select-none ${className}`}
+      className={`relative w-full ${aspectClass} ${hasBgClass ? '' : 'bg-cream'} border border-charcoal flex flex-col justify-between p-4 overflow-hidden tech-grid-bg select-none ${className}`}
     >
       {/* CAD Border Corners */}
       <div className="absolute top-1.5 left-1.5 font-mono text-[8px] text-charcoal/40 font-bold">┌ 13.73N</div>

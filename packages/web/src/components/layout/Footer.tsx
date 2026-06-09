@@ -1,10 +1,14 @@
 import { useTranslation } from 'react-i18next'
 
-export function Footer() {
+export interface FooterProps {
+  bgClass?: string
+}
+
+export function Footer({ bgClass = 'bg-cream' }: FooterProps) {
   const { t } = useTranslation()
 
   return (
-    <footer className="bg-cream border-t border-charcoal py-12">
+    <footer className={`border-t border-charcoal py-12 ${bgClass}`}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Left */}

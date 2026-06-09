@@ -32,7 +32,7 @@ export default function Products() {
     <div className="min-h-screen bg-cream flex flex-col justify-between">
       <Navbar />
 
-      <main className="flex-1 py-12">
+      <main className="flex-1 py-12 bg-white">
         {/* Centered, capped header */}
         <div className="max-w-7xl mx-auto px-4 mb-12">
           <h1 className="font-display font-bold text-4xl md:text-5xl uppercase text-charcoal mb-2">
@@ -50,7 +50,7 @@ export default function Products() {
           </div>
         ) : products.length > 0 ? (
           <div className="w-full">
-            <ProductGrid products={products} className="border-x-0" />
+            <ProductGrid products={products} className="border-x-0" cardBgClass="bg-white" />
           </div>
         ) : (
           <div className="max-w-7xl mx-auto px-4 text-center py-12">

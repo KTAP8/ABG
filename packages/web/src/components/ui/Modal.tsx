@@ -5,9 +5,10 @@ interface ModalProps {
   onClose: () => void
   title?: string
   children: React.ReactNode
+  bgClass?: string
 }
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, bgClass = 'bg-cream' }: ModalProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -27,11 +28,11 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/30 backdrop-blur-[2px]">
       <div
-        className="relative w-full max-w-xl bg-cream border border-charcoal flex flex-col"
+        className={`relative w-full max-w-xl border border-charcoal flex flex-col ${bgClass}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Register */}
-        <div className="flex items-center justify-between border-b border-charcoal px-6 py-4 bg-cream font-mono text-xs">
+        <div className={`flex items-center justify-between border-b border-charcoal px-6 py-4 font-mono text-xs ${bgClass}`}>
           <span>{title ? `[MODAL: ${title.toUpperCase()}]` : '[SYSTEM_DIALOG]'}</span>
           <button
             onClick={onClose}

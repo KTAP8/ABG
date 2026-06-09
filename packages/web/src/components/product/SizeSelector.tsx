@@ -5,9 +5,10 @@ import { SizePill } from '../ui/SizePill'
 interface SizeSelectorProps {
   variants: ProductVariant[]
   onSelect: (variant: ProductVariant) => void
+  bgClass?: string
 }
 
-export function SizeSelector({ variants, onSelect }: SizeSelectorProps) {
+export function SizeSelector({ variants, onSelect, bgClass = 'bg-cream' }: SizeSelectorProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleSelect = (variant: ProductVariant) => {
@@ -20,7 +21,7 @@ export function SizeSelector({ variants, onSelect }: SizeSelectorProps) {
   const selectedVariant = variants.find((v) => v.id === selectedId)
 
   return (
-    <div className="space-y-4 border border-charcoal p-4 bg-cream">
+    <div className={`space-y-4 border border-charcoal p-4 ${bgClass}`}>
       <p className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
         [SELECT_SIZE_SPEC]
       </p>

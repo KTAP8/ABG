@@ -102,10 +102,7 @@ export default function ProductDetail() {
 
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0
   const isSoldOut = totalStock === 0
-  const priceDisplay = `฿${(product.price / 100).toLocaleString(i18n.language === 'th' ? 'th-TH' : 'en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
+  const priceDisplay = `฿${product.price.toLocaleString(i18n.language === 'th' ? 'th-TH' : 'en-US')}`
 
   const displayName = product.name
   const displayDescription = i18n.language === 'th' ? product.description_th || product.description : product.description

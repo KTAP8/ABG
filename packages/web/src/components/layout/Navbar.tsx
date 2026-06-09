@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageToggle } from '../ui/LanguageToggle'
 
-export function Navbar() {
+export interface NavbarProps {
+  bgClass?: string;
+}
+
+export function Navbar({ bgClass = 'bg-cream' }: NavbarProps) {
   const { t } = useTranslation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -14,9 +18,11 @@ export function Navbar() {
     { label: t('nav.waitlist'), href: '/waitlist' },
   ]
 
+  const defaultBgColor = bgClass === 'bg-white' ? '#FFFFFF' : '#F5F1E8';
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-cream bg-opacity-100 border-b border-charcoal" style={{ backgroundColor: '#F5F1E8' }}>
+      <nav className={`fixed top-0 left-0 right-0 z-40 bg-opacity-100 border-b border-charcoal ${bgClass}`} style={{ backgroundColor: defaultBgColor }}>
         <div className="flex h-14 items-center justify-between">
           
           {/* Logo / Left Cell */}
@@ -30,9 +36,6 @@ export function Navbar() {
                 alt="ABG"
                 className="h-8 w-auto"
               />
-              <span className="font-mono text-[9px] font-normal tracking-wider opacity-60 border border-charcoal px-1 py-0.5 bg-charcoal/5 hidden sm:inline">
-                SYS_v1.0
-              </span>
             </Link>
           </div>
 
@@ -69,7 +72,7 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-14 bg-cream z-50 border-t border-charcoal">
+          <div className={`md:hidden fixed inset-0 top-14 z-50 border-t border-charcoal ${bgClass}`} style={{ backgroundColor: defaultBgColor }}>
             <div className="flex flex-col border-b border-charcoal">
               {navLinks.map((link) => (
                 <Link

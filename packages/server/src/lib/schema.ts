@@ -28,7 +28,7 @@ export const products = pgTable('products', {
   name_th: text('name_th'),
   description: text('description'),
   description_th: text('description_th'),
-  price: integer('price').notNull(), // THB in satang
+  price: integer('price').notNull(), // THB in baht
   drop_id: uuid('drop_id').references(() => drops.id),
   is_active: boolean('is_active').default(true),
   google_form_url: text('google_form_url'),

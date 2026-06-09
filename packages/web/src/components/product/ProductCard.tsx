@@ -6,20 +6,21 @@ import { useTranslation } from 'react-i18next'
 
 interface ProductCardProps {
   product: Product & { images?: ProductImage[] }
+  bgClass?: string
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps) {
   const { t } = useTranslation()
+  const isWhite = bgClass.includes('white')
+  const btnBgClass = isWhite ? 'bg-white' : 'bg-cream'
+  const btnBgOpacityClass = isWhite ? 'bg-white/90' : 'bg-cream/90'
   const [imageIndex, setImageIndex] = useState(0)
   const [isFavorite, setIsFavorite] = useState(false)
 
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0
   const isSoldOut = totalStock === 0
 
-  const priceDisplay = `฿${(product.price / 100).toLocaleString('th-TH', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
+  const priceDisplay = `฿${product.price.toLocaleString('th-TH')}`
 
   // Extract unique colors from variant data
   const colors = Array.from(
@@ -29,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link 
       to={`/products/${product.slug}`} 
-      className="group block bg-cream overflow-hidden hover:no-underline select-none transition-all duration-300"
+      className={`group block overflow-hidden hover:no-underline select-none transition-all duration-300 ${bgClass}`}
     >
       {/* Top half: Image / Carousel area */}
       <div className="relative w-full aspect-[3/4] p-4 flex flex-col justify-center items-center overflow-hidden border-b border-charcoal/10">
@@ -105,7 +106,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation()
                 setImageIndex((prev) => (prev === 0 ? product.images!.length - 1 : prev - 1))
               }}
-              className="w-6 h-6 flex items-center justify-center bg-cream/90 border border-charcoal text-charcoal hover:bg-charcoal hover:text-cream transition-colors duration-200 text-xs font-mono select-none pointer-events-auto cursor-pointer"
+              className={`w-6 h-6 flex items-center justify-center ${btnBgOpacityClass} border border-charcoal text-charcoal hover:bg-charcoal hover:text-cream transition-colors duration-200 text-xs font-mono select-none pointer-events-auto cursor-pointer`}
             >
               &lt;
             </button>
@@ -115,7 +116,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation()
                 setImageIndex((prev) => (prev === product.images!.length - 1 ? 0 : prev + 1))
               }}
-              className="w-6 h-6 flex items-center justify-center bg-cream/90 border border-charcoal text-charcoal hover:bg-charcoal hover:text-cream transition-colors duration-200 text-xs font-mono select-none pointer-events-auto cursor-pointer"
+              className={`w-6 h-6 flex items-center justify-center ${btnBgOpacityClass} border border-charcoal text-charcoal hover:bg-charcoal hover:text-cream transition-colors duration-200 text-xs font-mono select-none pointer-events-auto cursor-pointer`}
             >
               &gt;
             </button>
@@ -131,7 +132,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation()
                 alert(`${t('product.notify_me')}: ${product.name}`)
               }}
-              className="w-7 h-7 flex items-center justify-center bg-cream border border-charcoal text-charcoal hover:bg-red hover:text-cream hover:border-red transition-colors duration-200 cursor-pointer"
+              className={`w-7 h-7 flex items-center justify-center ${btnBgClass} border border-charcoal text-charcoal hover:bg-red hover:text-cream hover:border-red transition-colors duration-200 cursor-pointer`}
               title={t('product.notify_me')}
             >
               <svg 
@@ -149,7 +150,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </svg>
             </button>
           ) : (
-            <div className="w-7 h-7 flex items-center justify-center bg-cream border border-charcoal text-charcoal font-mono text-sm select-none group-hover:bg-charcoal group-hover:text-cream transition-colors duration-200">
+            <div className={`w-7 h-7 flex items-center justify-center ${btnBgClass} border border-charcoal text-charcoal font-mono text-sm select-none group-hover:bg-charcoal group-hover:text-cream transition-colors duration-200`}>
               +
             </div>
           )}
