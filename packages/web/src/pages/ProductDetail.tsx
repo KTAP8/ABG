@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
+import { ColorSelector } from '../components/product/ColorSelector'
 import { SizeSelector } from '../components/product/SizeSelector'
 import { OrderButton } from '../components/product/OrderButton'
 import { Accordion } from '../components/ui/Accordion'
@@ -16,7 +17,8 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [, setSelectedVariant] = useState<ProductVariant | null>(null)
+  const [selectedColor, setSelectedColor] = useState<string>('')
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
 
@@ -27,7 +29,14 @@ export default function ProductDetail() {
         const data = await getProduct(slug)
         setProduct(data)
         if (data.variants && data.variants.length > 0) {
-          setSelectedVariant(data.variants[0])
+          // Find first variant that has a color, or default to the first variant's color
+          const firstColorVariant = data.variants.find((v) => v.color)
+          const initialColor = firstColorVariant?.color || data.variants[0].color || ''
+          setSelectedColor(initialColor)
+
+          // Select the first variant matching that color
+          const firstMatch = data.variants.find((v) => (v.color || '') === initialColor)
+          setSelectedVariant(firstMatch || data.variants[0])
         }
       } catch (err) {
         setError('Product not found')
@@ -40,11 +49,26 @@ export default function ProductDetail() {
     fetchProduct()
   }, [slug])
 
+  // Extract unique colors from variant data
+  const colors = Array.from(
+    new Set(product?.variants?.map((v) => v.color).filter(Boolean))
+  ) as string[]
+
+  // Filter images by selected color (always include color-neutral images)
+  const filteredImages = product?.images?.filter(
+    (img) => !img.color || img.color === selectedColor
+  ) || []
+
+  // Filter variants by selected color (or empty if no color selected)
+  const variantsForColor = product?.variants?.filter(
+    (v) => (v.color || '') === selectedColor
+  ) || []
+
   // Track the active image index in the viewport using Intersection Observer
   useEffect(() => {
-    if (!product || !product.images || product.images.length === 0) return
+    if (!product || filteredImages.length === 0) return
 
-    const observers = product.images.map((_, index) => {
+    const observers = filteredImages.map((_, index) => {
       const el = document.getElementById(`product-image-${index}`)
       if (!el) return null
 
@@ -69,7 +93,22 @@ export default function ProductDetail() {
         if (obs) obs.observer.unobserve(obs.el)
       })
     }
-  }, [product])
+  }, [product, selectedColor, filteredImages.length])
+
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color)
+    if (product?.variants) {
+      // Try to find a variant matching the current size and new color
+      const currentSize = selectedVariant?.size
+      const exactMatch = product.variants.find(
+        (v) => v.color === color && v.size === currentSize
+      )
+      // Fallback to first available variant of new color
+      const fallbackMatch = product.variants.find((v) => v.color === color)
+      setSelectedVariant(exactMatch || fallbackMatch || null)
+    }
+    setActiveImageIndex(0)
+  }
 
   const scrollToImage = (index: number) => {
     const el = document.getElementById(`product-image-${index}`)
@@ -102,6 +141,8 @@ export default function ProductDetail() {
 
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0
   const isSoldOut = totalStock === 0
+  const isVariantSoldOut = selectedVariant ? selectedVariant.stock === 0 : isSoldOut
+
   const priceDisplay = `฿${product.price.toLocaleString(i18n.language === 'th' ? 'th-TH' : 'en-US')}`
 
   const displayName = product.name
@@ -118,7 +159,7 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
           {/* Thumbnails Column (Leftmost) */}
           <div className="hidden md:flex md:col-span-1 flex-col gap-3 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1">
-            {product.images && product.images.length > 1 && product.images.map((image, index) => (
+            {filteredImages.length > 1 && filteredImages.map((image, index) => (
               <button
                 key={image.id}
                 onClick={() => scrollToImage(index)}
@@ -139,8 +180,8 @@ export default function ProductDetail() {
 
           {/* Stacked Images Column (Center) */}
           <div className="col-span-1 md:col-span-7 space-y-6">
-            {product.images && product.images.length > 0 ? (
-              product.images.map((image, index) => (
+            {filteredImages.length > 0 ? (
+              filteredImages.map((image, index) => (
                 <div 
                   key={image.id} 
                   id={`product-image-${index}`}
@@ -187,10 +228,20 @@ export default function ProductDetail() {
               )}
             </div>
 
+            {/* Color Selector */}
+            {colors.length > 0 && (
+              <ColorSelector
+                colors={colors}
+                selectedColor={selectedColor}
+                onSelect={handleColorChange}
+              />
+            )}
+
             {/* Size Selector */}
-            {product.variants && product.variants.length > 0 && (
+            {variantsForColor.length > 0 && (
               <SizeSelector
-                variants={product.variants}
+                variants={variantsForColor}
+                selectedId={selectedVariant?.id || null}
                 onSelect={setSelectedVariant}
               />
             )}
@@ -198,7 +249,7 @@ export default function ProductDetail() {
             {/* Order Button */}
             <OrderButton
               googleFormUrl={product.google_form_url}
-              isSoldOut={isSoldOut}
+              isSoldOut={isVariantSoldOut}
             />
 
             {/* Modals/Accordions */}

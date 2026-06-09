@@ -46,6 +46,7 @@ export interface ProductImage {
   url: string
   position: number
   alt_text?: string
+  color?: string
 }
 
 export async function getDrops(): Promise<Drop[]> {

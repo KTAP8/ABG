@@ -51,6 +51,7 @@ export const product_images = pgTable('product_images', {
   url: text('url').notNull(),
   position: integer('position').default(0),
   alt_text: text('alt_text'),
+  color: text('color'),
 })
 
 export const waitlist = pgTable(

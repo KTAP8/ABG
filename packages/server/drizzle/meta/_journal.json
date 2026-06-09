@@ -8,6 +8,13 @@
       "when": 1780889185237,
       "tag": "0000_loose_retro_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780986902531,
+      "tag": "0001_zippy_mercury",
+      "breakpoints": true
     }
   ]
 }

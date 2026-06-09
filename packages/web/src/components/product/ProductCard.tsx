@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Product, ProductImage } from '../../lib/api'
 import { BlueprintPlaceholder } from '../ui/BlueprintPlaceholder'
 import { useTranslation } from 'react-i18next'
+import { resolveColorValue } from './ColorSelector'
 
 interface ProductCardProps {
   product: Product & { images?: ProductImage[] }
@@ -173,7 +174,7 @@ export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps)
               <span 
                 key={color} 
                 className="w-2.5 h-2.5 border border-cream/20 inline-block hover:scale-110 hover:border-cream transition-transform duration-200"
-                style={{ backgroundColor: color }}
+                style={{ backgroundColor: resolveColorValue(color) }}
                 title={color}
               />
             ))}

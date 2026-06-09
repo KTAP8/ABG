@@ -1,9 +1,17 @@
 import { db } from './lib/db'
-import { drops, products, product_variants, product_images } from './lib/schema'
+import { drops, products, product_variants, product_images, waitlist } from './lib/schema'
 
 async function seed() {
   try {
     console.log('🌱 Seeding database...')
+
+    // Clear existing data to avoid conflicts
+    console.log('Cleaning existing database records...')
+    await db.delete(waitlist)
+    await db.delete(product_images)
+    await db.delete(product_variants)
+    await db.delete(products)
+    await db.delete(drops)
 
     // Create drops
     const drop1 = await db
@@ -102,6 +110,11 @@ async function seed() {
       { product_id: product1[0].id, size: 'M', color: 'Cream', stock: 8 },
       { product_id: product1[0].id, size: 'L', color: 'Cream', stock: 3 },
       { product_id: product1[0].id, size: 'XL', color: 'Cream', stock: 0 },
+      { product_id: product1[0].id, size: 'XS', color: 'Black', stock: 10 },
+      { product_id: product1[0].id, size: 'S', color: 'Black', stock: 15 },
+      { product_id: product1[0].id, size: 'M', color: 'Black', stock: 4 },
+      { product_id: product1[0].id, size: 'L', color: 'Black', stock: 8 },
+      { product_id: product1[0].id, size: 'XL', color: 'Black', stock: 0 },
 
       { product_id: product2[0].id, size: 'XS', color: 'Black', stock: 4 },
       { product_id: product2[0].id, size: 'S', color: 'Black', stock: 7 },
@@ -113,7 +126,7 @@ async function seed() {
     ]
 
     await db.insert(product_variants).values(variants)
-    console.log('✓ Created 11 product variants')
+    console.log('✓ Created 16 product variants')
 
     // Create product images
     const images = [
@@ -121,13 +134,22 @@ async function seed() {
         product_id: product1[0].id,
         url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=667&fit=crop',
         position: 0,
-        alt_text: 'Oversized tee front',
+        alt_text: 'Oversized tee cream front',
+        color: 'Cream',
       },
       {
         product_id: product1[0].id,
         url: 'https://images.unsplash.com/photo-1592272889254-f7a438b4b9cf?w=500&h=667&fit=crop',
         position: 1,
-        alt_text: 'Oversized tee back',
+        alt_text: 'Oversized tee cream back',
+        color: 'Cream',
+      },
+      {
+        product_id: product1[0].id,
+        url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&h=667&fit=crop',
+        position: 2,
+        alt_text: 'Oversized tee black front',
+        color: 'Black',
       },
 
       {
@@ -135,12 +157,14 @@ async function seed() {
         url: 'https://images.unsplash.com/photo-1542272604-787c62d465d1?w=500&h=667&fit=crop',
         position: 0,
         alt_text: 'Cargo pants front',
+        color: 'Black',
       },
       {
         product_id: product2[0].id,
         url: 'https://images.unsplash.com/photo-1542272604-787c62d465d1?w=500&h=667&fit=crop',
         position: 1,
         alt_text: 'Cargo pants detail',
+        color: 'Black',
       },
 
       {
@@ -148,11 +172,12 @@ async function seed() {
         url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=667&fit=crop',
         position: 0,
         alt_text: 'Baseball cap front',
+        color: 'Black',
       },
     ]
 
     await db.insert(product_images).values(images)
-    console.log('✓ Created 5 product images')
+    console.log('✓ Created 6 product images')
 
     console.log('\n✅ Seeding complete!')
     console.log(`

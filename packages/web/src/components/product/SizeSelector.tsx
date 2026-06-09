@@ -1,19 +1,16 @@
-import { useState } from 'react'
 import { ProductVariant } from '../../lib/api'
 import { SizePill } from '../ui/SizePill'
 
 interface SizeSelectorProps {
   variants: ProductVariant[]
+  selectedId: string | null
   onSelect: (variant: ProductVariant) => void
   bgClass?: string
 }
 
-export function SizeSelector({ variants, onSelect, bgClass = 'bg-cream' }: SizeSelectorProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-
+export function SizeSelector({ variants, selectedId, onSelect, bgClass = 'bg-cream' }: SizeSelectorProps) {
   const handleSelect = (variant: ProductVariant) => {
     if (variant.stock > 0) {
-      setSelectedId(variant.id)
       onSelect(variant)
     }
   }
@@ -44,6 +41,7 @@ export function SizeSelector({ variants, onSelect, bgClass = 'bg-cream' }: SizeS
       {selectedVariant && (
         <div className="pt-2 border-t border-charcoal/20 font-mono text-[9px] tracking-widest text-charcoal/70 space-y-1">
           <div>// SKU: ABG-VAR-{selectedVariant.id.slice(0, 8).toUpperCase()}</div>
+          {selectedVariant.color && <div>// COLOR: {selectedVariant.color.toUpperCase()}</div>}
           <div>// STATE: {selectedVariant.stock <= 15 ? 'LOW_STOCK_WARNING' : 'IN_STOCK'}</div>
           <div>// QUANTITY: {selectedVariant.stock} UNITS REGISTERED</div>
         </div>
