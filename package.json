@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "concurrently \"pnpm --filter web dev\" \"pnpm --filter server dev\"",
     "build": "pnpm --filter web build && pnpm --filter server build",
+    "start": "node packages/server/dist/index.js",
     "db:push": "pnpm --filter server db:push",
     "db:generate": "pnpm --filter server db:generate",
     "db:migrate": "pnpm --filter server db:migrate"
