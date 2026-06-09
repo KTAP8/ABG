@@ -2,7 +2,6 @@ interface ColorSelectorProps {
   colors: string[]
   selectedColor: string
   onSelect: (color: string) => void
-  bgClass?: string
 }
 
 export function resolveColorValue(colorName: string): string {
@@ -15,13 +14,19 @@ export function resolveColorValue(colorName: string): string {
   return colorName
 }
 
-export function ColorSelector({ colors, selectedColor, onSelect, bgClass = 'bg-cream' }: ColorSelectorProps) {
+export function ColorSelector({ colors, selectedColor, onSelect }: ColorSelectorProps) {
   return (
-    <div className={`space-y-4 border border-charcoal p-4 ${bgClass}`}>
-      <p className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
-        [SELECT_COLOR_SPEC] {selectedColor && `// ${selectedColor.toUpperCase()}`}
-      </p>
-      <div className="flex flex-wrap gap-2.5">
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <span className="font-mono text-[9px] uppercase tracking-widest text-charcoal/50 font-bold">
+          [PARAM_COLOR_SPEC]
+        </span>
+        <span className="font-mono text-[9px] uppercase font-bold text-charcoal tracking-wide bg-charcoal/5 px-2 py-0.5 border border-charcoal/10 select-none">
+          {selectedColor || 'NOT_SELECTED'}
+        </span>
+      </div>
+      
+      <div className="flex flex-wrap gap-3 py-1">
         {colors.map((color) => {
           const isSelected = selectedColor === color
           const colorValue = resolveColorValue(color)
@@ -31,17 +36,17 @@ export function ColorSelector({ colors, selectedColor, onSelect, bgClass = 'bg-c
             <button
               key={color}
               onClick={() => onSelect(color)}
-              className={`w-7 h-7 border transition-all duration-200 cursor-pointer flex items-center justify-center hover:scale-105 focus:outline-none ${
+              className={`w-8 h-8 border transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 focus:outline-none ${
                 isSelected
-                  ? 'border-charcoal ring-2 ring-charcoal/20 scale-105'
-                  : 'border-charcoal/30 hover:border-charcoal/60'
+                  ? 'border-charcoal ring-4 ring-charcoal/15 scale-105'
+                  : 'border-charcoal/20 hover:border-charcoal/50'
               }`}
               style={{ backgroundColor: colorValue }}
               title={color}
               type="button"
             >
               {isSelected && (
-                <span className={`w-1.5 h-1.5 ${isLight ? 'bg-charcoal' : 'bg-cream'}`} />
+                <span className={`w-2 h-2 rounded-full ${isLight ? 'bg-charcoal' : 'bg-cream'}`} />
               )}
             </button>
           )

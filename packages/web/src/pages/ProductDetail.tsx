@@ -163,7 +163,7 @@ export default function ProductDetail() {
               <button
                 key={image.id}
                 onClick={() => scrollToImage(index)}
-                className={`w-full aspect-[3/4] border bg-cream overflow-hidden transition-all duration-300 cursor-pointer ${
+                className={`w-full aspect-[3/4] border bg-white overflow-hidden transition-all duration-300 cursor-pointer ${
                   index === activeImageIndex
                     ? 'border-charcoal scale-105 opacity-100'
                     : 'border-charcoal/20 opacity-40 hover:opacity-80'
@@ -172,7 +172,7 @@ export default function ProductDetail() {
                 <img
                   src={image.url}
                   alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover grayscale mix-blend-multiply"
+                  className="w-full h-full object-cover grayscale"
                 />
               </button>
             ))}
@@ -185,12 +185,12 @@ export default function ProductDetail() {
                 <div 
                   key={image.id} 
                   id={`product-image-${index}`}
-                  className="relative w-full aspect-[3/4] bg-cream border border-charcoal p-6 flex items-center justify-center overflow-hidden"
+                  className="relative w-full aspect-[3/4] bg-white border border-charcoal p-6 flex items-center justify-center overflow-hidden"
                 >
                   <img
                     src={image.url}
                     alt={image.alt_text || `${displayName} - view ${index + 1}`}
-                    className="w-full h-full object-contain mix-blend-multiply"
+                    className="w-full h-full object-contain"
                   />
                   {/* Technical visual tag */}
                   <div className="absolute bottom-4 right-4 font-mono text-[8px] text-charcoal/40 bg-cream/90 border border-charcoal/15 px-1.5 py-0.5 select-none">
@@ -204,73 +204,122 @@ export default function ProductDetail() {
           </div>
 
           {/* Sticky Details Column (Right) */}
-          <div className="col-span-1 md:col-span-4 md:sticky md:top-24 space-y-6">
-            <div className="border border-charcoal p-6 bg-cream space-y-4">
-              <div>
-                <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// MODEL_NOMENCLATURE</span>
-                <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal tracking-tighter mt-1">
-                  {displayName}
-                </h1>
-              </div>
+          <div className="col-span-1 md:col-span-4 md:sticky md:top-24">
+            <div className="border-2 border-charcoal bg-cream divide-y-2 divide-charcoal overflow-hidden shadow-[6px_6px_0px_rgba(63,63,68,0.1)]">
               
-              <div className="flex justify-between items-center border-t border-b border-charcoal/20 py-2">
-                <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// VALUE_REGISTRY</span>
-                <span className="font-mono text-sm uppercase font-bold text-charcoal">{priceDisplay}</span>
+              {/* Header Status Bar */}
+              <div className="px-6 py-3 bg-charcoal text-cream flex justify-between items-center font-mono text-[9px] tracking-widest select-none">
+                <span className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full inline-block ${isVariantSoldOut ? 'bg-red animate-pulse' : 'bg-green-500'}`} style={{ backgroundColor: isVariantSoldOut ? '#C0392B' : '#2ECC71' }} />
+                  SYSTEM_STATUS: {isVariantSoldOut ? 'OFFLINE // OUT_OF_STOCK' : 'ONLINE // IN_STOCK'}
+                </span>
+                <span>ID: {product.id.slice(0, 8).toUpperCase()}</span>
               </div>
 
-              {displayDescription && (
-                <div className="space-y-1">
-                  <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// DESIGN_SPECIFICATION</span>
-                  <p className="font-body text-xs leading-relaxed text-charcoal">
-                    {displayDescription}
-                  </p>
+              {/* Main Title & Price */}
+              <div className="p-6 space-y-4">
+                <div>
+                  <span className="font-mono text-[8px] tracking-widest text-charcoal/40 uppercase block">// MODEL_NOMENCLATURE</span>
+                  <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal tracking-tighter mt-1 leading-none select-all">
+                    {displayName}
+                  </h1>
                 </div>
-              )}
-            </div>
 
-            {/* Color Selector */}
-            {colors.length > 0 && (
-              <ColorSelector
-                colors={colors}
-                selectedColor={selectedColor}
-                onSelect={handleColorChange}
-              />
-            )}
-
-            {/* Size Selector */}
-            {variantsForColor.length > 0 && (
-              <SizeSelector
-                variants={variantsForColor}
-                selectedId={selectedVariant?.id || null}
-                onSelect={setSelectedVariant}
-              />
-            )}
-
-            {/* Order Button */}
-            <OrderButton
-              googleFormUrl={product.google_form_url}
-              isSoldOut={isVariantSoldOut}
-            />
-
-            {/* Modals/Accordions */}
-            <div className="border border-charcoal p-6 bg-cream space-y-4 font-mono text-xs">
-              <div className="flex justify-between items-center border-b border-charcoal/20 pb-2">
-                <span className="text-charcoal/50 uppercase tracking-widest text-[9px]">// FITMENT_SYSTEM</span>
-                <button
-                  onClick={() => setShowSizeGuide(true)}
-                  className="font-mono text-[10px] uppercase tracking-wider text-charcoal hover:text-red transition-colors cursor-pointer"
-                >
-                  [VIEW_SIZE_GUIDE]
-                </button>
+                <div className="flex justify-between items-center pt-2 border-t border-charcoal/10">
+                  <span className="font-mono text-[8px] tracking-widest text-charcoal/40 uppercase block">// VALUE_REGISTRY</span>
+                  <span className="font-mono text-base uppercase font-extrabold text-charcoal select-all">{priceDisplay}</span>
+                </div>
               </div>
-              <Accordion
-                items={[
-                  {
-                    title: 'MATERIAL & SPECIFICATIONS',
-                    content: materialContent,
-                  },
-                ]}
-              />
+
+              {/* Selectors Panel (Merged Color & Size) */}
+              <div className="p-6 space-y-6">
+                {/* Color Selector */}
+                {colors.length > 0 && (
+                  <ColorSelector
+                    colors={colors}
+                    selectedColor={selectedColor}
+                    onSelect={handleColorChange}
+                  />
+                )}
+
+                {/* Size Selector */}
+                {variantsForColor.length > 0 && (
+                  <SizeSelector
+                    variants={variantsForColor}
+                    selectedId={selectedVariant?.id || null}
+                    onSelect={setSelectedVariant}
+                  />
+                )}
+              </div>
+
+              {/* CTA Panel */}
+              <div className="p-6 bg-charcoal/[0.01]">
+                <OrderButton
+                  googleFormUrl={product.google_form_url}
+                  isSoldOut={isVariantSoldOut}
+                  stock={selectedVariant?.stock}
+                />
+              </div>
+
+              {/* Technical Specifications Table */}
+              <div className="p-6 space-y-3 font-mono text-[10px] tracking-widest bg-charcoal/[0.02] text-charcoal/70">
+                <span className="font-mono text-[8px] tracking-widest text-charcoal/40 uppercase block mb-1">// SYSTEM_METRIC_REGISTERS</span>
+                <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
+                  <span className="col-span-1 text-charcoal/40">COMPOSITION:</span>
+                  <span className="col-span-2 text-charcoal font-bold text-right uppercase">100% Cotton</span>
+                </div>
+                <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
+                  <span className="col-span-1 text-charcoal/40">FIT_PROFILE:</span>
+                  <span className="col-span-2 text-charcoal font-bold text-right uppercase">Boxy / Oversized</span>
+                </div>
+                <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
+                  <span className="col-span-1 text-charcoal/40">SKU_VAR_ID:</span>
+                  <span className="col-span-2 text-charcoal font-bold text-right uppercase select-all">
+                    {selectedVariant ? `ABG-VAR-${selectedVariant.id.slice(0, 8).toUpperCase()}` : 'NONE_ACTIVE'}
+                  </span>
+                </div>
+                {selectedVariant && (
+                  <div className="grid grid-cols-3 py-1">
+                    <span className="col-span-1 text-charcoal/40">STOCK_STATE:</span>
+                    <span className={`col-span-2 font-bold text-right uppercase ${selectedVariant.stock <= 15 ? 'text-red animate-pulse' : 'text-charcoal'}`}>
+                      {selectedVariant.stock === 0 ? 'DEPLETED' : selectedVariant.stock <= 15 ? `LOW_STOCK (${selectedVariant.stock} UNITS)` : 'STABLE_INVENTORY'}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Fitment & Specs Accordion */}
+              <div className="p-6 space-y-4 font-mono text-xs">
+                <div className="flex justify-between items-center border-b border-charcoal/10 pb-2.5">
+                  <span className="text-charcoal/40 uppercase tracking-widest text-[8px]">// FITMENT_SYSTEM</span>
+                  <button
+                    onClick={() => setShowSizeGuide(true)}
+                    className="font-mono text-[9px] uppercase tracking-wider text-charcoal font-bold hover:text-red transition-colors cursor-pointer"
+                  >
+                    [VIEW_SIZE_GUIDE]
+                  </button>
+                </div>
+                
+                {displayDescription && (
+                  <div className="py-1">
+                    <span className="text-charcoal/40 uppercase tracking-widest text-[8px] block mb-1.5">// DESIGN_SPECIFICATION</span>
+                    <p className="font-body text-xs leading-relaxed text-charcoal/85">
+                      {displayDescription}
+                    </p>
+                  </div>
+                )}
+
+                <div className="border-t border-charcoal/10 pt-2">
+                  <Accordion
+                    items={[
+                      {
+                        title: 'MATERIAL & LAUNDRY INSTRUCTIONS',
+                        content: materialContent,
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

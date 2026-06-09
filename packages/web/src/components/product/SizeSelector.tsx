@@ -5,10 +5,9 @@ interface SizeSelectorProps {
   variants: ProductVariant[]
   selectedId: string | null
   onSelect: (variant: ProductVariant) => void
-  bgClass?: string
 }
 
-export function SizeSelector({ variants, selectedId, onSelect, bgClass = 'bg-cream' }: SizeSelectorProps) {
+export function SizeSelector({ variants, selectedId, onSelect }: SizeSelectorProps) {
   const handleSelect = (variant: ProductVariant) => {
     if (variant.stock > 0) {
       onSelect(variant)
@@ -18,11 +17,17 @@ export function SizeSelector({ variants, selectedId, onSelect, bgClass = 'bg-cre
   const selectedVariant = variants.find((v) => v.id === selectedId)
 
   return (
-    <div className={`space-y-4 border border-charcoal p-4 ${bgClass}`}>
-      <p className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
-        [SELECT_SIZE_SPEC]
-      </p>
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <span className="font-mono text-[9px] uppercase tracking-widest text-charcoal/50 font-bold">
+          [PARAM_SIZE_SPEC]
+        </span>
+        <span className="font-mono text-[9px] uppercase font-bold text-charcoal tracking-wide bg-charcoal/5 px-2 py-0.5 border border-charcoal/10 select-none">
+          {selectedVariant?.size || 'NOT_SELECTED'}
+        </span>
+      </div>
+
+      <div className="flex flex-wrap gap-2 py-1">
         {variants.map((variant) => (
           <SizePill
             key={variant.id}
@@ -38,14 +43,6 @@ export function SizeSelector({ variants, selectedId, onSelect, bgClass = 'bg-cre
           />
         ))}
       </div>
-      {selectedVariant && (
-        <div className="pt-2 border-t border-charcoal/20 font-mono text-[9px] tracking-widest text-charcoal/70 space-y-1">
-          <div>// SKU: ABG-VAR-{selectedVariant.id.slice(0, 8).toUpperCase()}</div>
-          {selectedVariant.color && <div>// COLOR: {selectedVariant.color.toUpperCase()}</div>}
-          <div>// STATE: {selectedVariant.stock <= 15 ? 'LOW_STOCK_WARNING' : 'IN_STOCK'}</div>
-          <div>// QUANTITY: {selectedVariant.stock} UNITS REGISTERED</div>
-        </div>
-      )}
     </div>
   )
 }

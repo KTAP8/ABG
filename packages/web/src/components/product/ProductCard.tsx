@@ -34,7 +34,7 @@ export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps)
       className={`group block overflow-hidden hover:no-underline select-none transition-all duration-300 ${bgClass}`}
     >
       {/* Top half: Image / Carousel area */}
-      <div className="relative w-full aspect-[3/4] p-4 flex flex-col justify-center items-center overflow-hidden border-b border-charcoal/10">
+      <div className="relative w-full aspect-[3/4] p-4 flex flex-col justify-center items-center overflow-hidden border-b border-charcoal/10 bg-white">
         
         {/* Absolute Header Overlay */}
         <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
@@ -87,7 +87,7 @@ export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps)
           <img 
             src={product.images[imageIndex].url} 
             alt={product.images[imageIndex].alt_text || product.name}
-            className="w-full h-full object-contain mix-blend-multiply group-hover:scale-[1.02] transition-transform duration-500 ease-out"
+            className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-500 ease-out"
           />
         ) : (
           <BlueprintPlaceholder 
