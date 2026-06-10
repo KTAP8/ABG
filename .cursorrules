@@ -1,0 +1,18 @@
+# ABG Project - AI Coding Assistant Rules
+
+## CRITICAL: Database Safety Rules
+
+- **NEVER run database seed scripts**: Do NOT execute `pnpm --filter server seed` or `tsx src/seed.ts` (or any equivalent seeding command).
+- **NEVER execute destructive database commands**: Do NOT write or run code, scripts, or migrations that perform `db.delete(...)` or `db.truncate(...)` on the database tables (e.g. `products`, `drops`, `product_variants`, `product_images`).
+- **User Database Ownership**: The user manually configures and updates the drops and product data directly in the Neon database console. All database records must be treated as production data and must remain intact.
+- **Drizzle schema changes**: Database schema additions/migrations (e.g., `drizzle-kit generate` or `drizzle-kit push`) are allowed ONLY if they are non-destructive and do not drop existing tables or columns containing user data.
+
+## Visual Design Rules
+
+- **No rounded corners**: `border-radius: 0` globally.
+- **No drop shadows or gradients**: Pure flat brutalist design only.
+- **Color palette**: Only use `#F5F1E8` (cream), `#3F3F44` (charcoal), `#FFFFFF` (white), `#0A0A0A` (black), and `#C0392B` (red).
+
+## Development Rules
+
+- **Bilingual Copy**: Do not hardcode text inside components. All text must be declared in translations (`locales/en.json` and `locales/th.json`) and retrieved using the translation hook `t('key')`.

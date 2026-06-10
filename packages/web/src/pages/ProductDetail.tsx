@@ -13,7 +13,7 @@ import type { Product, ProductVariant } from '../lib/api'
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -148,8 +148,8 @@ export default function ProductDetail() {
   const displayName = product.name
   const displayDescription = i18n.language === 'th' ? product.description_th || product.description : product.description
 
-  const sizeGuideContent = 'Size guide content coming soon.'
-  const materialContent = product.description || 'Material information not available.'
+  const sizeGuideContent = t('product.sizeguide.content')
+  const materialContent = t('product.material.laundry')
 
   return (
     <div className="min-h-screen bg-cream">
@@ -313,7 +313,7 @@ export default function ProductDetail() {
                   <Accordion
                     items={[
                       {
-                        title: 'MATERIAL & LAUNDRY INSTRUCTIONS',
+                        title: t('product.material.laundry_title'),
                         content: materialContent,
                       },
                     ]}
@@ -328,7 +328,7 @@ export default function ProductDetail() {
       <Modal
         isOpen={showSizeGuide}
         onClose={() => setShowSizeGuide(false)}
-        title="Size Guide"
+        title={t('product.sizeguide.title')}
       >
         <p className="font-body text-sm text-charcoal">{sizeGuideContent}</p>
       </Modal>

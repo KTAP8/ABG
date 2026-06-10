@@ -34,7 +34,7 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
       setCampus('')
       setTimeout(() => setSubmitted(false), 5000)
     } catch (err) {
-      setError('Failed to join waitlist. Please try again.')
+      setError(t('waitlist.error'))
       console.error(err)
     } finally {
       setLoading(false)

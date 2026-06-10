@@ -18,12 +18,12 @@ async function seed() {
       .insert(drops)
       .values({
         slug: 'samyan-v1',
-        name: 'SAMYAN V1',
-        name_th: 'สัมยาน วี วัน',
+        name: 'SAMYAN BADDIE V1',
+        name_th: 'สามย่าน แบดดี้ V1',
         description:
-          'The first drop. Raw energy from campus. Limited run of 200 pieces.',
+          'We are creating the unofficial \'Samyan Baddie\' uniform. Effortless everyday wear, but injected with bold, limited-run aesthetics. Our obsession is premium construction—utilizing the same heavyweight fabrics as luxury streetwear labels, but without the gatekept price tag. Only 200 pieces ever made. No restocks.',
         description_th:
-          'ดรอปแรก พลังบริสุทธิ์จากแคมปัส จำนวนจำกัด 200 ชิ้น',
+          'ชุดเครื่องแบบอย่างไม่เป็นทางการของชาว Samyan Baddie เสื้อผ้าสวมใส่ง่ายในทุกๆ วัน คัสตอมพิเศษเฉพาะรอบนี้เท่านั้น ดีไซน์จัดเต็มเหมือนแบรนด์ลักชูรีสตรีทแวร์ ในราคาที่จับต้องได้ ผลิตเพียง 200 ชิ้นเท่านั้น ไม่มีรีสต็อก',
         drop_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
         is_active: true,
         google_form_url:
@@ -35,12 +35,12 @@ async function seed() {
       .insert(drops)
       .values({
         slug: 'summer-edition',
-        name: 'SUMMER EDITION',
-        name_th: 'ซัมเมอร์ เอดิชั่น',
+        name: 'NPC ESCAPE PLAN',
+        name_th: 'หลบหนีความ NPC',
         description:
-          'Hot season essentials. Oversized tees and caps. Gone in 48 hours last time.',
+          'We literally fought our print-on-demand supplier to get this puff-print right. A protest against the standard faculty jerseys and standard mass-produced tees that everyone walks around Samyan in. Archived.',
         description_th:
-          'สินค้าสำหรับฤดูร้อน เสื้อยืดโอเวอร์ไซส์และหมวก หมดเร็วมากครั้งแรก',
+          'ดีไซน์ที่ตั้งใจทำเพื่อหลีกหนีเสื้อผ้า NPC ลายพิมพ์นูนพัฟฟ์หนาพิเศษที่เราสู้รบกับซัพพลายเออร์เพื่อให้งานออกมาดีที่สุด หาสวมใส่จากที่อื่นไม่ได้อีกแล้ว ถูกเก็บเข้ากรุเรียบร้อย',
         drop_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
         is_active: false,
         google_form_url:

@@ -604,3 +604,4 @@ The ABG site should feel like these references had a child who grew up in Samyan
 - No hardcoded copy — all strings via `t('key')`.
 - No cart, bag, or checkout UI (v1 has no payment).
 - No password gate on drops.
+- NEVER run database seed scripts (e.g., `pnpm --filter server seed` or `tsx src/seed.ts`) or run any commands that delete, truncate, or overwrite database tables. The database products and drops are manually managed by the user on the Neon console, so database records must remain completely intact.

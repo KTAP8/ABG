@@ -12,7 +12,7 @@ export function Navbar({ bgClass = 'bg-cream' }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navLinks = [
-    { label: 'Products', href: '/products' },
+    { label: t('nav.products'), href: '/products' },
     { label: t('nav.archive'), href: '/archive' },
     { label: t('nav.about'), href: '/about' },
     { label: t('nav.waitlist'), href: '/waitlist' },
