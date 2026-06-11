@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 export function LanguageToggle() {
   const { i18n } = useTranslation()
-  const currentLang = i18n.language || 'th'
+  const currentLang = i18n.language || 'en'
 
   return (
     <div className="flex border border-charcoal font-mono text-xs overflow-hidden">

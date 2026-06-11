@@ -23,6 +23,8 @@ export interface Product {
   description_th?: string
   price: number
   drop_id?: string
+  category?: string
+  gender?: string
   is_active: boolean
   google_form_url?: string
   created_at: string
@@ -49,8 +51,13 @@ export interface ProductImage {
   color?: string
 }
 
-export async function getDrops(): Promise<Drop[]> {
-  const res = await fetch(`${API_URL}/drops`)
+export async function getDrops(params?: { category?: string; gender?: string }): Promise<Drop[]> {
+  const searchParams = new URLSearchParams()
+  if (params?.category) searchParams.append('category', params.category)
+  if (params?.gender) searchParams.append('gender', params.gender)
+
+  const url = `${API_URL}/drops${searchParams.toString() ? '?' + searchParams.toString() : ''}`
+  const res = await fetch(url)
   if (!res.ok) throw new Error('Failed to fetch drops')
   return res.json()
 }

@@ -64,5 +64,8 @@
   "product.sizeguide.title": "Size Guide",
   "product.sizeguide.content": "Standard oversized fits. If you want it extra boxy to hide your midterm stress, go one size up. Full chart coming soon.",
   "product.material.laundry": "100% combed cotton. Wash cold, hang dry, and please don't burn it with a cheap iron.",
-  "product.material.laundry_title": "MATERIAL & LAUNDRY INSTRUCTIONS"
+  "product.material.laundry_title": "MATERIAL & LAUNDRY INSTRUCTIONS",
+  "pagination.prev": "prev",
+  "pagination.next": "next",
+  "pagination.page": "page"
 }

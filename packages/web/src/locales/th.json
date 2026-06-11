@@ -64,5 +64,8 @@
   "product.sizeguide.title": "คู่มือไซส์",
   "product.sizeguide.content": "ทรง Oversized ทั่วไป ถ้าอยากได้แบบโคร่งๆ ไว้ซ่อนความเครียดช่วงสอบมิดเทอม ให้บวกเพิ่มหนึ่งไซส์ ตารางไซส์แบบละเอียดจะตามมาเร็วๆ นี้",
   "product.material.laundry": "คอตตอนแท้ 100% ซักน้ำเย็น แขวนให้แห้ง และโปรดอย่ารีดแรงจนพัฟปริ้นท์พัง",
-  "product.material.laundry_title": "วัสดุ & คำแนะนำการดูแลรักษา"
+  "product.material.laundry_title": "วัสดุ & คำแนะนำการดูแลรักษา",
+  "pagination.prev": "ก่อนหน้า",
+  "pagination.next": "ถัดไป",
+  "pagination.page": "หน้า"
 }

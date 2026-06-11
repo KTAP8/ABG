@@ -21,6 +21,14 @@ export const drops = pgTable('drops', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })
 
+export const product_categories = pgTable('product_categories', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  slug: text('slug').unique().notNull(),
+  name: text('name').notNull(),
+  name_th: text('name_th'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+})
+
 export const products = pgTable('products', {
   id: uuid('id').primaryKey().defaultRandom(),
   slug: text('slug').unique().notNull(),
@@ -30,6 +38,8 @@ export const products = pgTable('products', {
   description_th: text('description_th'),
   price: integer('price').notNull(), // THB in baht
   drop_id: uuid('drop_id').references(() => drops.id),
+  category: text('category').default('accessories'),
+  gender: text('gender').default('unisex'), // 'men', 'women', 'unisex'
   is_active: boolean('is_active').default(true),
   google_form_url: text('google_form_url'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),

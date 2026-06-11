@@ -37,7 +37,7 @@ export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps)
       <div className="relative w-full aspect-[3/4] p-4 flex flex-col justify-center items-center overflow-hidden border-b border-charcoal/10 bg-white">
         
         {/* Absolute Header Overlay */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
+        <div className="absolute top-2 left-2 right-2 md:top-4 md:left-4 md:right-4 flex justify-between items-center z-10">
           {/* Status Indicator */}
           {isSoldOut ? (
             <span className="text-red font-mono text-[9px] font-bold tracking-wider flex items-center gap-1.5 uppercase">
@@ -125,7 +125,7 @@ export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps)
         )}
 
         {/* Action Icon Overlay (Bottom-Right) */}
-        <div className="absolute bottom-4 right-4 z-10">
+        <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
           {isSoldOut ? (
             <button
               onClick={(e) => {

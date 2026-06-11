@@ -12,6 +12,8 @@ export default function Home() {
   const { t } = useTranslation()
   const [latestDrop, setLatestDrop] = useState<Drop | null>(null)
   const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const productsPerPage = 4
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,6 +31,11 @@ export default function Home() {
 
     fetchData()
   }, [])
+
+  const products = latestDrop?.products || []
+  const totalPages = Math.ceil(products.length / productsPerPage)
+  const startIndex = (currentPage - 1) * productsPerPage
+  const paginatedProducts = products.slice(startIndex, startIndex + productsPerPage)
 
   return (
     <div className="min-h-screen bg-cream">
@@ -64,10 +71,10 @@ export default function Home() {
           {/* Coordinates grid watermark */}
           <div className="absolute inset-0 tech-grid-bg opacity-40 pointer-events-none" />
           
-          <h1 className="font-display font-black text-[10vw] lg:text-[7vw] leading-[0.9] uppercase text-charcoal tracking-tighter mb-6 select-none z-10">
+          <h1 className="font-display font-black text-[10vw] lg:text-[7vw] leading-[0.9] uppercase text-charcoal tracking-[-0.12em] mb-6 select-none z-10">
             ACOUSTIC<br />
             BUT<br />
-            GOATED.
+            GOATED
           </h1>
           <p className="font-mono text-xs uppercase tracking-widest text-charcoal max-w-sm z-10">
             // {t('hero.sub')}
@@ -125,8 +132,8 @@ export default function Home() {
             </span>
           </div>
         ) : latestDrop && latestDrop.products ? (
-          <>
-            <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between border-b border-charcoal pb-4">
+          <div className="flex flex-col items-center">
+            <div className="w-full mb-10 flex flex-col md:flex-row md:items-end justify-between border-b border-charcoal pb-4">
               <h2 className="font-display font-black text-2xl md:text-3xl uppercase text-charcoal">
                 {latestDrop.name}
               </h2>
@@ -134,8 +141,32 @@ export default function Home() {
                 [CATALOGUE_REF: {latestDrop.slug.toUpperCase()}]
               </span>
             </div>
-            <ProductGrid products={latestDrop.products.slice(0, 4)} />
-          </>
+            <div className="w-full">
+              <ProductGrid products={paginatedProducts} />
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-6 mt-12 font-mono text-[11px] select-none">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  className="px-4 py-2 border border-charcoal text-charcoal font-bold uppercase transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-charcoal hover:text-cream cursor-pointer"
+                >
+                  &lt; {t('pagination.prev')}
+                </button>
+                <span className="text-charcoal uppercase tracking-wider font-bold">
+                  {t('pagination.page')} {currentPage} / {totalPages}
+                </span>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  className="px-4 py-2 border border-charcoal text-charcoal font-bold uppercase transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-charcoal hover:text-cream cursor-pointer"
+                >
+                  {t('pagination.next')} &gt;
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="py-24 text-center border border-dashed border-charcoal/40">
             <p className="font-mono text-sm uppercase tracking-wider text-charcoal opacity-70">

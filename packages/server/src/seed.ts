@@ -61,6 +61,8 @@ async function seed() {
         description_th: '100% คอตตอน ทรงบ็อกซี่ ชิ้นสำคัญของ ABG',
         price: 79000, // ฿790 in satang
         drop_id: drop1[0].id,
+        category: 'tops',
+        gender: 'unisex',
         is_active: true,
         google_form_url:
           'https://forms.gle/placeholder-tee-cream',
@@ -79,6 +81,8 @@ async function seed() {
           'ดีเทลกระเป๋า สีดำวินเทจ แมตช์กับทุกอย่าง',
         price: 249000, // ฿2490
         drop_id: drop1[0].id,
+        category: 'bottoms',
+        gender: 'unisex',
         is_active: true,
         google_form_url:
           'https://forms.gle/placeholder-cargo-black',
@@ -95,6 +99,8 @@ async function seed() {
         description_th: 'โลโก้ปักเย็บ โครงสร้าง 6 แผง หลังโปร่ง',
         price: 59000, // ฿590
         drop_id: drop1[0].id,
+        category: 'accessories',
+        gender: 'unisex',
         is_active: true,
         google_form_url:
           'https://forms.gle/placeholder-cap-emb',
