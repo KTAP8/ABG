@@ -67,5 +67,7 @@
   "product.material.laundry_title": "วัสดุ & คำแนะนำการดูแลรักษา",
   "pagination.prev": "ก่อนหน้า",
   "pagination.next": "ถัดไป",
-  "pagination.page": "หน้า"
+  "pagination.page": "หน้า",
+  "products.loading_more": "[ กำลังโหลดสินค้าเพิ่มเติม... ]",
+  "products.all_loaded": "[ สิ้นสุดแคตตาล็อก ]"
 }

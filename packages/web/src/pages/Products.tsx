@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
@@ -24,10 +24,11 @@ export default function Products() {
   const { t } = useTranslation()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [visibleCount, setVisibleCount] = useState(8)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedGender, setSelectedGender] = useState('')
-  const productsPerPage = 4
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -40,7 +41,7 @@ export default function Products() {
         // Flatten all products from all drops
         const allProducts = drops.flatMap((drop) => drop.products || [])
         setProducts(allProducts)
-        setCurrentPage(1) // Reset to first page when filters change
+        setVisibleCount(8) // Reset visible items count when filters change
       } catch (err) {
         console.error('Failed to fetch products', err)
       } finally {
@@ -51,9 +52,35 @@ export default function Products() {
     fetchProducts()
   }, [selectedCategory, selectedGender])
 
-  const totalPages = Math.ceil(products.length / productsPerPage)
-  const startIndex = (currentPage - 1) * productsPerPage
-  const paginatedProducts = products.slice(startIndex, startIndex + productsPerPage)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0]
+        if (first.isIntersecting && !loading && !loadingMore && visibleCount < products.length) {
+          setLoadingMore(true)
+          // Add a subtle delay (400ms) for premium visual feedback on loading
+          setTimeout(() => {
+            setVisibleCount((prev) => Math.min(prev + 8, products.length))
+            setLoadingMore(false)
+          }, 400)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    const currentSentinel = sentinelRef.current
+    if (currentSentinel) {
+      observer.observe(currentSentinel)
+    }
+
+    return () => {
+      if (currentSentinel) {
+        observer.unobserve(currentSentinel)
+      }
+    }
+  }, [loading, loadingMore, visibleCount, products.length])
+
+  const displayedProducts = products.slice(0, visibleCount)
 
   return (
     <div className="min-h-screen bg-cream flex flex-col justify-between">
@@ -117,30 +144,20 @@ export default function Products() {
         ) : products.length > 0 ? (
           <div className="w-full flex flex-col items-center">
             <div className="w-full">
-              <ProductGrid products={paginatedProducts} className="border-x-0" cardBgClass="bg-white" />
+              <ProductGrid products={displayedProducts} className="border-x-0" cardBgClass="bg-white" />
             </div>
             
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-6 mt-12 font-mono text-[11px] select-none">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  className="px-4 py-2 border border-charcoal text-charcoal font-bold uppercase transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-charcoal hover:text-cream cursor-pointer"
-                >
-                  &lt; {t('pagination.prev')}
-                </button>
-                <span className="text-charcoal uppercase tracking-wider font-bold">
-                  {t('pagination.page')} {currentPage} / {totalPages}
-                </span>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  className="px-4 py-2 border border-charcoal text-charcoal font-bold uppercase transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-charcoal hover:text-cream cursor-pointer"
-                >
-                  {t('pagination.next')} &gt;
-                </button>
-              </div>
-            )}
+            {/* Infinite scroll sentinel / loader */}
+            <div 
+              ref={sentinelRef} 
+              className="w-full flex justify-center py-12 font-mono text-[11px] text-charcoal/60 uppercase tracking-widest"
+            >
+              {loadingMore ? (
+                <span>{t('products.loading_more')}</span>
+              ) : visibleCount >= products.length ? (
+                <span>{t('products.all_loaded')}</span>
+              ) : null}
+            </div>
           </div>
         ) : (
           <div className="max-w-7xl mx-auto px-4 text-center py-12">

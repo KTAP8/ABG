@@ -67,5 +67,7 @@
   "product.material.laundry_title": "MATERIAL & LAUNDRY INSTRUCTIONS",
   "pagination.prev": "prev",
   "pagination.next": "next",
-  "pagination.page": "page"
+  "pagination.page": "page",
+  "products.loading_more": "[ LOADING MORE ]",
+  "products.all_loaded": "[ END OF CATALOGUE ]"
 }
