@@ -11,7 +11,7 @@ export function DropCountdown({ targetDate }: DropCountdownProps) {
   return (
     <div className="border border-charcoal p-6 md:p-10 bg-cream text-center flex flex-col items-center justify-center space-y-4 mb-8">
       <p className="font-mono text-xs uppercase tracking-widest text-charcoal/60">
-        // {t('drop.countdown.label').toUpperCase()}_SEQUENCE_ACTIVATED
+        {t('drop.countdown.label').toUpperCase()}
       </p>
       <CountdownTimer targetDate={targetDate} className="justify-center" />
     </div>

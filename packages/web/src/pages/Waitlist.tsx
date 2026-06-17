@@ -35,7 +35,6 @@ export default function Waitlist() {
 
         <main className="max-w-xl mx-auto px-4 py-16">
           <div className="border border-charcoal p-6 bg-cream mb-8">
-            <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// WAITLIST_REGISTRY</span>
             <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal mt-1">
               {t('nav.waitlist')}
             </h1>
@@ -43,13 +42,12 @@ export default function Waitlist() {
 
           {loading ? (
             <div className="p-8 text-center font-mono text-xs uppercase tracking-widest text-charcoal/60 animate-pulse">
-              $ loading_upcoming_records...
+              Loading...
             </div>
           ) : upcomingDrop ? (
             <div className="space-y-6">
               <div className="border border-charcoal p-6 bg-cream space-y-4">
                 <div>
-                  <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// UPCOMING_SEQUENCE</span>
                   <h3 className="font-display font-black text-xl md:text-2xl uppercase text-charcoal mt-1">
                     {upcomingDrop.name}
                   </h3>
@@ -64,7 +62,7 @@ export default function Waitlist() {
             <div className="space-y-6">
               <div className="border border-charcoal p-6 bg-cream text-center">
                 <span className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
-                  [STATUS: {t('something.coming').toUpperCase()}]
+                  {t('something.coming').toUpperCase()}
                 </span>
               </div>
               <WaitlistForm />

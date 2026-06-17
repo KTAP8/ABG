@@ -4,8 +4,7 @@ import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 
 export default function About() {
-  const { t, i18n } = useTranslation()
-  const isTh = i18n.language === 'th'
+  const { t } = useTranslation()
 
   // Fade-in-up transition settings for scroll animations
   const fadeInUp = {
@@ -15,121 +14,31 @@ export default function About() {
     transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
   }
 
-  // Stagger children transition
-  const staggerContainer = {
-    initial: {},
-    animate: {
-      transition: {
-        staggerChildren: 0.15
-      }
-    }
-  }
-
-  const staggerItem = {
-    initial: { opacity: 0, y: 20 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
-    }
-  }
-
   return (
     <div className="min-h-screen bg-cream selection:bg-charcoal selection:text-cream">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-        {/* Technical Hero Panel */}
+        {/* Clean Hero Panel */}
         <section className="border border-charcoal bg-cream grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[500px]">
-          {/* Left Column: Hero Image with CAD Overlays */}
+          {/* Left Column: Hero Image */}
           <div className="lg:col-span-5 relative min-h-[400px] lg:min-h-0 border-b lg:border-b-0 lg:border-r border-charcoal overflow-hidden group">
-            {/* Visual Asset */}
             <img 
               src="/images/about_hero.png" 
-              alt="ABG Streetwear Brutalist Concrete Campus Model Shot" 
+              alt="ABG Streetwear Concrete Campus Model Shot" 
               className="absolute inset-0 w-full h-full object-cover grayscale contrast-115 group-hover:scale-105 transition-transform duration-1000 ease-out"
             />
-            {/* CAD coordinates watermark */}
-            <div className="absolute inset-0 tech-grid-bg opacity-35 pointer-events-none" />
-            
-            {/* Corner Indicators */}
-            <div className="absolute top-3 left-3 font-mono text-[8px] text-cream bg-charcoal/80 px-1.5 py-0.5 tracking-wider uppercase">
-              [IMG_CATALOGUE_01]
-            </div>
-            <div className="absolute top-3 right-3 font-mono text-[8px] text-cream bg-charcoal/80 px-1.5 py-0.5 tracking-wider">
-              13.7372° N, 100.5283° E
-            </div>
-            <div className="absolute bottom-3 left-3 font-mono text-[8px] text-cream bg-charcoal/80 px-1.5 py-0.5 tracking-wider">
-              ASPECT: 3/4 // VERTICAL
-            </div>
-            <div className="absolute bottom-3 right-3 font-mono text-[8px] text-cream bg-charcoal/80 px-1.5 py-0.5 tracking-wider">
-              REF: BATCH_01 // SAMYAN
-            </div>
-
-            {/* Asymmetric Technical Red Dot */}
-            <div className="absolute top-12 left-3 flex items-center gap-1.5 bg-cream/90 border border-charcoal p-1 text-[8px] font-mono tracking-widest text-charcoal">
-              <span className="w-1.5 h-1.5 bg-red animate-pulse" />
-              LIVE_STREAM
-            </div>
           </div>
 
-          {/* Right Column: Title and Core Diagnostics */}
-          <div className="lg:col-span-7 flex flex-col justify-between p-6 md:p-10 lg:p-12 relative bg-cream">
-            {/* Background Grid */}
-            <div className="absolute inset-0 tech-grid-bg opacity-15 pointer-events-none" />
-
-            {/* Technical Header */}
-            <div className="flex justify-between items-start font-mono text-[9px] tracking-widest text-charcoal/50 uppercase border-b border-charcoal/15 pb-4 z-10">
-              <span>{t('about.intro.label')}</span>
-              <span className="text-red font-bold">// SEC_LEVEL: UNCLASSIFIED</span>
-            </div>
-
-            {/* Animated Title block */}
-            <motion.div 
-              variants={staggerContainer}
-              initial="initial"
-              animate="animate"
-              className="my-auto py-10 z-10"
-            >
-              <motion.span 
-                variants={staggerItem}
-                className="font-mono text-[10px] tracking-[0.2em] text-red uppercase block mb-2 font-bold"
-              >
-                // PROTOCOL_INITIALIZATION
-              </motion.span>
-              <motion.h1 
-                variants={staggerItem}
-                className="font-display font-black text-4xl md:text-6xl lg:text-7xl uppercase text-charcoal tracking-tighter leading-[0.9]"
-              >
+          {/* Right Column: Title */}
+          <div className="lg:col-span-7 flex flex-col justify-center p-6 md:p-10 lg:p-12 relative bg-cream">
+            <div className="z-10">
+              <span className="font-mono text-[10px] tracking-[0.2em] text-red uppercase block mb-2 font-bold">
+                ABOUT US
+              </span>
+              <h1 className="font-display font-black text-4xl md:text-6xl lg:text-7xl uppercase text-charcoal tracking-tighter leading-[0.9]">
                 {t('about.intro.title')}
-              </motion.h1>
-              <motion.div 
-                variants={staggerItem}
-                className="mt-6 flex items-center gap-2 font-mono text-xs text-charcoal/70"
-              >
-                <span className="w-2 h-2 bg-charcoal animate-cursor-blink" />
-                <span>ACOUSTIC BUT GOATED // VER_1.05</span>
-              </motion.div>
-            </motion.div>
-
-            {/* Systems Metrics Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-charcoal/20 z-10 font-mono text-[9px] tracking-wider text-charcoal/60">
-              <div className="border border-charcoal/15 p-2 bg-charcoal/[0.02]">
-                <span className="text-charcoal/40 block mb-1">01 / STATE</span>
-                <span className="text-charcoal font-bold">{t('about.metadata.status')}</span>
-              </div>
-              <div className="border border-charcoal/15 p-2 bg-charcoal/[0.02]">
-                <span className="text-charcoal/40 block mb-1">02 / VERSION</span>
-                <span className="text-charcoal font-bold">{t('about.metadata.rev')}</span>
-              </div>
-              <div className="border border-charcoal/15 p-2 bg-charcoal/[0.02]">
-                <span className="text-charcoal/40 block mb-1">03 / REGISTRY</span>
-                <span className="text-charcoal font-bold truncate block">{t('about.metadata.location')}</span>
-              </div>
-              <div className="border border-charcoal/15 p-2 bg-charcoal/[0.02]">
-                <span className="text-charcoal/40 block mb-1">04 / PROTOCOL</span>
-                <span className="text-charcoal font-bold">{t('about.metadata.system')}</span>
-              </div>
+              </h1>
             </div>
           </div>
         </section>
@@ -143,31 +52,18 @@ export default function About() {
           className="border border-charcoal bg-cream hover:border-red transition-colors duration-500"
         >
           <div className="flex justify-between items-center border-b border-charcoal px-6 py-3 font-mono text-[9px] tracking-widest text-charcoal bg-charcoal/5 select-none">
-            <span className="opacity-60">{t('about.chapter1.ref')}</span>
+            <span className="opacity-60">CHAPTER 01</span>
             <h2 className="font-bold uppercase tracking-widest">{t('about.chapter1.title')}</h2>
           </div>
           <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
-            {/* Technical Info Column */}
-            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-[9px] tracking-wider text-charcoal/60">
-              <div className="space-y-2">
-                <span className="text-red font-bold uppercase block">// INDEX_SYS_RECORD</span>
-                <div>SYS_REF: NAME_REGISTRY</div>
-                <div>STATUS: DEPLOYED</div>
-                <div>GLYPH_SET: LATIN_THAI</div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-dashed border-charcoal/25 hidden md:block">
-                [ACOUSTIC_GOATED_PROTOCOL]
-              </div>
+            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-xs uppercase tracking-widest text-charcoal/60 font-bold">
+              {t('about.chapter1.title')}
             </div>
-            {/* Main Text Column */}
-            <div className="md:col-span-8 space-y-4">
-              <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
-                {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
-              </span>
+            <div className="md:col-span-8 space-y-4 font-body text-charcoal">
               <p className="font-medium text-sm md:text-base leading-snug">
                 {t('about.chapter1.text1')}
               </p>
-              <p className="opacity-85">
+              <p className="opacity-85 text-xs md:text-sm">
                 {t('about.chapter1.text2')}
               </p>
             </div>
@@ -180,31 +76,18 @@ export default function About() {
           className="border border-charcoal bg-cream hover:border-red transition-colors duration-500"
         >
           <div className="flex justify-between items-center border-b border-charcoal px-6 py-3 font-mono text-[9px] tracking-widest text-charcoal bg-charcoal/5 select-none">
-            <span className="opacity-60">{t('about.chapter2.ref')}</span>
+            <span className="opacity-60">CHAPTER 02</span>
             <h2 className="font-bold uppercase tracking-widest">{t('about.chapter2.title')}</h2>
           </div>
           <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
-            {/* Technical Info Column */}
-            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-[9px] tracking-wider text-charcoal/60">
-              <div className="space-y-2">
-                <span className="text-red font-bold uppercase block">// INDEX_SYS_RECORD</span>
-                <div>SYS_REF: CAMPUS_REGISTRY</div>
-                <div>COORDINATES: 13.73N // 100.52E</div>
-                <div>ENVIRONMENT: SAMYAN_SANDBOX</div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-dashed border-charcoal/25 hidden md:block">
-                [GRID_LOCATION_SAMYAN_TH]
-              </div>
+            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-xs uppercase tracking-widest text-charcoal/60 font-bold">
+              {t('about.chapter2.title')}
             </div>
-            {/* Main Text Column */}
-            <div className="md:col-span-8 space-y-4">
-              <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
-                {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
-              </span>
+            <div className="md:col-span-8 space-y-4 font-body text-charcoal">
               <p className="font-medium text-sm md:text-base leading-snug">
                 {t('about.chapter2.text1')}
               </p>
-              <p className="opacity-85">
+              <p className="opacity-85 text-xs md:text-sm">
                 {t('about.chapter2.text2')}
               </p>
             </div>
@@ -217,7 +100,7 @@ export default function About() {
           className="border border-charcoal bg-cream hover:border-red transition-colors duration-500"
         >
           <div className="flex justify-between items-center border-b border-charcoal px-6 py-3 font-mono text-[9px] tracking-widest text-charcoal bg-charcoal/5 select-none">
-            <span className="opacity-60">{t('about.chapter3.ref')}</span>
+            <span className="opacity-60">CHAPTER 03</span>
             <h2 className="font-bold uppercase tracking-widest">{t('about.chapter3.title')}</h2>
           </div>
           <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
@@ -225,44 +108,28 @@ export default function About() {
             <div className="lg:col-span-5 relative aspect-square border border-charcoal overflow-hidden group bg-charcoal/5">
               <img 
                 src="/images/about_detail.png" 
-                alt="ABG Streetwear Textile Specification Graphic" 
+                alt="ABG Streetwear Textile Specification Shot" 
                 className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 group-hover:scale-105 transition-transform duration-700 ease-out"
               />
-              <div className="absolute inset-0 tech-grid-bg opacity-20 pointer-events-none" />
-              {/* CAD Layout overlays */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" xmlns="http://www.w3.org/2000/svg">
-                <line x1="0" y1="0" x2="100%" y2="100%" stroke="var(--color-charcoal)" strokeWidth="0.5" />
-                <line x1="100%" y1="0" x2="0" y2="100%" stroke="var(--color-charcoal)" strokeWidth="0.5" />
-                <circle cx="50%" cy="50%" r="35" stroke="var(--color-charcoal)" strokeWidth="0.5" fill="none" />
-              </svg>
-              <div className="absolute top-2 left-2 font-mono text-[8px] text-cream bg-charcoal/85 px-1 py-0.5 uppercase">
-                [FABRIC_ZOOM // 400%]
-              </div>
-              <div className="absolute bottom-2 right-2 font-mono text-[8px] text-cream bg-charcoal/85 px-1 py-0.5">
-                GSM_WEIGHT: 380G HEAVY
-              </div>
             </div>
 
             {/* Spec descriptions */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
-                  {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
-                </span>
                 <p className="font-medium text-sm md:text-base leading-snug">
                   {t('about.chapter3.text1')}
                 </p>
-                <p className="opacity-85">
+                <p className="opacity-85 text-xs md:text-sm">
                   {t('about.chapter3.text2')}
                 </p>
               </div>
 
               {/* Monospace Bullet Specs */}
               <div className="border-t border-dashed border-charcoal/30 pt-4 font-mono text-[9px] tracking-wide text-charcoal/60 grid grid-cols-2 gap-2 uppercase">
-                <div>// SILHOUETTE: OVERSIZED</div>
-                <div>// COTTON_BASE: 100% COMBED</div>
-                <div>// STITCH_PATTERN: REINFORCED</div>
-                <div>// RELEASE_MODEL: BATCH_LIMITED</div>
+                <div>SILHOUETTE: OVERSIZED</div>
+                <div>COTTON BASE: 100% COMBED</div>
+                <div>STITCH PATTERN: REINFORCED</div>
+                <div>RELEASE MODEL: BATCH LIMITED</div>
               </div>
             </div>
           </div>
@@ -274,40 +141,27 @@ export default function About() {
           className="border border-charcoal bg-cream hover:border-red transition-colors duration-500"
         >
           <div className="flex justify-between items-center border-b border-charcoal px-6 py-3 font-mono text-[9px] tracking-widest text-charcoal bg-charcoal/5 select-none">
-            <span className="opacity-60">{t('about.chapter4.ref')}</span>
+            <span className="opacity-60">CHAPTER 04</span>
             <h2 className="font-bold uppercase tracking-widest">{t('about.chapter4.title')}</h2>
           </div>
           <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-8 font-body text-xs md:text-sm leading-relaxed text-charcoal">
-            {/* Technical Info Column */}
-            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-[9px] tracking-wider text-charcoal/60">
-              <div className="space-y-2">
-                <span className="text-red font-bold uppercase block">// INDEX_SYS_RECORD</span>
-                <div>SYS_REF: NODE_REGISTRY</div>
-                <div>NETWORK: WAITLIST_ONLINE</div>
-                <div>ACCESS_MODE: DECENTRALIZED</div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-dashed border-charcoal/25 hidden md:block">
-                [BADDIE_NETWORK_CONNECT]
-              </div>
+            <div className="md:col-span-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-charcoal/20 pb-6 md:pb-0 md:pr-8 font-mono text-xs uppercase tracking-widest text-charcoal/60 font-bold">
+              {t('about.chapter4.title')}
             </div>
-            {/* Main Text Column */}
             <div className="md:col-span-8 space-y-6">
-              <div className="space-y-4">
-                <span className="font-mono text-[9px] tracking-widest text-red font-bold block">
-                  {isTh ? '// REGISTRY_TH' : '// REGISTRY_EN'}
-                </span>
+              <div className="space-y-4 font-body text-charcoal">
                 <p className="font-medium text-sm md:text-base leading-snug">
                   {t('about.chapter4.text1')}
                 </p>
-                <p className="opacity-85">
+                <p className="opacity-85 text-xs md:text-sm">
                   {t('about.chapter4.text2')}
                 </p>
               </div>
 
-              {/* Technical Manifesto Footer Banner */}
+              {/* Minimalist Manifesto Footer */}
               <div className="border-t border-charcoal/20 pt-6 mt-4 text-center select-none">
-                <span className="font-mono text-[10px] md:text-xs tracking-[0.2em] text-red font-bold block animate-pulse">
-                  ★ {t('about.chapter4.footer')} ★
+                <span className="font-mono text-[10px] md:text-xs tracking-[0.2em] text-red font-bold block">
+                  {t('about.chapter4.footer')}
                 </span>
               </div>
             </div>

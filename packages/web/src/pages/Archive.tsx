@@ -35,19 +35,18 @@ export default function Archive() {
 
         <main className="max-w-4xl mx-auto px-4 py-16">
           <div className="border border-charcoal p-6 bg-cream mb-12">
-            <span className="font-mono text-[9px] tracking-widest text-charcoal/50 uppercase block">// REGISTRY_LEDGER</span>
             <h1 className="font-display font-black text-3xl md:text-5xl uppercase text-charcoal mt-1">
               {t('archive.title')}
             </h1>
             <p className="font-mono text-xs text-charcoal/70 mt-2">
-              // SPEC: {t('archive.subtitle').toUpperCase()} // ARCHIVE_LEDGER
+              {t('archive.subtitle').toUpperCase()}
             </p>
           </div>
 
           {loading ? (
             <div className="py-24 text-center">
               <span className="font-mono text-xs uppercase tracking-widest text-charcoal animate-pulse">
-                $ loading_archive_ledger_records...
+                Loading...
               </span>
             </div>
           ) : drops.length > 0 ? (
@@ -63,7 +62,7 @@ export default function Archive() {
           ) : (
             <div className="text-center py-16 border border-dashed border-charcoal/30 bg-charcoal/5">
               <p className="font-mono text-xs uppercase tracking-widest text-charcoal/60">
-                // NO ARCHIVED RECORDS AVAILABLE IN REGISTRY //
+                NO ARCHIVED DROPS AVAILABLE
               </p>
             </div>
           )}

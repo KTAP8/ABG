@@ -5,20 +5,20 @@ export function LanguageToggle() {
   const currentLang = i18n.language || 'en'
 
   return (
-    <div className="flex border border-charcoal font-mono text-xs overflow-hidden">
+    <div className="flex border border-white/20 font-mono text-xs overflow-hidden">
       <button
         onClick={() => i18n.changeLanguage('en')}
         className={`px-2.5 py-1 uppercase transition-all cursor-pointer ${
-          currentLang === 'en' ? 'bg-charcoal text-cream font-bold' : 'text-charcoal hover:bg-charcoal/10'
+          currentLang === 'en' ? 'bg-white text-charcoal font-bold' : 'text-white hover:bg-white/10'
         }`}
       >
         EN
       </button>
-      <div className="w-[1px] bg-charcoal" />
+      <div className="w-[1px] bg-white/20" />
       <button
         onClick={() => i18n.changeLanguage('th')}
         className={`px-2.5 py-1 uppercase transition-all cursor-pointer ${
-          currentLang === 'th' ? 'bg-charcoal text-cream font-bold' : 'text-charcoal hover:bg-charcoal/10'
+          currentLang === 'th' ? 'bg-white text-charcoal font-bold' : 'text-white hover:bg-white/10'
         }`}
       >
         TH

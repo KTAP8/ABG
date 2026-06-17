@@ -71,7 +71,7 @@ export default function DropPage() {
             <DropCountdown targetDate={drop.drop_at} />
             <div className="my-8 border border-charcoal p-6 bg-cream">
               <h2 className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold mb-4">
-                $ sys.waitlist_registration_request()
+                WAITLIST REGISTRATION
               </h2>
               <WaitlistForm dropId={drop.id} />
             </div>
@@ -94,7 +94,7 @@ export default function DropPage() {
         {isEnded && (
           <div className="text-center border border-charcoal/35 bg-charcoal/5 py-12">
             <p className="font-mono text-xs uppercase tracking-widest text-charcoal/50 font-bold">
-              [SYSTEM_STATE: DROP_ARCHIVED // SALES_CLOSED]
+              DROP ARCHIVED // SALES CLOSED
             </p>
           </div>
         )}

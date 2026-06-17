@@ -7,7 +7,7 @@ export interface NavbarProps {
   bgClass?: string;
 }
 
-export function Navbar({ bgClass = 'bg-cream' }: NavbarProps) {
+export function Navbar({ bgClass = 'bg-charcoal' }: NavbarProps) {
   const { t } = useTranslation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -18,21 +18,19 @@ export function Navbar({ bgClass = 'bg-cream' }: NavbarProps) {
     { label: t('nav.waitlist'), href: '/waitlist' },
   ]
 
-  const defaultBgColor = bgClass === 'bg-white' ? '#FFFFFF' : '#F5F1E8';
-
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-40 bg-opacity-100 border-b border-charcoal ${bgClass}`} style={{ backgroundColor: defaultBgColor }}>
+      <nav className={`fixed top-0 left-0 right-0 z-40 border-b border-white/10 ${bgClass}`} style={{ backgroundColor: '#3F3F44' }}>
         <div className="flex h-14 items-center justify-between">
           
           {/* Logo / Left Cell */}
-          <div className="flex items-center h-full px-4 border-r border-charcoal md:w-48 lg:w-64">
+          <div className="flex items-center h-full px-4 border-r border-white/10 md:w-48 lg:w-64">
             <Link
               to="/"
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
               <img
-                src="/logos/ABG_logo_grey.png"
+                src="/logos/ABG_logo_cream.png"
                 alt="ABG"
                 className="h-8 w-auto"
               />
@@ -45,23 +43,18 @@ export function Navbar({ bgClass = 'bg-cream' }: NavbarProps) {
               <Link
                 key={link.href}
                 to={link.href}
-                className="font-body text-xs uppercase tracking-widest text-charcoal hover:bg-charcoal hover:text-cream h-full flex items-center px-6 border-r border-charcoal transition-colors"
+                className="font-body text-xs uppercase tracking-widest text-white hover:bg-black hover:text-white h-full flex items-center px-6 border-r border-white/10 transition-colors hover:underline"
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          {/* System Status / Coordinate Metadata */}
-          <div className="hidden lg:flex items-center h-full px-6 border-r border-charcoal font-mono text-[9px] tracking-wider text-charcoal opacity-70">
-            [LOC: 13.7367° N, 100.5231° E]
-          </div>
-
           {/* Controls / Right Cell */}
           <div className="flex items-center h-full px-4 gap-4">
             <LanguageToggle />
             <button
-              className="md:hidden text-xs font-mono text-charcoal cursor-pointer border border-charcoal px-2 py-1 hover:bg-charcoal hover:text-cream transition-colors"
+              className="md:hidden text-xs font-mono text-white cursor-pointer border border-white/20 px-2 py-1 hover:bg-black hover:text-white transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? 'CLOSE' : 'MENU'}
@@ -72,21 +65,18 @@ export function Navbar({ bgClass = 'bg-cream' }: NavbarProps) {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className={`md:hidden fixed inset-0 top-14 z-50 border-t border-charcoal ${bgClass}`} style={{ backgroundColor: defaultBgColor }}>
-            <div className="flex flex-col border-b border-charcoal">
+          <div className={`md:hidden fixed inset-0 top-14 z-50 border-t border-white/10`} style={{ backgroundColor: '#3F3F44' }}>
+            <div className="flex flex-col border-b border-white/10">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
-                  className="font-body text-sm uppercase tracking-widest text-charcoal p-4 border-b border-charcoal last:border-b-0 hover:bg-charcoal hover:text-cream transition-colors"
+                  className="font-body text-sm uppercase tracking-widest text-white p-4 border-b border-white/10 last:border-b-0 hover:bg-black hover:text-white transition-colors hover:underline"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
-              <div className="p-4 font-mono text-[9px] tracking-wider text-charcoal/60 bg-charcoal/5">
-                LOC: SAMYAN // SYSTEM_STATE: ACTIVE
-              </div>
             </div>
           </div>
         )}

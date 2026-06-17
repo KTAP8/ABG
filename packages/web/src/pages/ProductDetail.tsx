@@ -192,10 +192,7 @@ export default function ProductDetail() {
                     alt={image.alt_text || `${displayName} - view ${index + 1}`}
                     className="w-full h-full object-contain"
                   />
-                  {/* Technical visual tag */}
-                  <div className="absolute bottom-4 right-4 font-mono text-[8px] text-charcoal/40 bg-cream/90 border border-charcoal/15 px-1.5 py-0.5 select-none">
-                    [VIEW_{String(index + 1).padStart(2, '0')} // ID: {image.id.slice(0, 8).toUpperCase()}]
-                  </div>
+
                 </div>
               ))
             ) : (
@@ -210,23 +207,20 @@ export default function ProductDetail() {
               {/* Header Status Bar */}
               <div className="px-6 py-3 bg-charcoal text-cream flex justify-between items-center font-mono text-[9px] tracking-widest select-none">
                 <span className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full inline-block ${isVariantSoldOut ? 'bg-red animate-pulse' : 'bg-green-500'}`} style={{ backgroundColor: isVariantSoldOut ? '#C0392B' : '#2ECC71' }} />
-                  SYSTEM_STATUS: {isVariantSoldOut ? 'OFFLINE // OUT_OF_STOCK' : 'ONLINE // IN_STOCK'}
+                  <span className={`w-2 h-2 rounded-full inline-block ${isVariantSoldOut ? 'bg-red' : 'bg-green-500'}`} style={{ backgroundColor: isVariantSoldOut ? '#C0392B' : '#2ECC71' }} />
+                  {isVariantSoldOut ? 'OUT OF STOCK' : 'IN STOCK'}
                 </span>
-                <span>ID: {product.id.slice(0, 8).toUpperCase()}</span>
               </div>
 
               {/* Main Title & Price */}
               <div className="p-6 space-y-4">
                 <div>
-                  <span className="font-mono text-[8px] tracking-widest text-charcoal/40 uppercase block">// MODEL_NOMENCLATURE</span>
                   <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal tracking-tighter mt-1 leading-none select-all">
                     {displayName}
                   </h1>
                 </div>
 
                 <div className="flex justify-between items-center pt-2 border-t border-charcoal/10">
-                  <span className="font-mono text-[8px] tracking-widest text-charcoal/40 uppercase block">// VALUE_REGISTRY</span>
                   <span className="font-mono text-base uppercase font-extrabold text-charcoal select-all">{priceDisplay}</span>
                 </div>
               </div>
@@ -261,28 +255,27 @@ export default function ProductDetail() {
                 />
               </div>
 
-              {/* Technical Specifications Table */}
+              {/* Specifications Table */}
               <div className="p-6 space-y-3 font-mono text-[10px] tracking-widest bg-charcoal/[0.02] text-charcoal/70">
-                <span className="font-mono text-[8px] tracking-widest text-charcoal/40 uppercase block mb-1">// SYSTEM_METRIC_REGISTERS</span>
                 <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
                   <span className="col-span-1 text-charcoal/40">COMPOSITION:</span>
                   <span className="col-span-2 text-charcoal font-bold text-right uppercase">100% Cotton</span>
                 </div>
                 <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
-                  <span className="col-span-1 text-charcoal/40">FIT_PROFILE:</span>
+                  <span className="col-span-1 text-charcoal/40">FIT:</span>
                   <span className="col-span-2 text-charcoal font-bold text-right uppercase">Boxy / Oversized</span>
                 </div>
                 <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
-                  <span className="col-span-1 text-charcoal/40">SKU_VAR_ID:</span>
+                  <span className="col-span-1 text-charcoal/40">SKU:</span>
                   <span className="col-span-2 text-charcoal font-bold text-right uppercase select-all">
-                    {selectedVariant ? `ABG-VAR-${selectedVariant.id.slice(0, 8).toUpperCase()}` : 'NONE_ACTIVE'}
+                    {selectedVariant ? `ABG-${selectedVariant.id.slice(0, 8).toUpperCase()}` : '—'}
                   </span>
                 </div>
                 {selectedVariant && (
                   <div className="grid grid-cols-3 py-1">
-                    <span className="col-span-1 text-charcoal/40">STOCK_STATE:</span>
-                    <span className={`col-span-2 font-bold text-right uppercase ${selectedVariant.stock <= 15 ? 'text-red animate-pulse' : 'text-charcoal'}`}>
-                      {selectedVariant.stock === 0 ? 'DEPLETED' : selectedVariant.stock <= 15 ? `LOW_STOCK (${selectedVariant.stock} UNITS)` : 'STABLE_INVENTORY'}
+                    <span className="col-span-1 text-charcoal/40">STOCK:</span>
+                    <span className={`col-span-2 font-bold text-right uppercase ${selectedVariant.stock <= 15 && selectedVariant.stock > 0 ? 'text-red' : 'text-charcoal'}`}>
+                      {selectedVariant.stock === 0 ? 'SOLD OUT' : selectedVariant.stock <= 15 ? `ONLY ${selectedVariant.stock} LEFT` : 'IN STOCK'}
                     </span>
                   </div>
                 )}
@@ -291,18 +284,17 @@ export default function ProductDetail() {
               {/* Fitment & Specs Accordion */}
               <div className="p-6 space-y-4 font-mono text-xs">
                 <div className="flex justify-between items-center border-b border-charcoal/10 pb-2.5">
-                  <span className="text-charcoal/40 uppercase tracking-widest text-[8px]">// FITMENT_SYSTEM</span>
+                  <span className="text-charcoal/40 uppercase tracking-widest text-[8px]">FIT</span>
                   <button
                     onClick={() => setShowSizeGuide(true)}
                     className="font-mono text-[9px] uppercase tracking-wider text-charcoal font-bold hover:text-red transition-colors cursor-pointer"
                   >
-                    [VIEW_SIZE_GUIDE]
+                    SIZE GUIDE
                   </button>
                 </div>
                 
                 {displayDescription && (
                   <div className="py-1">
-                    <span className="text-charcoal/40 uppercase tracking-widest text-[8px] block mb-1.5">// DESIGN_SPECIFICATION</span>
                     <p className="font-body text-xs leading-relaxed text-charcoal/85">
                       {displayDescription}
                     </p>

@@ -44,12 +44,9 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
   if (submitted) {
     return (
       <div className="p-6 border border-charcoal bg-cream text-left font-mono text-xs space-y-2 max-w-md">
-        <div className="text-charcoal font-bold">// SYSTEM_CHECK: SUCCESS</div>
-        <div className="text-charcoal/70">
-          $ join_waitlist: OK (QUEUE_POSITION: REGISTERED)
-        </div>
-        <div className="text-red font-bold uppercase tracking-wider animate-pulse">
-          &gt; {t('waitlist.confirm')}
+        <div className="text-charcoal font-bold">SUCCESSFULLY REGISTERED</div>
+        <div className="text-red font-bold uppercase tracking-wider">
+          {t('waitlist.confirm')}
         </div>
       </div>
     )
@@ -58,17 +55,14 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md border border-charcoal p-6 bg-cream">
       <div className="font-mono text-[10px] uppercase tracking-widest text-charcoal/50 pb-3 border-b border-charcoal/20">
-        // WAITLIST_TERMINAL_V1.04
+        WAITLIST REGISTRATION
       </div>
 
       <div className="space-y-1">
         <label className="block font-mono text-[9px] uppercase tracking-wider text-charcoal/60">
-          $ email_address (required)
+          Email Address (Required)
         </label>
         <div className="flex border border-charcoal bg-transparent">
-          <span className="bg-charcoal text-cream font-mono text-[11px] px-3 py-2 select-none">
-            &gt;
-          </span>
           <input
             type="email"
             required
@@ -82,12 +76,9 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
 
       <div className="space-y-1">
         <label className="block font-mono text-[9px] uppercase tracking-wider text-charcoal/60">
-          $ line_id / phone_number (optional)
+          LINE ID / Phone Number (Optional)
         </label>
         <div className="flex border border-charcoal bg-transparent">
-          <span className="bg-charcoal text-cream font-mono text-[11px] px-3 py-2 select-none">
-            &gt;
-          </span>
           <input
             type="text"
             value={phone}
@@ -100,12 +91,9 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
 
       <div className="space-y-1">
         <label className="block font-mono text-[9px] uppercase tracking-wider text-charcoal/60">
-          $ campus_location (optional)
+          Campus / Location (Optional)
         </label>
         <div className="flex border border-charcoal bg-transparent">
-          <span className="bg-charcoal text-cream font-mono text-[11px] px-3 py-2 select-none">
-            &gt;
-          </span>
           <input
             type="text"
             value={campus}
@@ -118,12 +106,12 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
 
       {error && (
         <p className="font-mono text-[9px] text-red uppercase tracking-wider">
-          // ERR_LOG: {error}
+          {error}
         </p>
       )}
 
       <Button variant="primary" className="w-full text-center" disabled={loading}>
-        {loading ? 'EXECUTING...' : `$ ${t('waitlist.submit').toUpperCase()}_QUEUE()`}
+        {loading ? 'JOINING...' : t('waitlist.submit').toUpperCase()}
       </Button>
     </form>
   )
