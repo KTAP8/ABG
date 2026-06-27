@@ -48,7 +48,7 @@ export default function Home() {
           BUT<br />
           GOATED
         </h1>
-        <p className="font-mono text-xs uppercase tracking-widest text-charcoal max-w-sm z-10">
+        <p className="font-mono text-xs uppercase tracking-widest text-charcoal max-w-lg z-10">
           {t('hero.sub')}
         </p>
         <div className="absolute bottom-8 w-0.5 h-10 bg-charcoal animate-pulse hidden md:block" />
@@ -129,7 +129,7 @@ export default function Home() {
           {t('hero.sub')}
         </blockquote>
         <p className="font-mono text-xs tracking-wider leading-relaxed text-charcoal/70 uppercase">
-          The raw culture of Samyan campus, captured and expressed through heavy cotton fibers. Produced in limited batches.
+          The raw culture of Bangkok, captured and expressed through heavy cotton fibers. Produced in limited batches.
         </p>
       </section>
 

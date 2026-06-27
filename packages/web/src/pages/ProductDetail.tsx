@@ -163,10 +163,10 @@ export default function ProductDetail() {
               <button
                 key={image.id}
                 onClick={() => scrollToImage(index)}
-                className={`w-full aspect-[3/4] border bg-white overflow-hidden transition-all duration-300 cursor-pointer ${
+                className={`w-full aspect-[3/4] border bg-white overflow-hidden transition-all duration-200 cursor-pointer ${
                   index === activeImageIndex
-                    ? 'border-charcoal scale-105 opacity-100'
-                    : 'border-charcoal/20 opacity-40 hover:opacity-80'
+                    ? 'border-charcoal opacity-100'
+                    : 'border-charcoal/20 opacity-45 hover:opacity-85'
                 }`}
               >
                 <img
@@ -185,69 +185,76 @@ export default function ProductDetail() {
                 <div 
                   key={image.id} 
                   id={`product-image-${index}`}
-                  className="relative w-full aspect-[3/4] bg-white border border-charcoal p-6 flex items-center justify-center overflow-hidden"
+                  className="relative w-full aspect-[3/4] bg-white overflow-hidden"
                 >
                   <img
                     src={image.url}
                     alt={image.alt_text || `${displayName} - view ${index + 1}`}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                   />
-
                 </div>
               ))
             ) : (
-              <div className="aspect-[3/4] bg-charcoal border border-charcoal" />
+              <div className="aspect-[3/4] bg-cream" />
             )}
           </div>
 
           {/* Sticky Details Column (Right) */}
           <div className="col-span-1 md:col-span-4 md:sticky md:top-24">
-            <div className="border-2 border-charcoal bg-cream divide-y-2 divide-charcoal overflow-hidden shadow-[6px_6px_0px_rgba(63,63,68,0.1)]">
+            <div className="space-y-6 pr-2">
               
-              {/* Header Status Bar */}
-              <div className="px-6 py-3 bg-charcoal text-cream flex justify-between items-center font-mono text-[9px] tracking-widest select-none">
-                <span className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full inline-block ${isVariantSoldOut ? 'bg-red' : 'bg-green-500'}`} style={{ backgroundColor: isVariantSoldOut ? '#C0392B' : '#2ECC71' }} />
-                  {isVariantSoldOut ? 'OUT OF STOCK' : 'IN STOCK'}
-                </span>
-              </div>
-
-              {/* Main Title & Price */}
-              <div className="p-6 space-y-4">
-                <div>
-                  <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal tracking-tighter mt-1 leading-none select-all">
-                    {displayName}
-                  </h1>
+              {/* Region 1: Header Info (Status, Brand Category, Title, Price) */}
+              <div className="space-y-2 pb-6 border-b border-charcoal/10">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[9px] tracking-wider text-charcoal/40 uppercase select-none">
+                    SAMYAN BAD DIH SERIES
+                  </span>
+                  
+                  {/* Status Badge */}
+                  <span className={`px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${
+                    isVariantSoldOut 
+                      ? 'bg-red/10 text-red border border-red/15' 
+                      : 'bg-green-500/10 text-green-700 border border-green-500/15'
+                  }`} style={{ 
+                    color: isVariantSoldOut ? '#C0392B' : '#27AE60',
+                    backgroundColor: isVariantSoldOut ? 'rgba(192, 57, 43, 0.08)' : 'rgba(39, 174, 96, 0.08)',
+                    borderColor: isVariantSoldOut ? 'rgba(192, 57, 43, 0.15)' : 'rgba(39, 174, 96, 0.15)'
+                  }}>
+                    {isVariantSoldOut ? 'SOLD OUT' : 'IN STOCK'}
+                  </span>
                 </div>
 
-                <div className="flex justify-between items-center pt-2 border-t border-charcoal/10">
-                  <span className="font-mono text-base uppercase font-extrabold text-charcoal select-all">{priceDisplay}</span>
+                <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal tracking-tight select-all leading-tight">
+                  {displayName}
+                </h1>
+
+                <p className="font-mono text-xl font-black text-charcoal select-all">
+                  {priceDisplay}
+                </p>
+              </div>
+
+              {/* Region 2: Purchase Control Group (Variants Selection + CTA Order Button) */}
+              <div className="space-y-6 pb-6 border-b border-charcoal/10">
+                <div className="space-y-4">
+                  {/* Color Selector */}
+                  {colors.length > 0 && (
+                    <ColorSelector
+                      colors={colors}
+                      selectedColor={selectedColor}
+                      onSelect={handleColorChange}
+                    />
+                  )}
+
+                  {/* Size Selector */}
+                  {variantsForColor.length > 0 && (
+                    <SizeSelector
+                      variants={variantsForColor}
+                      selectedId={selectedVariant?.id || null}
+                      onSelect={setSelectedVariant}
+                    />
+                  )}
                 </div>
-              </div>
 
-              {/* Selectors Panel (Merged Color & Size) */}
-              <div className="p-6 space-y-6">
-                {/* Color Selector */}
-                {colors.length > 0 && (
-                  <ColorSelector
-                    colors={colors}
-                    selectedColor={selectedColor}
-                    onSelect={handleColorChange}
-                  />
-                )}
-
-                {/* Size Selector */}
-                {variantsForColor.length > 0 && (
-                  <SizeSelector
-                    variants={variantsForColor}
-                    selectedId={selectedVariant?.id || null}
-                    onSelect={setSelectedVariant}
-                  />
-                )}
-              </div>
-
-              {/* CTA Panel */}
-              <div className="p-6 bg-charcoal/[0.01]">
                 <OrderButton
                   googleFormUrl={product.google_form_url}
                   isSoldOut={isVariantSoldOut}
@@ -255,53 +262,56 @@ export default function ProductDetail() {
                 />
               </div>
 
-              {/* Specifications Table */}
-              <div className="p-6 space-y-3 font-mono text-[10px] tracking-widest bg-charcoal/[0.02] text-charcoal/70">
-                <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
-                  <span className="col-span-1 text-charcoal/40">COMPOSITION:</span>
-                  <span className="col-span-2 text-charcoal font-bold text-right uppercase">100% Cotton</span>
-                </div>
-                <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
-                  <span className="col-span-1 text-charcoal/40">FIT:</span>
-                  <span className="col-span-2 text-charcoal font-bold text-right uppercase">Boxy / Oversized</span>
-                </div>
-                <div className="grid grid-cols-3 py-1 border-b border-charcoal/10">
-                  <span className="col-span-1 text-charcoal/40">SKU:</span>
-                  <span className="col-span-2 text-charcoal font-bold text-right uppercase select-all">
-                    {selectedVariant ? `ABG-${selectedVariant.id.slice(0, 8).toUpperCase()}` : '—'}
-                  </span>
-                </div>
-                {selectedVariant && (
-                  <div className="grid grid-cols-3 py-1">
-                    <span className="col-span-1 text-charcoal/40">STOCK:</span>
-                    <span className={`col-span-2 font-bold text-right uppercase ${selectedVariant.stock <= 15 && selectedVariant.stock > 0 ? 'text-red' : 'text-charcoal'}`}>
-                      {selectedVariant.stock === 0 ? 'SOLD OUT' : selectedVariant.stock <= 15 ? `ONLY ${selectedVariant.stock} LEFT` : 'IN STOCK'}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Fitment & Specs Accordion */}
-              <div className="p-6 space-y-4 font-mono text-xs">
-                <div className="flex justify-between items-center border-b border-charcoal/10 pb-2.5">
-                  <span className="text-charcoal/40 uppercase tracking-widest text-[8px]">FIT</span>
-                  <button
-                    onClick={() => setShowSizeGuide(true)}
-                    className="font-mono text-[9px] uppercase tracking-wider text-charcoal font-bold hover:text-red transition-colors cursor-pointer"
-                  >
-                    SIZE GUIDE
-                  </button>
-                </div>
-                
+              {/* Region 3: Information Group (Description + Details List + Material Accordion) */}
+              <div className="space-y-6 pt-2">
                 {displayDescription && (
-                  <div className="py-1">
-                    <p className="font-body text-xs leading-relaxed text-charcoal/85">
+                  <div className="space-y-2">
+                    <span className="font-mono text-[9px] tracking-wider text-charcoal/40 uppercase block select-none">
+                      Description
+                    </span>
+                    <p className="font-body text-sm leading-relaxed text-charcoal/80">
                       {displayDescription}
                     </p>
                   </div>
                 )}
 
-                <div className="border-t border-charcoal/10 pt-2">
+                {/* Tech Specs */}
+                <div className="space-y-3 font-mono text-xs pt-2">
+                  <span className="font-mono text-[9px] tracking-wider text-charcoal/40 uppercase block select-none">
+                    Specifications
+                  </span>
+                  
+                  <div className="grid grid-cols-3 py-1.5 border-b border-charcoal/5">
+                    <span className="col-span-1 text-charcoal/40">FIT</span>
+                    <span className="col-span-2 text-charcoal font-bold text-right uppercase">Boxy / Oversized</span>
+                  </div>
+
+                  <div className="grid grid-cols-3 py-1.5 border-b border-charcoal/5">
+                    <span className="col-span-1 text-charcoal/40">COMPOSITION</span>
+                    <span className="col-span-2 text-charcoal font-bold text-right uppercase">100% Cotton</span>
+                  </div>
+
+                  {selectedVariant && (
+                    <div className="grid grid-cols-3 py-1.5 border-b border-charcoal/5">
+                      <span className="col-span-1 text-charcoal/40">SKU</span>
+                      <span className="col-span-2 text-charcoal font-bold text-right uppercase select-all">
+                        {`ABG-${selectedVariant.id.slice(0, 8).toUpperCase()}`}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center py-1.5">
+                    <span className="text-charcoal/40 uppercase tracking-wider">SIZE GUIDE</span>
+                    <button
+                      onClick={() => setShowSizeGuide(true)}
+                      className="font-mono text-[9px] uppercase tracking-wider text-charcoal font-bold hover:text-red transition-colors cursor-pointer border border-charcoal/20 px-2 py-0.5 bg-white hover:bg-charcoal hover:text-cream"
+                    >
+                      VIEW CHART
+                    </button>
+                  </div>
+                </div>
+
+                <div className="border-t border-charcoal/10 pt-4">
                   <Accordion
                     items={[
                       {
@@ -312,6 +322,7 @@ export default function ProductDetail() {
                   />
                 </div>
               </div>
+
             </div>
           </div>
         </div>

@@ -33,26 +33,32 @@ export default function Waitlist() {
       <div>
         <Navbar />
 
-        <main className="max-w-xl mx-auto px-4 py-16">
-          <div className="border border-charcoal p-6 bg-cream mb-8">
-            <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal mt-1">
+        <main className="max-w-md mx-auto px-4 py-20 text-center space-y-10">
+          
+          {/* Header & Subtitle */}
+          <div className="space-y-3">
+            <h1 className="font-display font-black text-4xl md:text-5xl uppercase text-charcoal tracking-tight leading-none">
               {t('nav.waitlist')}
             </h1>
+            <p className="font-mono text-xs uppercase tracking-wider text-charcoal/50 leading-relaxed max-w-sm mx-auto select-none">
+              {t('drop.waitlist.cta')}
+            </p>
           </div>
 
           {loading ? (
-            <div className="p-8 text-center font-mono text-xs uppercase tracking-widest text-charcoal/60 animate-pulse">
+            <div className="py-8 font-mono text-xs uppercase tracking-widest text-charcoal/40 animate-pulse">
               Loading...
             </div>
           ) : upcomingDrop ? (
             <div className="space-y-6">
-              <div className="border border-charcoal p-6 bg-cream space-y-4">
-                <div>
-                  <h3 className="font-display font-black text-xl md:text-2xl uppercase text-charcoal mt-1">
-                    {upcomingDrop.name}
-                  </h3>
-                </div>
-                <div className="border-t border-charcoal/20 pt-4">
+              <div className="space-y-2.5 pb-6 border-b border-charcoal/10">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-red font-bold select-none bg-red/10 border border-red/15 px-2.5 py-0.5 inline-block">
+                  NEXT DROP PREPARATION
+                </span>
+                <h3 className="font-display font-black text-2xl uppercase text-charcoal leading-tight">
+                  {upcomingDrop.name}
+                </h3>
+                <div className="pt-2">
                   <CountdownTimer targetDate={upcomingDrop.drop_at} />
                 </div>
               </div>
@@ -60,7 +66,7 @@ export default function Waitlist() {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="border border-charcoal p-6 bg-cream text-center">
+              <div className="pb-6 border-b border-charcoal/10">
                 <span className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
                   {t('something.coming').toUpperCase()}
                 </span>

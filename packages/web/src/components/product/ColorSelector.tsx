@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 interface ColorSelectorProps {
   colors: string[]
   selectedColor: string
@@ -15,14 +17,16 @@ export function resolveColorValue(colorName: string): string {
 }
 
 export function ColorSelector({ colors, selectedColor, onSelect }: ColorSelectorProps) {
+  const { t } = useTranslation()
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <span className="font-mono text-[9px] uppercase tracking-widest text-charcoal/50 font-bold">
-          [PARAM_COLOR_SPEC]
+        <span className="font-mono text-xs uppercase tracking-wider text-charcoal/50 font-bold">
+          {t('product.color')}
         </span>
-        <span className="font-mono text-[9px] uppercase font-bold text-charcoal tracking-wide bg-charcoal/5 px-2 py-0.5 border border-charcoal/10 select-none">
-          {selectedColor || 'NOT_SELECTED'}
+        <span className="font-mono text-xs font-bold text-charcoal select-none">
+          {selectedColor || ''}
         </span>
       </div>
       
@@ -36,9 +40,9 @@ export function ColorSelector({ colors, selectedColor, onSelect }: ColorSelector
             <button
               key={color}
               onClick={() => onSelect(color)}
-              className={`w-8 h-8 border transition-all duration-300 cursor-pointer flex items-center justify-center hover:scale-110 focus:outline-none ${
+              className={`w-8 h-8 border transition-all duration-200 cursor-pointer flex items-center justify-center focus:outline-none ${
                 isSelected
-                  ? 'border-charcoal ring-4 ring-charcoal/15 scale-105'
+                  ? 'border-charcoal scale-105'
                   : 'border-charcoal/20 hover:border-charcoal/50'
               }`}
               style={{ backgroundColor: colorValue }}
