@@ -87,7 +87,7 @@ export default function DropPage() {
                 className={isEnded ? 'opacity-50 pointer-events-none' : ''}
               />
             </div>
-            <DropNotes notes={drop.description} notes_th={drop.description_th} />
+            <DropNotes notes={drop.description} />
           </>
         )}
 

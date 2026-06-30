@@ -2,34 +2,31 @@
   "name": "@abg/server",
   "version": "1.0.0",
   "private": true,
-  "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "tsx src/index.ts",
+    "dev": "wrangler dev --env dev --env-file ../../.env",
+    "deploy": "wrangler deploy",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "express": "^4.x",
-    "cors": "^2.x",
-    "dotenv": "^16.x",
-    "drizzle-orm": "latest",
     "@neondatabase/serverless": "latest",
     "better-auth": "latest",
-    "resend": "latest",
+    "dotenv": "^16.x",
+    "drizzle-orm": "latest",
+    "hono": "^4.x",
     "multer": "^1.x",
+    "resend": "latest",
     "zod": "^3.x",
     "tsx": "^4.x"
   },
   "devDependencies": {
-    "@types/express": "^4.x",
-    "@types/cors": "^2.x",
+    "@cloudflare/workers-types": "^4.x",
     "@types/multer": "^1.x",
     "@types/node": "^20.x",
     "drizzle-kit": "latest",
-    "typescript": "^5.x"
+    "typescript": "^5.x",
+    "wrangler": "^4.x"
   }
 }

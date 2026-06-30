@@ -1,0 +1,17 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "abg-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat_v2"],
+  "vars": {
+    "WEB_URL": "https://abg-web.pages.dev"
+  },
+  "env": {
+    "dev": {
+      "vars": {
+        "WEB_URL": "http://localhost:5173"
+      }
+    }
+  }
+}

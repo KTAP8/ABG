@@ -1,4 +1,12 @@
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '/api'
+function getApiUrl(): string {
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined
+  if (!envUrl) return '/api'
+  const trimmed = envUrl.replace(/\/$/, '')
+  if (trimmed.endsWith('/api')) return trimmed
+  return `${trimmed}/api`
+}
+
+const API_URL = getApiUrl()
 
 export interface Drop {
   id: string

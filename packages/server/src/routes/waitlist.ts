@@ -1,9 +1,9 @@
-import { Router, type Router as ExpressRouter } from 'express'
-import { db } from '../lib/db'
+import { Hono } from 'hono'
 import { waitlist } from '../lib/schema'
 import { z } from 'zod'
+import type { Env } from '../types'
 
-const router: ExpressRouter = Router()
+const router = new Hono<Env>()
 
 const WaitlistInputSchema = z.object({
   email: z.string().email(),
@@ -12,33 +12,29 @@ const WaitlistInputSchema = z.object({
   campus: z.string().optional(),
 })
 
-// POST /api/waitlist - add to waitlist
-router.post('/', async (req, res, next) => {
-  try {
-    const parsed = WaitlistInputSchema.safeParse(req.body)
+router.post('/', async (c) => {
+  const db = c.get('db')
+  const body = await c.req.json()
+  const parsed = WaitlistInputSchema.safeParse(body)
 
-    if (!parsed.success) {
-      return res.status(400).json({ error: 'Invalid input', issues: parsed.error.issues })
-    }
-
-    const { email, drop_id, phone, campus } = parsed.data
-
-    // Try to insert; handle unique constraint silently
-    try {
-      await db.insert(waitlist).values({
-        email,
-        drop_id: drop_id || null,
-        phone: phone || null,
-        campus: campus || null,
-      })
-    } catch (err) {
-      // Unique constraint violation - treat as success (user already in waitlist)
-    }
-
-    res.json({ success: true, message: 'Added to waitlist' })
-  } catch (error) {
-    next(error)
+  if (!parsed.success) {
+    return c.json({ error: 'Invalid input', issues: parsed.error.issues }, 400)
   }
+
+  const { email, drop_id, phone, campus } = parsed.data
+
+  try {
+    await db.insert(waitlist).values({
+      email,
+      drop_id: drop_id || null,
+      phone: phone || null,
+      campus: campus || null,
+    })
+  } catch {
+    // Unique constraint violation — treat as success
+  }
+
+  return c.json({ success: true, message: 'Added to waitlist' })
 })
 
 export default router

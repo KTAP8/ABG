@@ -1,0 +1,5 @@
+# Copy to .dev.vars for local wrangler dev (not committed)
+DATABASE_URL=postgresql://user:password@endpoint.neon.tech/dbname?sslmode=require
+RESEND_API_KEY=re_your_api_key_here
+RESEND_FROM_EMAIL=drop@abg.studio
+BETTER_AUTH_SECRET=your-secret-key-here

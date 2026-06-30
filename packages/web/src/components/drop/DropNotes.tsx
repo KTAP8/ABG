@@ -2,17 +2,16 @@ import { useTranslation } from 'react-i18next'
 
 interface DropNotesProps {
   notes?: string
-  notes_th?: string
 }
 
-export function DropNotes({ notes, notes_th }: DropNotesProps) {
-  const { i18n, t } = useTranslation()
+export function DropNotes({ notes }: DropNotesProps) {
+  const { t } = useTranslation()
 
-  if (!notes && !notes_th) {
+  if (!notes) {
     return null
   }
 
-  const displayNotes = i18n.language === 'th' ? notes_th || notes : notes
+  const displayNotes = notes
 
   return (
     <div className="border border-charcoal p-6 bg-cream my-12">

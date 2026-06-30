@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LanguageToggle } from '../ui/LanguageToggle'
 
 export interface NavbarProps {
   bgClass?: string;
@@ -52,7 +51,6 @@ export function Navbar({ bgClass = 'bg-charcoal' }: NavbarProps) {
 
           {/* Controls / Right Cell */}
           <div className="flex items-center h-full px-4 gap-4">
-            <LanguageToggle />
             <button
               className="md:hidden text-xs font-mono text-white cursor-pointer border border-white/20 px-2 py-1 hover:bg-black hover:text-white transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

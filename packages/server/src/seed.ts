@@ -1,4 +1,15 @@
-import { db } from './lib/db'
+import { config } from 'dotenv'
+import path from 'path'
+import { createDb } from './lib/db'
+
+config({ path: path.resolve(process.cwd(), '../../.env') })
+
+const connectionString = process.env.DATABASE_URL
+if (!connectionString) {
+  throw new Error('DATABASE_URL environment variable is not set')
+}
+
+const db = createDb(connectionString)
 import { drops, products, product_variants, product_images, waitlist } from './lib/schema'
 
 async function seed() {

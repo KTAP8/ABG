@@ -1,70 +1,28 @@
-import { Router, type Router as ExpressRouter } from 'express'
+import { Hono } from 'hono'
 import { requireAdmin } from '../../middleware/auth'
+import type { Env } from '../../types'
 
-const router: ExpressRouter = Router()
+const router = new Hono<Env>()
 
-// All admin routes protected by requireAdmin middleware
-router.use(requireAdmin)
+router.use('*', requireAdmin)
 
-// Stub routes - actual implementation in phase 2
-router.post('/login', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
+const notImplemented = (c: { json: (body: unknown, status: number) => Response }) =>
+  c.json({ error: 'Not implemented' }, 401)
 
-router.post('/logout', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.get('/drops', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.post('/drops', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.patch('/drops/:id', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.delete('/drops/:id', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.get('/products', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.post('/products', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.patch('/products/:id', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.delete('/products/:id', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.post('/products/:id/images', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.patch('/products/:id/stock', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.get('/waitlist', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.get('/waitlist/export', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
-
-router.post('/waitlist/blast', (_req, res) => {
-  res.status(401).json({ error: 'Not implemented' })
-})
+router.post('/login', notImplemented)
+router.post('/logout', notImplemented)
+router.get('/drops', notImplemented)
+router.post('/drops', notImplemented)
+router.patch('/drops/:id', notImplemented)
+router.delete('/drops/:id', notImplemented)
+router.get('/products', notImplemented)
+router.post('/products', notImplemented)
+router.patch('/products/:id', notImplemented)
+router.delete('/products/:id', notImplemented)
+router.post('/products/:id/images', notImplemented)
+router.patch('/products/:id/stock', notImplemented)
+router.get('/waitlist', notImplemented)
+router.get('/waitlist/export', notImplemented)
+router.post('/waitlist/blast', notImplemented)
 
 export default router

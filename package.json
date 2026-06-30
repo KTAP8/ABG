@@ -3,8 +3,10 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"pnpm --filter web dev\" \"pnpm --filter server dev\"",
-    "build": "pnpm --filter web build && pnpm --filter server build",
-    "start": "node packages/server/dist/index.js",
+    "build": "pnpm --filter web build",
+    "build:pages": "VITE_API_URL=https://abg-api.touch-apinankul.workers.dev/api pnpm --filter web build",
+    "deploy:api": "pnpm --filter server deploy",
+    "deploy:web": "pnpm build:pages && pnpm --filter server exec wrangler pages deploy ../web/dist --project-name=abg-web --commit-dirty=true",
     "db:push": "pnpm --filter server db:push",
     "db:generate": "pnpm --filter server db:generate",
     "db:migrate": "pnpm --filter server db:migrate"

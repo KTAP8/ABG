@@ -13,7 +13,7 @@ import type { Product, ProductVariant } from '../lib/api'
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -143,10 +143,10 @@ export default function ProductDetail() {
   const isSoldOut = totalStock === 0
   const isVariantSoldOut = selectedVariant ? selectedVariant.stock === 0 : isSoldOut
 
-  const priceDisplay = `฿${product.price.toLocaleString(i18n.language === 'th' ? 'th-TH' : 'en-US')}`
+  const priceDisplay = `฿${product.price.toLocaleString('en-US')}`
 
   const displayName = product.name
-  const displayDescription = i18n.language === 'th' ? product.description_th || product.description : product.description
+  const displayDescription = product.description
 
   const sizeGuideContent = t('product.sizeguide.content')
   const materialContent = t('product.material.laundry')

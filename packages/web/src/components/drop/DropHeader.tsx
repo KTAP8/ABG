@@ -1,15 +1,12 @@
 import { Drop } from '../../lib/api'
-import { useTranslation } from 'react-i18next'
 
 interface DropHeaderProps {
   drop: Drop
 }
 
 export function DropHeader({ drop }: DropHeaderProps) {
-  const { i18n } = useTranslation()
-
   const dropDate = new Date(drop.drop_at).toLocaleDateString(
-    i18n.language === 'th' ? 'th-TH' : 'en-GB',
+    'en-GB',
     {
       weekday: 'long',
       year: 'numeric',
@@ -18,7 +15,7 @@ export function DropHeader({ drop }: DropHeaderProps) {
     },
   )
 
-  const description = i18n.language === 'th' ? drop.description_th || drop.description : drop.description
+  const description = drop.description
   const isUpcoming = new Date(drop.drop_at) > new Date()
 
   return (
