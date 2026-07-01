@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 import type { Env } from '../types'
 import { insertSignupWithUniqueCode } from '../lib/discountCode'
-import { createEmailClient, sendIykykConfirmationEmail } from '../lib/email'
+import { createEmailClient, sendThankYouDiscountEmail } from '../lib/email'
 
 const router = new Hono<Env>()
 
@@ -29,7 +29,7 @@ router.post('/', async (c) => {
     try {
       const resend = createEmailClient(c.env.RESEND_API_KEY)
       const fromEmail = c.env.RESEND_FROM_EMAIL || 'drop@abg.studio'
-      await sendIykykConfirmationEmail(resend, fromEmail, email, {
+      await sendThankYouDiscountEmail(resend, fromEmail, email, {
         name,
         discountCode: result.discount_code,
         discountAmount: result.discount_amount,
