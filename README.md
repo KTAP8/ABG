@@ -56,7 +56,7 @@ Equivalent:
 
 ```bash
 cd packages/server
-pnpm exec wrangler deploy
+pnpm run deploy
 ```
 
 Deploys `packages/server` to `https://abg-api.touch-apinankul.workers.dev`.
