@@ -4,6 +4,7 @@ import DropPage from './pages/DropPage'
 import Products from './pages/Products'
 import ProductDetail from './pages/ProductDetail'
 import Waitlist from './pages/Waitlist'
+import Iykyk from './pages/Iykyk'
 import Archive from './pages/Archive'
 import About from './pages/About'
 
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:slug" element={<ProductDetail />} />
         <Route path="/waitlist" element={<Waitlist />} />
+        <Route path="/iykyk" element={<Iykyk />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/about" element={<About />} />
       </Routes>

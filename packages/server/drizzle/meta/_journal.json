@@ -15,6 +15,20 @@
       "when": 1780986902531,
       "tag": "0001_zippy_mercury",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781000000000,
+      "tag": "0002_add_categories_gender",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782901531845,
+      "tag": "0003_majestic_kid_colt",
+      "breakpoints": true
     }
   ]
 }

@@ -85,3 +85,14 @@ export const admin_users = pgTable('admin_users', {
   name: text('name'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })
+
+export const iykyk_signups = pgTable('iykyk_signups', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  email: text('email').unique().notNull(),
+  ig_handle: text('ig_handle'),
+  discount_code: text('discount_code').unique().notNull(),
+  discount_amount: integer('discount_amount').notNull().default(50),
+  used_at: timestamp('used_at', { withTimezone: true }),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+})

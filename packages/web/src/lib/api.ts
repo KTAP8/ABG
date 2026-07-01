@@ -96,3 +96,17 @@ export async function joinWaitlist(data: {
   if (!res.ok) throw new Error('Failed to join waitlist')
   return res.json()
 }
+
+export async function submitIykyk(data: {
+  name: string
+  email: string
+  ig_handle?: string
+}): Promise<{ success: boolean; discount_code: string; discount_amount: number }> {
+  const res = await fetch(`${API_URL}/iykyk`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Failed to submit')
+  return res.json()
+}

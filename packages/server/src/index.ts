@@ -6,6 +6,7 @@ import { AppError } from './middleware/errorHandler'
 import dropsRouter from './routes/drops'
 import productsRouter from './routes/products'
 import waitlistRouter from './routes/waitlist'
+import iykykRouter from './routes/iykyk'
 import adminRouter from './routes/admin/index'
 import type { Env } from './types'
 
@@ -30,6 +31,7 @@ app.use('*', dbMiddleware)
 app.route('/api/drops', dropsRouter)
 app.route('/api/products', productsRouter)
 app.route('/api/waitlist', waitlistRouter)
+app.route('/api/iykyk', iykykRouter)
 app.route('/api/admin', adminRouter)
 
 app.onError((err, c) => {

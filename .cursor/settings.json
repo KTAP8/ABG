@@ -2,6 +2,9 @@
   "plugins": {
     "cloudflare": {
       "enabled": true
+    },
+    "neon-postgres": {
+      "enabled": true
     }
   }
 }
