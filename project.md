@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A drop-culture catalogue website for ABG, a Thai university streetwear micro-brand rooted in Samyan campus culture. The aesthetic reference is **Post Archive Faction (PAF)** — cold, architectural, editorial restraint — crossed with the **drop-model urgency of Named Collective** but without the gothic maximalism. Think: systemic minimalism with cultural heat underneath. The site should feel like it was designed by a student who also happens to be a frustrated ex-intern at a Parisian concept store.
+A drop-culture catalogue website for ABG, a Thai university streetwear micro-brand rooted in Samyan campus culture. The aesthetic reference is **Post Archive Faction (PAF)** — cold, architectural, editorial restraint — crossed with the luxurious, minimal, and clean aesthetics of brands like **imnotamorningperson**, **Represent**, and **Nude Project** to capture a premium 'Pinterest it-girl' vibe. Think: clean typography, luxurious space, and effortless editorial layout with student culture heat underneath. The site should feel like a high-end concept store catalog designed for the modern fashion-forward student.
 
 **Ordering model (MVP):** No payment processing in v1. Products link to a **Google Form** for ordering. The site's job is to build hype, display drops, capture waitlist data, and direct users to the form. Payment and fulfilment are handled manually off-platform.
 
@@ -592,7 +592,7 @@ export default {
 
 1. **PAF (Post Archive Faction)** — primary reference. Cold grid, architectural type, extreme restraint.
 2. **SSENSE** — editorial product layout, asymmetric grids, monospace labels.
-3. **Named Collective** — drop mechanics and urgency. Strip all gothic energy.
+3. **imnotamorningperson / Represent / Nude Project** — luxurious, clean, minimal layouts with a premium 'Pinterest it-girl' aesthetic. Effortless streetwear basics framed in high-end editorial grids.
 4. **Brandy Melville** — effortless minimalism, basics-first photography.
 
 The ABG site should feel like these references had a child who grew up in Samyan and never stopped being online.

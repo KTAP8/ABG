@@ -15,16 +15,7 @@
   --color-red: #C0392B;
 }
 
-* {
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-*::before,
-*::after {
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
+/* Base settings */
 
 body {
   background-color: var(--color-cream);

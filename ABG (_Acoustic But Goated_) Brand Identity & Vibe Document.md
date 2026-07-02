@@ -56,4 +56,4 @@
 * **Quality Standard:** Moving away from cheap promotional blanks. Focusing on specific cuts, washes, and reliable print infrastructure to ensure the pieces survive a hundred washes.  
 * **The Drop Mechanics:** High-velocity, limited runs. Cultivating a feeling that if you don't secure the "SAMYAN BADDIE" drop this week, you will definitely miss out on the cultural moment.
 
-What color palette and typography style are you picturing to bridge that gap between Brandy Melville's minimalist basics and Named Collective's bold graphics?
+What color palette and typography style are you picturing to bridge that gap between Brandy Melville's minimalist basics and Represent or Nude Project's clean and luxurious aesthetics?

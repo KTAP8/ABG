@@ -2,92 +2,6 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { submitIykyk } from '../../lib/api'
 
-// Luxurious slot-machine typographic resolve component
-function CodeDecryptor({ 
-  code, 
-  onComplete 
-}: { 
-  code: string 
-  onComplete: () => void 
-}) {
-  const [displayText, setDisplayText] = useState('')
-  const [logs, setLogs] = useState<string[]>([])
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-
-  useEffect(() => {
-    const logSteps = [
-      'RESOLVING SIGNATURE REGISTRY...',
-      'MATCHING FIRST DROP DATABASE...',
-      'GENERATING ARCHIVAL TOKEN...',
-      'DECRYPTING VERIFICATION KEY...',
-    ]
-
-    let logIdx = 0
-    const logInterval = setInterval(() => {
-      if (logIdx < logSteps.length) {
-        setLogs((prev) => [...prev, logSteps[logIdx]])
-        logIdx++
-      } else {
-        clearInterval(logInterval)
-        
-        let iterations = 0
-        const textInterval = setInterval(() => {
-          setDisplayText(() => {
-            return code
-              .split('')
-              .map((_, index) => {
-                if (index < iterations) return code[index]
-                return chars[Math.floor(Math.random() * chars.length)]
-              })
-              .join('')
-          })
-
-          if (iterations >= code.length) {
-            clearInterval(textInterval)
-            setTimeout(onComplete, 550)
-          }
-          iterations += 0.4
-        }, 45)
-      }
-    }, 200)
-
-    return () => {
-      clearInterval(logInterval)
-    }
-  }, [code, onComplete])
-
-  return (
-    <div className="font-mono text-[9px] text-left space-y-2 py-2">
-      <div className="space-y-1 text-[#3F3F44]/50">
-        {logs.map((log, i) => (
-          <div key={i} className="flex justify-between items-center border-b border-[#3F3F44]/5 pb-0.5">
-            <span>&gt; {log}</span>
-            <span className="text-[#3F3F44]/80 font-bold">DONE</span>
-          </div>
-        ))}
-        {logs.length < 4 && (
-          <div className="flex items-center gap-1 text-[#3F3F44]/30 pt-0.5">
-            <span>&gt; RESOLVING SECURE CHANNEL...</span>
-            <span className="w-1 h-3 bg-[#3F3F44] animate-cursor-blink" />
-          </div>
-        )}
-      </div>
-
-      {logs.length >= 4 && (
-        <div className="border border-[#3F3F44]/20 bg-white/40 p-4 text-center space-y-1.5 mt-3 relative">
-          <div className="absolute top-1 left-1 font-mono text-[6px] text-[#3F3F44]/40">SYS_DECRYPTOR_v1.0</div>
-          <div className="text-[#3F3F44]/50 uppercase text-[8px] tracking-[0.2em] pt-0.5">
-            RESOLVING ACCESS CODE
-          </div>
-          <div className="text-lg font-display font-black tracking-[4px] text-[#3F3F44] break-all select-none">
-            {displayText || 'RESOLVING'}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
 export function IykykForm() {
   const { t } = useTranslation()
   const [name, setName] = useState('')
@@ -99,6 +13,16 @@ export function IykykForm() {
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Trigger a soft loading delay when form is submitted before revealing code
+  useEffect(() => {
+    if (submitted && discountCode && !revealDone) {
+      const timer = setTimeout(() => {
+        setRevealDone(true)
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [submitted, discountCode, revealDone])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -113,9 +37,6 @@ export function IykykForm() {
       })
       setDiscountCode(response.discount_code)
       setSubmitted(true)
-      setName('')
-      setEmail('')
-      setIgHandle('')
     } catch (err) {
       const errMessage = (err as any)?.message || ''
       if (errMessage.includes('already claimed')) {
@@ -137,58 +58,52 @@ export function IykykForm() {
     }
   }
 
-  // Resolving code animation
+  // Luxurious minimalist loading state
   if (submitted && discountCode && !revealDone) {
     return (
-      <div className="space-y-4">
-        <div className="text-center space-y-0.5">
-          <div className="text-[9px] tracking-[0.2em] text-[#3F3F44]/40 uppercase font-mono">
-            ARCHIVAL_VAULT
-          </div>
-          <div className="text-xs text-[#3F3F44] font-display font-bold uppercase tracking-wider">
-            RESOLVING REWARD ACCESS
-          </div>
-        </div>
-        <CodeDecryptor code={discountCode} onComplete={() => setRevealDone(true)} />
+      <div className="py-16 flex flex-col items-center justify-center space-y-4">
+        <div className="w-5 h-5 border-2 border-neutral-100 border-t-neutral-800 rounded-full animate-spin" />
+        <p className="font-sans text-xs uppercase tracking-widest text-[#3F3F44]/50 animate-pulse">
+          Generating voucher...
+        </p>
       </div>
     )
   }
 
-  // Certificate of Authenticity reveal card
+  // Luxury digital gift voucher reveal card
   if (revealDone && discountCode) {
     return (
-      <div className="py-1.5 space-y-6 text-center animate-fade-in">
-        <div className="space-y-1.5">
-          <div className="text-[#3F3F44] font-display font-black tracking-[0.15em] uppercase text-xs">
-            ACCESS GRANTED
+      <div className="py-2 space-y-8 text-center animate-fade-in font-sans">
+        <div className="space-y-2">
+          <div className="text-[#3F3F44] font-display font-black tracking-widest uppercase text-sm">
+            your code is ready.
           </div>
-          <p className="font-mono text-[9px] uppercase tracking-wider text-[#3F3F44]/75 max-w-xs mx-auto leading-relaxed">
+          <p className="text-xs text-[#3F3F44]/70 max-w-xs mx-auto leading-relaxed">
             {t('iykyk.confirm')}
           </p>
         </div>
         
-        <div className="bg-[#F5F1E8]/50 border border-[#3F3F44]/25 p-5 rounded-none relative">
-          <div className="absolute top-1 left-1 font-mono text-[6px] text-[#3F3F44]/40">CERTIFICATE_OF_AUTHENTICITY</div>
-          <p className="text-[#3F3F44]/40 text-[8px] uppercase tracking-[0.2em] mb-2 font-mono">
-            YOUR EXCLUSIVE REWARD KEY
+        <div className="bg-[#F5F1E8]/70 border border-neutral-100/50 rounded-xl p-6 relative">
+          <p className="text-[#3F3F44]/40 text-[9px] uppercase tracking-widest mb-3 font-semibold">
+            supporter discount code
           </p>
-          <p className="font-display font-black text-2xl text-[#3F3F44] tracking-[3px] break-all select-all">
+          <p className="font-display font-black text-2xl text-[#3F3F44] tracking-[3px] select-all uppercase">
             {discountCode}
           </p>
-          <p className="text-[#3F3F44]/60 font-mono text-[8px] uppercase tracking-[0.15em] mt-3">
-            50 THB off • Drop #2 Supporter Item
+          <p className="text-neutral-500 text-[10px] tracking-wider mt-3 font-medium">
+            50 THB off • one-time use
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4 pt-2">
           <button
             onClick={handleCopy}
-            className="w-full bg-[#3F3F44] border border-[#3F3F44] text-[#F5F1E8] hover:bg-[#F5F1E8] hover:text-[#3F3F44] font-mono text-[10px] uppercase tracking-[0.25em] py-3.5 transition-all cursor-pointer font-bold"
+            className="w-full bg-[#3F3F44] hover:bg-[#3F3F44]/90 text-white font-sans text-xs uppercase tracking-widest py-4 rounded-lg transition-all duration-200 cursor-pointer font-bold"
           >
-            {copied ? 'COPIED_TO_CLIPBOARD' : 'COPY_ACCESS_KEY'}
+            {copied ? 'copied to clipboard' : 'copy code'}
           </button>
           
-          <p className="font-mono text-[8px] text-[#3F3F44]/55 max-w-xs mx-auto leading-relaxed uppercase">
+          <p className="text-[10px] text-[#3F3F44]/50 max-w-xs mx-auto leading-relaxed">
             {t('iykyk.check_email')}
           </p>
         </div>
@@ -197,81 +112,69 @@ export function IykykForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 text-left max-w-sm mx-auto pt-1.5">
-      <div className="text-center mb-5 space-y-0.5">
-        <div className="text-[9px] tracking-[0.25em] text-[#3F3F44]/40 uppercase font-mono">
-          SECURE_PORTAL
+    <form onSubmit={handleSubmit} className="space-y-6 text-left max-w-sm mx-auto font-sans">
+      <div className="text-center mb-6 space-y-1">
+        <div className="text-[9px] tracking-[0.25em] text-[#3F3F44]/40 uppercase font-semibold">
+          exclusive reward
         </div>
-        <div className="text-xs font-display font-black text-[#3F3F44] uppercase tracking-widest">
-          CLAIM SUPPORTER VOUCHER
-        </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#3F3F44]/50">
-          [01] {t('iykyk.name')}
-        </label>
-        <div className="relative flex items-center">
-          <span className="absolute left-2.5 font-mono text-xs text-[#3F3F44]/30">[</span>
-          <input
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full pl-6 pr-6 py-2.5 bg-white/40 border border-[#3F3F44]/20 font-mono text-xs text-[#3F3F44] placeholder-[#3F3F44]/20 focus:outline-none focus:border-[#3F3F44]/80 transition-all"
-            placeholder="Your name"
-          />
-          <span className="absolute right-2.5 font-mono text-xs text-[#3F3F44]/30">]</span>
+        <div className="text-base font-display font-black text-[#3F3F44] uppercase tracking-wider">
+          claim discount voucher
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#3F3F44]/50">
-          [02] {t('iykyk.email')}
+      <div className="space-y-2">
+        <label className="block font-sans text-xs font-semibold text-[#3F3F44]/60">
+          Name (Required)
         </label>
-        <div className="relative flex items-center">
-          <span className="absolute left-2.5 font-mono text-xs text-[#3F3F44]/30">[</span>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-6 pr-6 py-2.5 bg-white/40 border border-[#3F3F44]/20 font-mono text-xs text-[#3F3F44] placeholder-[#3F3F44]/20 focus:outline-none focus:border-[#3F3F44]/80 transition-all"
-            placeholder="your@email.com"
-          />
-          <span className="absolute right-2.5 font-mono text-xs text-[#3F3F44]/30">]</span>
-        </div>
+        <input
+          type="text"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full px-4 py-3 bg-neutral-50/50 border border-neutral-200/80 rounded-lg text-sm text-[#3F3F44] placeholder-neutral-400 focus:outline-none focus:bg-white focus:border-neutral-400 transition-all duration-200"
+          placeholder="Your name"
+        />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#3F3F44]/50">
-          [03] {t('iykyk.ig')}
+      <div className="space-y-2">
+        <label className="block font-sans text-xs font-semibold text-[#3F3F44]/60">
+          Email Address (Required)
         </label>
-        <div className="relative flex items-center">
-          <span className="absolute left-2.5 font-mono text-xs text-[#3F3F44]/30">[</span>
-          <input
-            type="text"
-            value={igHandle}
-            onChange={(e) => setIgHandle(e.target.value)}
-            className="w-full pl-6 pr-6 py-2.5 bg-white/40 border border-[#3F3F44]/20 font-mono text-xs text-[#3F3F44] placeholder-[#3F3F44]/20 focus:outline-none focus:border-[#3F3F44]/80 transition-all"
-            placeholder="@instagram"
-          />
-          <span className="absolute right-2.5 font-mono text-xs text-[#3F3F44]/30">]</span>
-        </div>
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-3 bg-neutral-50/50 border border-neutral-200/80 rounded-lg text-sm text-[#3F3F44] placeholder-neutral-400 focus:outline-none focus:bg-white focus:border-neutral-400 transition-all duration-200"
+          placeholder="your@email.com"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="block font-sans text-xs font-semibold text-[#3F3F44]/60">
+          Instagram Handle (Optional)
+        </label>
+        <input
+          type="text"
+          value={igHandle}
+          onChange={(e) => setIgHandle(e.target.value)}
+          className="w-full px-4 py-3 bg-neutral-50/50 border border-neutral-200/80 rounded-lg text-sm text-[#3F3F44] placeholder-neutral-400 focus:outline-none focus:bg-white focus:border-neutral-400 transition-all duration-200"
+          placeholder="@instagram"
+        />
       </div>
 
       {error && (
-        <p className="font-mono text-[8px] text-red-600 uppercase tracking-wider text-center pt-1 animate-pulse">
-          &gt; EXCEPTION: {error}
+        <p className="text-xs text-red-600 tracking-wide text-center pt-1 animate-pulse font-medium">
+          Error: {error}
         </p>
       )}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-transparent border border-[#3F3F44]/30 hover:border-[#3F3F44] text-[#3F3F44] hover:bg-[#3F3F44] hover:text-[#F5F1E8] font-mono text-xs uppercase tracking-[0.25em] py-3.5 transition-all duration-200 cursor-pointer text-center font-bold focus:outline-none disabled:border-[#3F3F44]/10 disabled:text-[#3F3F44]/20 disabled:bg-transparent disabled:cursor-not-allowed"
+        className="w-full bg-[#3F3F44] hover:bg-[#3F3F44]/90 text-white font-sans text-xs uppercase tracking-widest py-4 px-6 rounded-lg transition-all duration-200 cursor-pointer text-center font-bold focus:outline-none disabled:bg-neutral-100 disabled:text-neutral-400 disabled:cursor-not-allowed"
       >
-        {loading ? 'CALCULATING...' : `[ ${t('iykyk.submit').toUpperCase()} ]`}
+        {loading ? 'Processing...' : t('iykyk.submit').toUpperCase()}
       </button>
     </form>
   )
