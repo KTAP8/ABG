@@ -15,7 +15,8 @@
     "react-i18next": "^14.x",
     "i18next": "^23.x",
     "zustand": "^4.x",
-    "motion": "^11.x"
+    "motion": "^11.x",
+    "framer-motion": "^11.x"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.x",
