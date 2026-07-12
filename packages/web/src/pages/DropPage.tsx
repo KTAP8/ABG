@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { DropHeader } from '../components/drop/DropHeader'
@@ -12,6 +13,7 @@ import type { Drop } from '../lib/api'
 
 export default function DropPage() {
   const { slug } = useParams<{ slug: string }>()
+  const { t } = useTranslation()
   const [drop, setDrop] = useState<Drop | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -23,7 +25,7 @@ export default function DropPage() {
         const data = await getDrop(slug)
         setDrop(data)
       } catch (err) {
-        setError('Drop not found')
+        setError(t('drop.not_found'))
         console.error(err)
       } finally {
         setLoading(false)
@@ -31,14 +33,16 @@ export default function DropPage() {
     }
 
     fetchDrop()
-  }, [slug])
+  }, [slug, t])
 
   if (loading) {
     return (
       <div className="min-h-screen bg-cream">
         <Navbar />
-        <div className="h-screen flex items-center justify-center">
-          <p className="font-body text-charcoal">Loading...</p>
+        <div className="flex h-screen items-center justify-center">
+          <p className="font-body text-sm tracking-[-0.04em] text-charcoal/50 animate-pulse">
+            {t('drop.loading')}
+          </p>
         </div>
       </div>
     )
@@ -48,9 +52,10 @@ export default function DropPage() {
     return (
       <div className="min-h-screen bg-cream">
         <Navbar />
-        <div className="h-screen flex items-center justify-center">
-          <p className="font-body text-charcoal">{error}</p>
+        <div className="flex h-screen items-center justify-center">
+          <p className="font-body text-sm tracking-[-0.04em] text-charcoal/60">{error}</p>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -62,42 +67,37 @@ export default function DropPage() {
     <div className="min-h-screen bg-cream">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        <DropHeader drop={drop} />
+      <main className="w-full bg-cream px-6 pt-8 pb-16 md:px-8 md:pt-10 md:pb-20 lg:px-[27px] lg:pb-24">
+        <div className="mx-auto max-w-7xl">
+          <DropHeader drop={drop} />
 
-        {/* Pre-drop or Countdown */}
-        {!isLive ? (
-          <div className="space-y-6">
-            <DropCountdown targetDate={drop.drop_at} />
-            <div className="my-8 border border-charcoal p-6 bg-cream">
-              <h2 className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold mb-4">
-                WAITLIST REGISTRATION
-              </h2>
-              <WaitlistForm dropId={drop.id} />
+          {!isLive && (
+            <div className="mt-12 space-y-10">
+              <DropCountdown targetDate={drop.drop_at} />
+              <div className="mx-auto max-w-md border-t border-charcoal/15 pt-10">
+                <h2 className="mb-6 text-center font-display text-lg font-bold lowercase tracking-[-0.07em] text-charcoal">
+                  {t('drop.waitlist.title')}
+                </h2>
+                <WaitlistForm dropId={drop.id} />
+              </div>
             </div>
-          </div>
-        ) : null}
+          )}
 
-        {/* Product Grid */}
-        {drop.products && drop.products.length > 0 && (
-          <>
-            <div className="my-12">
-              <ProductGrid
-                products={drop.products}
-                className={isEnded ? 'opacity-50 pointer-events-none' : ''}
-              />
-            </div>
-            <DropNotes notes={drop.description} />
-          </>
-        )}
+          {drop.products && drop.products.length > 0 && (
+            <>
+              <div className="my-12">
+                <ProductGrid products={drop.products} />
+              </div>
+              <DropNotes notes={drop.description} />
+            </>
+          )}
 
-        {isEnded && (
-          <div className="text-center border border-charcoal/35 bg-charcoal/5 py-12">
-            <p className="font-mono text-xs uppercase tracking-widest text-charcoal/50 font-bold">
-              DROP ARCHIVED // SALES CLOSED
+          {isEnded && (
+            <p className="py-16 text-center font-body text-sm tracking-[-0.04em] text-charcoal/60">
+              {t('drop.ended')}
             </p>
-          </div>
-        )}
+          )}
+        </div>
       </main>
 
       <Footer />

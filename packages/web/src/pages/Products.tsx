@@ -6,19 +6,19 @@ import { ProductGrid } from '../components/product/ProductGrid'
 import { getDrops } from '../lib/api'
 import type { Product } from '../lib/api'
 
-const CATEGORIES = [
-  { value: '', label: 'All Categories' },
-  { value: 'tops', label: 'Tops' },
-  { value: 'bottoms', label: 'Bottoms' },
-  { value: 'accessories', label: 'Accessories' },
-]
+const CATEGORY_KEYS = [
+  { value: '', key: 'products.filter.category_all' },
+  { value: 'tops', key: 'products.filter.tops' },
+  { value: 'bottoms', key: 'products.filter.bottoms' },
+  { value: 'accessories', key: 'products.filter.accessories' },
+] as const
 
-const GENDERS = [
-  { value: '', label: 'All Genders' },
-  { value: 'men', label: 'Men' },
-  { value: 'women', label: 'Women' },
-  { value: 'unisex', label: 'Unisex' },
-]
+const GENDER_KEYS = [
+  { value: '', key: 'products.filter.gender_all' },
+  { value: 'men', key: 'products.filter.men' },
+  { value: 'women', key: 'products.filter.women' },
+  { value: 'unisex', key: 'products.filter.unisex' },
+] as const
 
 export default function Products() {
   const { t } = useTranslation()
@@ -38,10 +38,9 @@ export default function Products() {
           category: selectedCategory || undefined,
           gender: selectedGender || undefined,
         })
-        // Flatten all products from all drops
         const allProducts = drops.flatMap((drop) => drop.products || [])
         setProducts(allProducts)
-        setVisibleCount(8) // Reset visible items count when filters change
+        setVisibleCount(8)
       } catch (err) {
         console.error('Failed to fetch products', err)
       } finally {
@@ -58,7 +57,6 @@ export default function Products() {
         const first = entries[0]
         if (first.isIntersecting && !loading && !loadingMore && visibleCount < products.length) {
           setLoadingMore(true)
-          // Add a subtle delay (400ms) for premium visual feedback on loading
           setTimeout(() => {
             setVisibleCount((prev) => Math.min(prev + 8, products.length))
             setLoadingMore(false)
@@ -81,91 +79,92 @@ export default function Products() {
   }, [loading, loadingMore, visibleCount, products.length])
 
   const displayedProducts = products.slice(0, visibleCount)
+  const hasFilters = Boolean(selectedCategory || selectedGender)
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col justify-between">
+    <div className="min-h-screen bg-cream">
       <Navbar />
 
-      <main className="flex-1 py-12 bg-white">
-        {/* Centered, capped header */}
-        <div className="max-w-7xl mx-auto px-4 mb-12">
-          <h1 className="font-display font-bold text-4xl md:text-5xl uppercase text-charcoal mb-2">
-            {t('products.title')}
-          </h1>
-          <p className="font-body text-sm text-charcoal opacity-75">
-            {t('products.subtitle')}
-          </p>
-
-          {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mt-8">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-charcoal text-charcoal font-mono text-sm uppercase bg-cream focus:outline-none"
-            >
-              {CATEGORIES.map((cat) => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedGender}
-              onChange={(e) => setSelectedGender(e.target.value)}
-              className="px-4 py-2 border border-charcoal text-charcoal font-mono text-sm uppercase bg-cream focus:outline-none"
-            >
-              {GENDERS.map((gender) => (
-                <option key={gender.value} value={gender.value}>
-                  {gender.label}
-                </option>
-              ))}
-            </select>
-
-            {(selectedCategory || selectedGender) && (
-              <button
-                onClick={() => {
-                  setSelectedCategory('')
-                  setSelectedGender('')
-                }}
-                className="px-4 py-2 border border-charcoal text-charcoal font-mono text-sm uppercase hover:bg-charcoal hover:text-cream transition-colors"
-              >
-                Clear Filters
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Full-bleed products grid */}
-        {loading ? (
-          <div className="max-w-7xl mx-auto px-4">
-            <p className="font-body text-charcoal text-center py-12">Loading...</p>
-          </div>
-        ) : products.length > 0 ? (
-          <div className="w-full flex flex-col items-center">
-            <div className="w-full">
-              <ProductGrid products={displayedProducts} className="border-x-0" cardBgClass="bg-white" />
-            </div>
-            
-            {/* Infinite scroll sentinel / loader */}
-            <div 
-              ref={sentinelRef} 
-              className="w-full flex justify-center py-12 font-mono text-[11px] text-charcoal/60 uppercase tracking-widest"
-            >
-              {loadingMore ? (
-                <span>{t('products.loading_more')}</span>
-              ) : visibleCount >= products.length ? (
-                <span>{t('products.all_loaded')}</span>
-              ) : null}
-            </div>
-          </div>
-        ) : (
-          <div className="max-w-7xl mx-auto px-4 text-center py-12">
-            <p className="font-body text-charcoal opacity-60">
-              No products available yet. Check back when the first drop launches.
+      <main className="w-full bg-cream px-6 pt-8 pb-16 md:px-8 md:pt-10 md:pb-20 lg:px-[27px] lg:pb-24">
+        <div className="mx-auto w-full max-w-7xl">
+          <header className="mb-10 border-b border-charcoal/15 pb-6 md:mb-12">
+            <p className="mb-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+              {t('products.section_label')}
             </p>
-          </div>
-        )}
+            <h1 className="font-display text-2xl font-bold lowercase leading-none tracking-[-0.07em] text-charcoal md:text-[28px] lg:text-[32px]">
+              {t('products.title')}
+            </h1>
+            <p className="mt-3 max-w-md font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70">
+              {t('products.subtitle')}
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="cursor-pointer border border-charcoal/15 bg-cream px-3 py-2 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none"
+              >
+                {CATEGORY_KEYS.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {t(cat.key)}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedGender}
+                onChange={(e) => setSelectedGender(e.target.value)}
+                className="cursor-pointer border border-charcoal/15 bg-cream px-3 py-2 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none"
+              >
+                {GENDER_KEYS.map((gender) => (
+                  <option key={gender.value} value={gender.value}>
+                    {t(gender.key)}
+                  </option>
+                ))}
+              </select>
+
+              {hasFilters && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory('')
+                    setSelectedGender('')
+                  }}
+                  className="cursor-pointer px-1 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/70 transition-opacity hover:text-charcoal"
+                >
+                  {t('products.filter.clear')}
+                </button>
+              )}
+            </div>
+          </header>
+
+          {loading ? (
+            <p className="py-24 text-center font-body text-sm tracking-[-0.04em] text-charcoal/50 animate-pulse">
+              {t('products.loading')}
+            </p>
+          ) : products.length > 0 ? (
+            <div className="flex w-full flex-col items-center">
+              <div className="w-full">
+                <ProductGrid products={displayedProducts} />
+              </div>
+
+              <div
+                ref={sentinelRef}
+                className="flex w-full justify-center py-12 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/50"
+              >
+                {loadingMore ? (
+                  <span>{t('products.loading_more')}</span>
+                ) : visibleCount >= products.length ? (
+                  <span>{t('products.all_loaded')}</span>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <p className="py-24 text-center font-body text-sm tracking-[-0.04em] text-charcoal/60">
+              {t('products.empty')}
+            </p>
+          )}
+        </div>
       </main>
 
       <Footer />

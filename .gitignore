@@ -13,3 +13,6 @@ yarn-error.log*
 .turbo/
 .dev.vars
 .wrangler/
+exports/
+tools/.venv/
+tools/out/

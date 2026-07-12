@@ -4,15 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ABG — Acoustic But Goated</title>
-    <link rel="icon" href="/favicon/Favicon_Grey.png" media="(prefers-color-scheme: light)" />
-    <link rel="icon" href="/favicon/Favicon_Cream.png" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon/Favicon_Grey.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
+    <link rel="icon" href="/favicon/Favicon_Cream.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon/Favicon_Grey.svg" type="image/svg+xml" />
     <script>
       function setFavicon() {
         const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        const favicon = document.querySelector('link[rel="icon"]')
-        if (favicon) {
-          favicon.href = isDark ? '/favicon/Favicon_Cream.png' : '/favicon/Favicon_Grey.png'
-        }
+        const href = isDark ? '/favicon/Favicon_Cream.svg' : '/favicon/Favicon_Grey.svg'
+        document.querySelectorAll('link[rel="icon"]').forEach((el) => {
+          if (!el.media) el.href = href
+        })
       }
       setFavicon()
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', setFavicon)

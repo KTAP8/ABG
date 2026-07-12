@@ -1,6 +1,6 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Drop } from '../../lib/api'
-import { Badge } from '../ui/Badge'
 import { ProductGrid } from '../product/ProductGrid'
 
 interface DropCardProps {
@@ -9,60 +9,54 @@ interface DropCardProps {
 }
 
 export function DropCard({ drop, isEnded }: DropCardProps) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
 
   const dropDate = new Date(drop.drop_at).toLocaleDateString('en-GB', {
     year: 'numeric',
     month: 'short',
-    day: '2-digit',
-  }).toUpperCase()
+    day: 'numeric',
+  }).toLowerCase()
 
   return (
-    <div className="border border-charcoal bg-cream">
+    <div className="bg-cream">
       <button
+        type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full text-left transition-colors p-4 md:p-6 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 select-none hover:bg-charcoal/5"
+        className="flex w-full cursor-pointer flex-col gap-3 py-5 text-left transition-opacity hover:opacity-70 md:flex-row md:items-center md:justify-between md:gap-8 select-none"
       >
-        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 flex-1">
-          {/* Date Stamp */}
-          <div className="font-mono text-xs text-charcoal/60 min-w-[100px]">
-            [{dropDate}]
-          </div>
-          {/* Drop Identifier */}
+        <div className="flex flex-1 flex-col gap-1 md:flex-row md:items-baseline md:gap-8">
+          <span className="min-w-[100px] font-body text-[12px] tracking-[-0.04em] text-charcoal/50">
+            {dropDate}
+          </span>
           <div>
-            <h3 className="font-display font-black text-lg uppercase text-charcoal tracking-tight">
+            <h3 className="font-display text-base font-bold lowercase leading-snug tracking-[-0.07em] text-charcoal md:text-lg">
               {drop.name}
             </h3>
-            <span className="font-mono text-[9px] text-charcoal/50 uppercase block mt-0.5">
-              // REF: {drop.slug}
-            </span>
           </div>
         </div>
 
-        {/* Status indicator and action */}
-        <div className="flex items-center justify-between md:justify-end gap-6 border-t border-charcoal/10 pt-3 md:pt-0 md:border-t-0">
+        <div className="flex items-center gap-4">
           {isEnded && (
-            <Badge variant="soldout">ARCHIVED_OOS</Badge>
+            <span className="font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/50">
+              {t('archive.ended')}
+            </span>
           )}
-          <span className="font-mono text-xs font-bold text-charcoal">
-            {expanded ? '[-]' : '[+]'}
+          <span className="font-body text-[13px] tracking-[-0.04em] text-charcoal/40">
+            {expanded ? '−' : '+'}
           </span>
         </div>
       </button>
 
       {expanded && (
-        <div className="p-6 border-t border-charcoal bg-cream space-y-6">
-          <div className="border border-charcoal/20 p-4 font-mono text-[10px] text-charcoal/70 bg-charcoal/5 leading-relaxed">
-            <span className="font-bold block mb-1">// MANIFESTO_ARCHIVE_LOG:</span>
-            {drop.description || 'No registry description recorded.'}
-          </div>
+        <div className="space-y-8 border-t border-charcoal/15 pb-10 pt-6">
+          {drop.description && (
+            <p className="max-w-2xl font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70">
+              {drop.description}
+            </p>
+          )}
           {drop.products && drop.products.length > 0 && (
-            <div className={isEnded ? 'opacity-70 pointer-events-none' : ''}>
-              <p className="font-mono text-[9px] uppercase tracking-widest text-charcoal/50 mb-4 font-bold">
-                // PRODUCTS_REGISTERED_TO_THIS_DROP:
-              </p>
-              <ProductGrid products={drop.products} />
-            </div>
+            <ProductGrid products={drop.products} />
           )}
         </div>
       )}

@@ -29,53 +29,52 @@ export default function Waitlist() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col justify-between">
-      <div>
-        <Navbar />
+    <div className="min-h-screen bg-cream">
+      <Navbar />
 
-        <main className="max-w-md mx-auto px-4 py-20 text-center space-y-10">
-          
-          {/* Header & Subtitle */}
-          <div className="space-y-3">
-            <h1 className="font-display font-black text-4xl md:text-5xl uppercase text-charcoal tracking-tight leading-none">
-              {t('nav.waitlist')}
-            </h1>
-            <p className="font-mono text-xs uppercase tracking-wider text-charcoal/50 leading-relaxed max-w-sm mx-auto select-none">
-              {t('drop.waitlist.cta')}
-            </p>
+      <main className="mx-auto w-full max-w-md px-6 pt-8 pb-20 md:px-8 md:pt-10 md:pb-24 lg:px-[27px]">
+        <header className="mb-10 space-y-3 text-center">
+          <h1 className="font-display text-2xl font-bold lowercase leading-none tracking-[-0.07em] text-charcoal md:text-[28px] lg:text-[32px]">
+            {t('nav.waitlist')}
+          </h1>
+          <p className="mx-auto max-w-sm font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70">
+            {t('drop.waitlist.cta')}
+          </p>
+        </header>
+
+        {loading ? (
+          <p className="py-8 text-center font-body text-sm tracking-[-0.04em] text-charcoal/50 animate-pulse">
+            {t('waitlist.loading')}
+          </p>
+        ) : upcomingDrop ? (
+          <div className="space-y-8">
+            <div className="space-y-3 border-b border-charcoal/15 pb-8 text-center">
+              <p className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+                {t('waitlist.upcoming_label')}
+              </p>
+              <h2 className="font-display text-xl font-bold lowercase leading-snug tracking-[-0.07em] text-charcoal">
+                {upcomingDrop.name}
+              </h2>
+              <div className="flex flex-wrap items-center justify-center gap-2 font-body text-[13px] tracking-[-0.04em] text-charcoal/70">
+                <span className="lowercase">{t('waitlist.starts_in')}</span>
+                <CountdownTimer
+                  targetDate={upcomingDrop.drop_at}
+                  variant="simple"
+                  className="font-medium text-charcoal"
+                />
+              </div>
+            </div>
+            <WaitlistForm dropId={upcomingDrop.id} />
           </div>
-
-          {loading ? (
-            <div className="py-8 font-mono text-xs uppercase tracking-widest text-charcoal/40 animate-pulse">
-              Loading...
-            </div>
-          ) : upcomingDrop ? (
-            <div className="space-y-6">
-              <div className="space-y-2.5 pb-6 border-b border-charcoal/10">
-                <span className="font-mono text-[9px] uppercase tracking-widest text-red font-bold select-none bg-red/10 border border-red/15 px-2.5 py-0.5 inline-block">
-                  NEXT DROP PREPARATION
-                </span>
-                <h3 className="font-display font-black text-2xl uppercase text-charcoal leading-tight">
-                  {upcomingDrop.name}
-                </h3>
-                <div className="pt-2">
-                  <CountdownTimer targetDate={upcomingDrop.drop_at} />
-                </div>
-              </div>
-              <WaitlistForm dropId={upcomingDrop.id} />
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="pb-6 border-b border-charcoal/10">
-                <span className="font-mono text-xs uppercase tracking-widest text-charcoal font-bold">
-                  {t('something.coming').toUpperCase()}
-                </span>
-              </div>
-              <WaitlistForm />
-            </div>
-          )}
-        </main>
-      </div>
+        ) : (
+          <div className="space-y-8">
+            <p className="border-b border-charcoal/15 pb-8 text-center font-body text-sm tracking-[-0.04em] text-charcoal/60">
+              {t('something.coming')}
+            </p>
+            <WaitlistForm />
+          </div>
+        )}
+      </main>
 
       <Footer />
     </div>

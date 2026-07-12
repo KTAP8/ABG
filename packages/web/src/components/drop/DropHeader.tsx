@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Drop } from '../../lib/api'
 
 interface DropHeaderProps {
@@ -5,48 +6,43 @@ interface DropHeaderProps {
 }
 
 export function DropHeader({ drop }: DropHeaderProps) {
-  const dropDate = new Date(drop.drop_at).toLocaleDateString(
-    'en-GB',
-    {
+  const { t } = useTranslation()
+  const dropDate = new Date(drop.drop_at)
+    .toLocaleDateString('en-GB', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    },
-  )
+    })
+    .toLowerCase()
 
-  const description = drop.description
   const isUpcoming = new Date(drop.drop_at) > new Date()
 
   return (
-    <div className="border border-charcoal p-6 bg-cream mb-8 font-mono text-xs text-charcoal/80 space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between border-b border-charcoal pb-4 gap-4">
+    <header className="border-b border-charcoal/15 pb-8">
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block">DROP NAME</span>
-          <h1 className="font-display font-black text-3xl md:text-5xl uppercase text-charcoal tracking-tighter mt-1">
+          <p className="mb-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+            {t('drop.section_label')}
+          </p>
+          <h1 className="font-display text-2xl font-bold lowercase leading-none tracking-[-0.07em] text-charcoal md:text-[28px] lg:text-[32px]">
             {drop.name}
           </h1>
+          {drop.description && (
+            <p className="mt-4 max-w-xl font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70">
+              {drop.description}
+            </p>
+          )}
         </div>
-        <div className="sm:text-right">
-          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block">LAUNCH DATE</span>
-          <span className="font-bold text-sm block mt-1">{dropDate}</span>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-        <div className="md:col-span-2">
-          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block mb-1">DESCRIPTION</span>
-          <p className="font-body text-xs text-charcoal leading-relaxed">
-            {description}
+        <div className="space-y-1 text-left md:text-right">
+          <p className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+            {dropDate}
+          </p>
+          <p className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/70">
+            {isUpcoming ? t('drop.status.waitlist') : t('drop.status.live')}
           </p>
         </div>
-        <div className="md:text-right flex flex-col justify-end">
-          <span className="text-charcoal/40 uppercase tracking-widest text-[9px] block mb-1">STATUS</span>
-          <span className="text-red font-bold uppercase">
-            {isUpcoming ? 'WAITLIST OPEN' : 'DROP LIVE'}
-          </span>
-        </div>
       </div>
-    </div>
+    </header>
   )
 }

@@ -138,6 +138,31 @@ pnpm db:migrate    # apply migrations to Neon
 
 ---
 
+## Coupons
+
+Discount codes live in the **`coupons`** table. `iykyk_signups` only stores signup info + `coupon_id` FK.
+
+| Field | Flat (IYKYK) | Percent (outreach) |
+|-------|--------------|--------------------|
+| `code` | 8-char | 8-char |
+| `discount_amount` | `50` | `null` |
+| `discount_percent` | `null` | `10` |
+| `max_discount_amount` | `null` | `150` |
+| `used_at` | set on redeem | set on redeem |
+
+### Migrate schema (one-time)
+
+1. Delete mock `iykyk_signups` rows in Neon.
+2. Run [`packages/server/drizzle/0004_coupons_fk.sql`](packages/server/drizzle/0004_coupons_fk.sql) in the Neon SQL Editor.
+
+### Generate bulk 10% codes (max 150 THB)
+
+```bash
+pnpm --filter server generate:coupons
+```
+
+Writes `exports/coupons-10pct-max150-YYYY-MM-DD.csv` and `.txt` (gitignored), and inserts into Neon.
+
 ## Custom domain (later)
 
 When your domain is on Cloudflare:

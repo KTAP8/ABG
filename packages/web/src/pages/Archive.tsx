@@ -15,7 +15,6 @@ export default function Archive() {
     const fetchDrops = async () => {
       try {
         const allDrops = await getDrops()
-        // Get ended drops (all drops, filter for ones in the past)
         const endedDrops = allDrops.filter((d) => new Date(d.drop_at) <= new Date())
         setDrops(endedDrops)
       } catch (err) {
@@ -29,45 +28,40 @@ export default function Archive() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col justify-between">
-      <div>
-        <Navbar />
+    <div className="min-h-screen bg-cream">
+      <Navbar />
 
-        <main className="max-w-4xl mx-auto px-4 py-16">
-          <div className="border border-charcoal p-6 bg-cream mb-12">
-            <h1 className="font-display font-black text-3xl md:text-5xl uppercase text-charcoal mt-1">
+      <main className="w-full bg-cream px-6 pt-8 pb-16 md:px-8 md:pt-10 md:pb-20 lg:px-[27px] lg:pb-24">
+        <div className="mx-auto w-full max-w-7xl">
+          <header className="mb-10 border-b border-charcoal/15 pb-6 md:mb-12">
+            <p className="mb-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+              {t('archive.section_label')}
+            </p>
+            <h1 className="font-display text-2xl font-bold lowercase leading-none tracking-[-0.07em] text-charcoal md:text-[28px] lg:text-[32px]">
               {t('archive.title')}
             </h1>
-            <p className="font-mono text-xs text-charcoal/70 mt-2">
-              {t('archive.subtitle').toUpperCase()}
+            <p className="mt-3 max-w-md font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70">
+              {t('archive.subtitle')}
             </p>
-          </div>
+          </header>
 
           {loading ? (
-            <div className="py-24 text-center">
-              <span className="font-mono text-xs uppercase tracking-widest text-charcoal animate-pulse">
-                Loading...
-              </span>
-            </div>
+            <p className="py-24 text-center font-body text-sm tracking-[-0.04em] text-charcoal/50 animate-pulse">
+              {t('archive.loading')}
+            </p>
           ) : drops.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-0 divide-y divide-charcoal/15 border-b border-charcoal/15">
               {drops.map((drop) => (
-                <DropCard
-                  key={drop.id}
-                  drop={drop}
-                  isEnded={true}
-                />
+                <DropCard key={drop.id} drop={drop} isEnded />
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 border border-dashed border-charcoal/30 bg-charcoal/5">
-              <p className="font-mono text-xs uppercase tracking-widest text-charcoal/60">
-                NO ARCHIVED DROPS AVAILABLE
-              </p>
-            </div>
+            <p className="py-24 text-center font-body text-sm tracking-[-0.04em] text-charcoal/60">
+              {t('archive.empty')}
+            </p>
           )}
-        </main>
-      </div>
+        </div>
+      </main>
 
       <Footer />
     </div>

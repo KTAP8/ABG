@@ -7,8 +7,9 @@ export default {
         red: '#C0392B',
       },
       fontFamily: {
-        display: ['"HK Grotesk Wide"', 'Helvetica Neue', 'Helvetica', 'sans-serif'],
-        body: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        body: ['"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        brand: ['Jeffrson', 'Georgia', 'serif'],
         mono: ['"Courier New"', 'Courier', 'monospace'],
       },
     },

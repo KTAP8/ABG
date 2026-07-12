@@ -86,13 +86,30 @@ export const admin_users = pgTable('admin_users', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })
 
+/**
+ * Source of truth for all discount codes (IYKYK + bulk outreach).
+ * Flat: set discount_amount, leave discount_percent null.
+ * Percent: set discount_percent + max_discount_amount, leave discount_amount null.
+ */
+export const coupons = pgTable('coupons', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  code: text('code').unique().notNull(),
+  discount_amount: integer('discount_amount'),
+  discount_percent: integer('discount_percent'),
+  max_discount_amount: integer('max_discount_amount'),
+  used_at: timestamp('used_at', { withTimezone: true }),
+  note: text('note'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+})
+
 export const iykyk_signups = pgTable('iykyk_signups', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   email: text('email').unique().notNull(),
   ig_handle: text('ig_handle'),
-  discount_code: text('discount_code').unique().notNull(),
-  discount_amount: integer('discount_amount').notNull().default(50),
-  used_at: timestamp('used_at', { withTimezone: true }),
+  coupon_id: uuid('coupon_id')
+    .notNull()
+    .unique()
+    .references(() => coupons.id),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })

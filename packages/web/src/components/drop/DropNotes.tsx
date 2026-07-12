@@ -11,15 +11,13 @@ export function DropNotes({ notes }: DropNotesProps) {
     return null
   }
 
-  const displayNotes = notes
-
   return (
-    <div className="border border-charcoal p-6 bg-cream my-12">
-      <span className="font-mono text-[9px] uppercase tracking-widest text-charcoal/50 block mb-2">
-        {t('drop.notes.label').toUpperCase()}
+    <div className="my-12 border-t border-charcoal/15 pt-10">
+      <span className="mb-3 block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+        {t('drop.notes.label')}
       </span>
-      <p className="font-display font-black text-lg md:text-xl uppercase text-charcoal leading-relaxed max-w-3xl">
-        "{displayNotes}"
+      <p className="max-w-2xl font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal/70 md:text-base">
+        {notes}
       </p>
     </div>
   )

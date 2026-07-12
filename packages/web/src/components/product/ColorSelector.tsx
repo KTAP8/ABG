@@ -21,15 +21,15 @@ export function ColorSelector({ colors, selectedColor, onSelect }: ColorSelector
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="font-mono text-xs uppercase tracking-wider text-charcoal/50 font-bold">
+      <div className="flex items-center justify-between">
+        <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
           {t('product.color')}
         </span>
-        <span className="font-mono text-xs font-bold text-charcoal select-none">
+        <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal select-none">
           {selectedColor || ''}
         </span>
       </div>
-      
+
       <div className="flex flex-wrap gap-3 py-1">
         {colors.map((color) => {
           const isSelected = selectedColor === color
@@ -40,17 +40,17 @@ export function ColorSelector({ colors, selectedColor, onSelect }: ColorSelector
             <button
               key={color}
               onClick={() => onSelect(color)}
-              className={`w-8 h-8 border transition-all duration-200 cursor-pointer flex items-center justify-center focus:outline-none ${
+              className={`flex h-8 w-8 cursor-pointer items-center justify-center border transition-opacity focus:outline-none ${
                 isSelected
-                  ? 'border-charcoal scale-105'
-                  : 'border-charcoal/20 hover:border-charcoal/50'
+                  ? 'border-charcoal'
+                  : 'border-charcoal/15 hover:border-charcoal/40'
               }`}
               style={{ backgroundColor: colorValue }}
               title={color}
               type="button"
             >
               {isSelected && (
-                <span className={`w-2 h-2 rounded-full ${isLight ? 'bg-charcoal' : 'bg-cream'}`} />
+                <span className={`h-2 w-2 ${isLight ? 'bg-charcoal' : 'bg-cream'}`} />
               )}
             </button>
           )

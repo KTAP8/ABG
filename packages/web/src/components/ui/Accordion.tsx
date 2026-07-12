@@ -24,20 +24,21 @@ export function Accordion({ items, allowMultiple = false }: AccordionProps) {
   }
 
   return (
-    <div className="space-y-0 border-t border-charcoal">
+    <div className="space-y-0 border-t border-charcoal/15">
       {items.map((item, index) => {
         const isExpanded = expandedIndices.includes(index)
         return (
-          <div key={index} className="border-b border-charcoal">
+          <div key={index} className="border-b border-charcoal/15">
             <button
+              type="button"
               onClick={() => toggleItem(index)}
-              className="w-full py-3.5 text-left font-mono text-[10px] uppercase tracking-widest text-charcoal hover:text-red transition-colors flex justify-between items-center cursor-pointer"
+              className="flex w-full cursor-pointer items-center justify-between py-3.5 text-left font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal transition-opacity hover:opacity-70"
             >
               <span>{item.title}</span>
-              <span className="font-bold text-xs">{isExpanded ? '[-]' : '[+]'}</span>
+              <span className="text-charcoal/40">{isExpanded ? '−' : '+'}</span>
             </button>
             {isExpanded && (
-              <div className="pb-4 font-body text-xs text-charcoal/80 leading-relaxed">
+              <div className="pb-4 font-body text-[13px] leading-snug tracking-[-0.04em] text-charcoal/70">
                 {item.content}
               </div>
             )}
