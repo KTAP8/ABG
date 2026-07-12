@@ -14,5 +14,7 @@ yarn-error.log*
 .dev.vars
 .wrangler/
 exports/
-tools/.venv/
-tools/out/
+
+# Local-only coupon print tooling (keep on disk, never commit)
+tools/
+card_back_ver1_template.pdf

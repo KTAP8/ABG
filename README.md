@@ -142,17 +142,19 @@ pnpm db:migrate    # apply migrations to Neon
 
 Discount codes live in the **`coupons`** table. `iykyk_signups` only stores signup info + `coupon_id` FK.
 
-| Field | Flat (IYKYK) | Percent (outreach) |
+| Field | IYKYK signup | Percent (outreach) |
 |-------|--------------|--------------------|
 | `code` | 8-char | 8-char |
-| `discount_amount` | `50` | `null` |
-| `discount_percent` | `null` | `10` |
+| `discount_amount` | `null` | `null` |
+| `discount_percent` | `10` | `10` |
 | `max_discount_amount` | `null` | `150` |
 | `used_at` | set on redeem | set on redeem |
 
 ### Migrate schema (one-time)
 
-1. Delete mock `iykyk_signups` rows in Neon.
+Only run if `iykyk_signups` has no rows you need to keep (or after you backfill into `coupons` yourself). The SQL drops the old discount columns and requires `coupon_id`.
+
+1. Clear or backfill `iykyk_signups` in Neon as needed.
 2. Run [`packages/server/drizzle/0004_coupons_fk.sql`](packages/server/drizzle/0004_coupons_fk.sql) in the Neon SQL Editor.
 
 ### Generate bulk 10% codes (max 150 THB)
@@ -162,6 +164,8 @@ pnpm --filter server generate:coupons
 ```
 
 Writes `exports/coupons-10pct-max150-YYYY-MM-DD.csv` and `.txt` (gitignored), and inserts into Neon.
+
+Card PDF rendering lives under local `tools/` (gitignored) — not part of the deployable app.
 
 ## Custom domain (later)
 
