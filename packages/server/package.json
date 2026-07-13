@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev --env dev --env-file ../../.env",
+    "dev": "wrangler dev --env dev --env-file ../../.env --port 8788",
     "deploy": "wrangler deploy",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "seed": "tsx src/seed.ts",
-    "generate:coupons": "tsx src/generateCoupons.ts"
+    "generate:coupons": "tsx src/generateCoupons.ts",
+    "populate:product-details": "tsx src/populateProductDetails.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "latest",

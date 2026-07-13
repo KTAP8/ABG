@@ -36,6 +36,8 @@ export const products = pgTable('products', {
   name_th: text('name_th'),
   description: text('description'),
   description_th: text('description_th'),
+  size_guide: text('size_guide'),
+  care: text('care'),
   price: integer('price').notNull(), // THB in baht
   drop_id: uuid('drop_id').references(() => drops.id),
   category: text('category').default('accessories'),
@@ -43,6 +45,14 @@ export const products = pgTable('products', {
   is_active: boolean('is_active').default(true),
   google_form_url: text('google_form_url'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+})
+
+export const product_specs = pgTable('product_specs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  product_id: uuid('product_id').references(() => products.id),
+  label: text('label').notNull(),
+  value: text('value').notNull(),
+  position: integer('position').default(0),
 })
 
 export const product_variants = pgTable('product_variants', {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
@@ -21,6 +21,7 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const imageColumnRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -59,6 +60,7 @@ export default function ProductDetail() {
   useEffect(() => {
     if (!product || filteredImages.length === 0) return
 
+    const root = imageColumnRef.current
     const observers = filteredImages.map((_, index) => {
       const el = document.getElementById(`product-image-${index}`)
       if (!el) return null
@@ -70,7 +72,7 @@ export default function ProductDetail() {
           }
         },
         {
-          root: null,
+          root,
           rootMargin: '-20% 0px -50% 0px',
           threshold: 0.2,
         },
@@ -102,7 +104,7 @@ export default function ProductDetail() {
   const scrollToImage = (index: number) => {
     const el = document.getElementById(`product-image-${index}`)
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
   }
 
@@ -137,54 +139,63 @@ export default function ProductDetail() {
   const priceDisplay = `฿${product.price.toLocaleString('en-US')}`
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="flex min-h-screen flex-col bg-cream md:h-svh md:overflow-hidden">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-6 pt-6 pb-12 md:px-8 md:pt-8 md:pb-16 lg:px-[27px]">
-        <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-12 md:gap-12">
-          <div className="sticky top-24 hidden max-h-[calc(100vh-8rem)] flex-col gap-3 overflow-y-auto pr-1 md:col-span-1 md:flex">
-            {filteredImages.length > 1 &&
-              filteredImages.map((image, index) => (
-                <button
-                  key={image.id}
-                  type="button"
-                  onClick={() => scrollToImage(index)}
-                  className={`aspect-3/4 w-full cursor-pointer overflow-hidden border bg-white transition-opacity duration-200 ${
-                    index === activeImageIndex
-                      ? 'border-charcoal opacity-100'
-                      : 'border-charcoal/15 opacity-45 hover:opacity-85'
-                  }`}
-                >
-                  <img
-                    src={image.url}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </button>
-              ))}
+      <main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col px-6 pt-6 pb-12 md:overflow-hidden md:px-8 md:pt-6 md:pb-0 lg:px-[27px]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 items-start gap-8 md:grid-cols-12 md:items-stretch md:gap-10 md:overflow-hidden">
+          {/* Image column — independent scroll on desktop */}
+          <div
+            ref={imageColumnRef}
+            className="col-span-1 min-h-0 md:col-span-8 md:overflow-y-auto md:overscroll-contain md:pr-2 scrollbar-none"
+          >
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-[auto_1fr] md:gap-4 md:pb-10">
+              <div className="sticky top-0 hidden max-h-[calc(100svh-5rem)] flex-col gap-3 self-start overflow-y-auto pr-1 scrollbar-none md:flex md:w-16 lg:w-20">
+                {filteredImages.length > 1 &&
+                  filteredImages.map((image, index) => (
+                    <button
+                      key={image.id}
+                      type="button"
+                      onClick={() => scrollToImage(index)}
+                      className={`aspect-3/4 w-full cursor-pointer overflow-hidden border bg-white transition-opacity duration-200 ${
+                        index === activeImageIndex
+                          ? 'border-charcoal opacity-100'
+                          : 'border-charcoal/15 opacity-45 hover:opacity-85'
+                      }`}
+                    >
+                      <img
+                        src={image.url}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </button>
+                  ))}
+              </div>
+
+              <div className="space-y-6">
+                {filteredImages.length > 0 ? (
+                  filteredImages.map((image, index) => (
+                    <div
+                      key={image.id}
+                      id={`product-image-${index}`}
+                      className="relative aspect-3/4 w-full overflow-hidden bg-white"
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.alt_text || `${product.name} - view ${index + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="aspect-3/4 bg-white" />
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="col-span-1 space-y-6 md:col-span-7">
-            {filteredImages.length > 0 ? (
-              filteredImages.map((image, index) => (
-                <div
-                  key={image.id}
-                  id={`product-image-${index}`}
-                  className="relative aspect-3/4 w-full overflow-hidden bg-white"
-                >
-                  <img
-                    src={image.url}
-                    alt={image.alt_text || `${product.name} - view ${index + 1}`}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="aspect-3/4 bg-white" />
-            )}
-          </div>
-
-          <div className="col-span-1 md:sticky md:top-24 md:col-span-4">
+          {/* Details column — independent scroll on desktop */}
+          <div className="col-span-1 min-h-0 md:col-span-4 md:overflow-y-auto md:overscroll-contain md:pb-10 scrollbar-none">
             <div className="space-y-6 pr-2">
               <div className="space-y-2 border-b border-charcoal/15 pb-6">
                 <div className="flex items-center justify-between">
@@ -247,53 +258,55 @@ export default function ProductDetail() {
                   </div>
                 )}
 
-                <div className="space-y-3 pt-2">
-                  <span className="block font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40 select-none">
-                    {t('product.specs_label')}
-                  </span>
+                {(product.specs?.length || product.size_guide) && (
+                  <div className="space-y-3 pt-2">
+                    <span className="block font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40 select-none">
+                      {t('product.specs_label')}
+                    </span>
 
-                  <div className="grid grid-cols-3 border-b border-charcoal/10 py-2">
-                    <span className="col-span-1 font-body text-[12px] lowercase text-charcoal/40">
-                      {t('product.spec.fit')}
-                    </span>
-                    <span className="col-span-2 text-right font-body text-[12px] lowercase text-charcoal">
-                      {t('product.spec.fit_value')}
-                    </span>
+                    {product.specs?.map((spec) => (
+                      <div
+                        key={spec.id}
+                        className="grid grid-cols-3 border-b border-charcoal/10 py-2"
+                      >
+                        <span className="col-span-1 font-body text-[12px] lowercase text-charcoal/40">
+                          {spec.label}
+                        </span>
+                        <span className="col-span-2 text-right font-body text-[12px] lowercase text-charcoal">
+                          {spec.value}
+                        </span>
+                      </div>
+                    ))}
+
+                    {product.size_guide && (
+                      <div className="flex items-center justify-between py-2">
+                        <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/40">
+                          {t('product.sizeguide.title')}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowSizeGuide(true)}
+                          className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/70 transition-opacity hover:text-charcoal"
+                        >
+                          {t('product.sizeguide.view')}
+                        </button>
+                      </div>
+                    )}
                   </div>
+                )}
 
-                  <div className="grid grid-cols-3 border-b border-charcoal/10 py-2">
-                    <span className="col-span-1 font-body text-[12px] lowercase text-charcoal/40">
-                      {t('product.spec.composition')}
-                    </span>
-                    <span className="col-span-2 text-right font-body text-[12px] lowercase text-charcoal">
-                      {t('product.spec.composition_value')}
-                    </span>
+                {product.care && (
+                  <div className="border-t border-charcoal/15 pt-4">
+                    <Accordion
+                      items={[
+                        {
+                          title: t('product.material.laundry_title'),
+                          content: product.care,
+                        },
+                      ]}
+                    />
                   </div>
-
-                  <div className="flex items-center justify-between py-2">
-                    <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/40">
-                      {t('product.sizeguide.title')}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowSizeGuide(true)}
-                      className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/70 transition-opacity hover:text-charcoal"
-                    >
-                      {t('product.sizeguide.view')}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="border-t border-charcoal/15 pt-4">
-                  <Accordion
-                    items={[
-                      {
-                        title: t('product.material.laundry_title'),
-                        content: t('product.material.laundry'),
-                      },
-                    ]}
-                  />
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -305,10 +318,12 @@ export default function ProductDetail() {
         onClose={() => setShowSizeGuide(false)}
         title={t('product.sizeguide.title')}
       >
-        <p className="font-body text-sm text-charcoal">{t('product.sizeguide.content')}</p>
+        <p className="font-body text-sm text-charcoal">{product.size_guide}</p>
       </Modal>
 
-      <Footer />
+      <div className="md:hidden">
+        <Footer />
+      </div>
     </div>
   )
 }

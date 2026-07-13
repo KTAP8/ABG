@@ -22,6 +22,14 @@ export interface Drop {
   products?: Product[]
 }
 
+export interface ProductSpec {
+  id: string
+  product_id: string
+  label: string
+  value: string
+  position: number
+}
+
 export interface Product {
   id: string
   slug: string
@@ -29,6 +37,8 @@ export interface Product {
   name_th?: string
   description?: string
   description_th?: string
+  size_guide?: string | null
+  care?: string | null
   price: number
   drop_id?: string
   category?: string
@@ -38,6 +48,7 @@ export interface Product {
   created_at: string
   variants?: ProductVariant[]
   images?: ProductImage[]
+  specs?: ProductSpec[]
 }
 
 export interface ProductVariant {

@@ -36,7 +36,7 @@ pnpm dev
 ```
 
 - Frontend: http://localhost:5173
-- API (Wrangler): http://localhost:8787
+- API (Wrangler): http://localhost:8788
 
 The API reads env vars from the root `.env` via `--env-file ../../.env`.
 

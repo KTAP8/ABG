@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { products, product_variants, product_images, product_categories } from '../lib/schema'
+import { products, product_variants, product_images, product_categories, product_specs } from '../lib/schema'
 import { eq } from 'drizzle-orm'
 import type { Env } from '../types'
 
@@ -43,10 +43,17 @@ router.get('/:slug', async (c) => {
     .where(eq(product_images.product_id, productData.id))
     .orderBy(product_images.position)
 
+  const specs = await db
+    .select()
+    .from(product_specs)
+    .where(eq(product_specs.product_id, productData.id))
+    .orderBy(product_specs.position)
+
   return c.json({
     ...productData,
     variants,
     images,
+    specs,
   })
 })
 
