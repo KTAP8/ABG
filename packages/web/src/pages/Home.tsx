@@ -50,7 +50,7 @@ export default function Home() {
 
         <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-8 md:px-8 md:pb-10 lg:px-[27px] lg:pb-12">
           <div className="max-w-xl space-y-3">
-            <h1 className="font-display text-[clamp(1.75rem,4vw,2.45rem)] font-bold leading-none tracking-[-0.07em] text-white select-none">
+            <h1 className="font-brand text-[clamp(1.75rem,4vw,2.45rem)] leading-none tracking-normal text-white select-none">
               {t('hero.title')}
             </h1>
             <p className="whitespace-pre-line font-body text-[15px] leading-snug tracking-[-0.07em] text-white md:text-[18px]">

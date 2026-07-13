@@ -42,11 +42,11 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
 
   if (submitted) {
     return (
-      <div className="space-y-2 py-8 text-center">
-        <p className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal">
+      <div className="space-y-2 py-4">
+        <p className="font-body text-[15px] lowercase tracking-[-0.04em] text-charcoal">
           {t('waitlist.success')}
         </p>
-        <p className="mx-auto max-w-xs font-body text-sm leading-snug tracking-[-0.04em] text-charcoal/70">
+        <p className="max-w-xs font-body text-sm leading-snug tracking-[-0.04em] text-charcoal/70">
           {t('waitlist.confirm')}
         </p>
       </div>
@@ -54,48 +54,50 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
   }
 
   const fieldClass =
-    'w-full border border-charcoal/15 bg-white px-3.5 py-2.5 font-body text-[13px] tracking-[-0.04em] text-charcoal placeholder:text-charcoal/30 focus:border-charcoal/40 focus:outline-none'
+    'w-full border-0 border-b border-charcoal/15 bg-transparent px-0 py-3 font-body text-[14px] tracking-[-0.04em] text-charcoal placeholder:text-charcoal/30 focus:border-charcoal/50 focus:outline-none'
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-sm space-y-5 pt-2 text-left">
-      <div className="space-y-1.5">
-        <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
-          {t('waitlist.email')}
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={fieldClass}
-          placeholder={t('waitlist.email_placeholder')}
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-8 text-left">
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
+            {t('waitlist.email')}
+          </label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={fieldClass}
+            placeholder={t('waitlist.email_placeholder')}
+          />
+        </div>
 
-      <div className="space-y-1.5">
-        <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
-          {t('waitlist.phone')}
-        </label>
-        <input
-          type="text"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className={fieldClass}
-          placeholder={t('waitlist.phone_placeholder')}
-        />
-      </div>
+        <div className="space-y-1">
+          <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
+            {t('waitlist.phone')}
+          </label>
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={fieldClass}
+            placeholder={t('waitlist.phone_placeholder')}
+          />
+        </div>
 
-      <div className="space-y-1.5">
-        <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
-          {t('waitlist.campus')}
-        </label>
-        <input
-          type="text"
-          value={campus}
-          onChange={(e) => setCampus(e.target.value)}
-          className={fieldClass}
-          placeholder={t('waitlist.campus_placeholder')}
-        />
+        <div className="space-y-1">
+          <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
+            {t('waitlist.campus')}
+          </label>
+          <input
+            type="text"
+            value={campus}
+            onChange={(e) => setCampus(e.target.value)}
+            className={fieldClass}
+            placeholder={t('waitlist.campus_placeholder')}
+          />
+        </div>
       </div>
 
       {error && (
@@ -105,7 +107,7 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full cursor-pointer bg-charcoal px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 focus:outline-none disabled:cursor-not-allowed disabled:opacity-30"
+        className="cursor-pointer bg-charcoal px-8 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 focus:outline-none disabled:cursor-not-allowed disabled:opacity-30"
       >
         {loading ? t('waitlist.joining') : t('waitlist.submit')}
       </button>

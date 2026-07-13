@@ -34,6 +34,8 @@
   "product.loading": "loading…",
   "product.not_found": "product not found.",
   "waitlist.cta": "get on the list.",
+  "waitlist.lead": "a quiet note when it goes live. nothing else.",
+  "waitlist.closer": "limited run. cut first. no restocks.",
   "waitlist.confirm": "you're on the list.",
   "waitlist.already": "you're already on the list.",
   "waitlist.email": "email",
