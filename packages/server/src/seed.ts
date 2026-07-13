@@ -32,7 +32,7 @@ async function seed() {
         name: 'SAMYAN BADDIE V1',
         name_th: 'สามย่าน แบดดี้ V1',
         description:
-          'We are creating the unofficial \'Samyan Baddie\' uniform. Effortless everyday wear, but injected with bold, limited-run aesthetics. Our obsession is premium construction—utilizing the same heavyweight fabrics as luxury streetwear labels, but without the gatekept price tag. Only 200 pieces ever made. No restocks.',
+          'We are creating the unofficial \'Samyan Baddie\' uniform. Effortless everyday wear, but injected with bold, limited-run aesthetics. Our obsession is premium construction, utilizing the same heavyweight fabrics as luxury streetwear labels, but without the gatekept price tag. Only 200 pieces ever made. No restocks.',
         description_th:
           'ชุดเครื่องแบบอย่างไม่เป็นทางการของชาว Samyan Baddie เสื้อผ้าสวมใส่ง่ายในทุกๆ วัน คัสตอมพิเศษเฉพาะรอบนี้เท่านั้น ดีไซน์จัดเต็มเหมือนแบรนด์ลักชูรีสตรีทแวร์ ในราคาที่จับต้องได้ ผลิตเพียง 200 ชิ้นเท่านั้น ไม่มีรีสต็อก',
         drop_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now

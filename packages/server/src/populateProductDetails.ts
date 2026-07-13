@@ -30,10 +30,10 @@ const CARE = 'Cotton 100%. Wash cold, hang dry.'
 const PROFILES: Record<Exclude<StyleKind, null>, StyleProfile> = {
   baby_tee: {
     sizeGuide: [
-      'ABG Size Chart — Baby Tee',
+      'ABG Size Chart: Baby Tee',
       '',
       'Size: Free Size',
-      'Chest: 28–34 inches',
+      'Chest: 28-34 inches',
       'Length: 22 inches',
       'Material: Cotton 100%',
       'Notes: Highly stretchable',
@@ -43,13 +43,13 @@ const PROFILES: Record<Exclude<StyleKind, null>, StyleProfile> = {
       { label: 'fit', value: 'baby tee / stretchable', position: 0 },
       { label: 'composition', value: '100% cotton', position: 1 },
       { label: 'size', value: 'freesize', position: 2 },
-      { label: 'chest', value: '28–34 inches', position: 3 },
+      { label: 'chest', value: '28-34 inches', position: 3 },
       { label: 'length', value: '22 inches', position: 4 },
     ],
   },
   oversized: {
     sizeGuide: [
-      'ABG Size Chart — Oversized Tee',
+      'ABG Size Chart: Oversized Tee',
       '',
       'Size: Free Size',
       'Chest: 44 inches',
@@ -100,7 +100,7 @@ async function main() {
   for (const product of allProducts) {
     const kind = inferStyle(product.name, product.slug)
     if (!kind) {
-      console.log(`skip  ${product.slug}  (${product.name}) — no baby tee / oversized match`)
+      console.log(`skip  ${product.slug}  (${product.name}) - no baby tee / oversized match`)
       skipped++
       continue
     }

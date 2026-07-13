@@ -48,7 +48,7 @@ async function main() {
   writeFileSync(csvPath, csvHeader + csvBody + '\n', 'utf8')
 
   const txt = [
-    `ABG — 10% off coupons (max ${MAX_DISCOUNT_AMOUNT} THB)`,
+    `ABG 10% off coupons (max ${MAX_DISCOUNT_AMOUNT} THB)`,
     `Generated: ${new Date().toISOString()}`,
     `Count: ${rows.length}`,
     `One-time use each (coupons.used_at)`,

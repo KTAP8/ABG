@@ -31,7 +31,7 @@ router.post('/', async (c) => {
       campus: campus || null,
     })
   } catch {
-    // Unique constraint violation — treat as success
+    // Unique constraint violation: treat as success
   }
 
   return c.json({ success: true, message: 'Added to waitlist' })

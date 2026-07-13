@@ -144,7 +144,7 @@ export default function ProductDetail() {
 
       <main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col px-6 pt-6 pb-12 md:overflow-hidden md:px-8 md:pt-6 md:pb-0 lg:px-[27px]">
         <div className="grid min-h-0 flex-1 grid-cols-1 items-start gap-8 md:grid-cols-12 md:items-stretch md:gap-10 md:overflow-hidden">
-          {/* Image column — independent scroll on desktop */}
+          {/* Image column */}
           <div
             ref={imageColumnRef}
             className="col-span-1 min-h-0 md:col-span-8 md:overflow-y-auto md:overscroll-contain md:pr-2 scrollbar-none"
@@ -194,7 +194,7 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Details column — independent scroll on desktop */}
+          {/* Details column */}
           <div className="col-span-1 min-h-0 md:col-span-4 md:overflow-y-auto md:overscroll-contain md:pb-10 scrollbar-none">
             <div className="space-y-6 pr-2">
               <div className="space-y-2 border-b border-charcoal/15 pb-6">

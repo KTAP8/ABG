@@ -40,7 +40,7 @@ export default function Home() {
     <div className="min-h-screen bg-cream">
       <Navbar overlay />
 
-      {/* Coming soon hero — Figma 408:58 */}
+      {/* Coming soon hero */}
       <section className="relative h-svh min-h-140 w-full overflow-hidden">
         <img
           src="/images/coming_soon_hero_image.webp"
@@ -62,7 +62,7 @@ export default function Home() {
 
       <DropBanner />
 
-      {/* Product section — continues hero language */}
+      {/* Product section */}
       <section className="w-full bg-cream px-6 py-16 md:px-8 md:py-20 lg:px-[27px] lg:py-24">
         {loading ? (
           <div className="py-24 text-center">

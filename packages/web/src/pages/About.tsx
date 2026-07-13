@@ -1,24 +1,15 @@
 import { useTranslation } from 'react-i18next'
-import { motion } from 'motion/react'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
+import {
+  ChapterFilmStrip,
+  type AboutChapter,
+} from '../components/about/ChapterFilmStrip'
 
 export default function About() {
   const { t } = useTranslation()
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 24 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: '-80px' },
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-  }
-
-  const chapters: {
-    title: string
-    text1: string
-    text2: string
-    specs?: string[]
-  }[] = [
+  const chapters: AboutChapter[] = [
     {
       title: t('about.chapter1.title'),
       text1: t('about.chapter1.text1'),
@@ -44,6 +35,7 @@ export default function About() {
       title: t('about.chapter4.title'),
       text1: t('about.chapter4.text1'),
       text2: t('about.chapter4.text2'),
+      closing: t('about.chapter4.footer'),
     },
   ]
 
@@ -51,7 +43,6 @@ export default function About() {
     <div className="min-h-screen bg-cream">
       <Navbar overlay />
 
-      {/* Full-bleed hero — replace /images/about_hero.webp with final art */}
       <section className="relative h-svh min-h-140 w-full overflow-hidden bg-charcoal">
         <img
           src="/images/about_hero.webp"
@@ -74,43 +65,7 @@ export default function About() {
         </div>
       </section>
 
-      <main className="w-full bg-cream px-6 py-16 md:px-8 md:py-20 lg:px-[27px] lg:py-24">
-        <div className="mx-auto max-w-3xl space-y-16 md:space-y-20">
-          {chapters.map((chapter) => (
-            <motion.section key={chapter.title} {...fadeInUp} className="border-b border-charcoal/15 pb-16 last:border-b-0 md:pb-20">
-              <h2 className="mb-6 font-display text-2xl font-bold lowercase leading-none tracking-[-0.07em] text-charcoal md:text-[28px]">
-                {chapter.title}
-              </h2>
-              <div className="space-y-4">
-                <p className="font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal md:text-base">
-                  {chapter.text1}
-                </p>
-                <p className="font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70 md:text-[15px]">
-                  {chapter.text2}
-                </p>
-              </div>
-              {chapter.specs && (
-                <ul className="mt-8 space-y-2 border-t border-charcoal/15 pt-6">
-                  {chapter.specs.map((spec) => (
-                    <li
-                      key={spec}
-                      className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50"
-                    >
-                      {spec}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </motion.section>
-          ))}
-
-          <div className="border-t border-charcoal/15 pt-10">
-            <p className="max-w-lg font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal/70 md:text-base">
-              {t('about.chapter4.footer')}
-            </p>
-          </div>
-        </div>
-      </main>
+      <ChapterFilmStrip chapters={chapters} />
 
       <Footer />
     </div>

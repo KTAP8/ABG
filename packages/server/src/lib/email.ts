@@ -38,7 +38,7 @@ export async function sendThankYouDiscountEmail(
         </p>
 
         <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.5; letter-spacing: -0.04em;">
-          you backed the first drop. this is our thank you — a one-time code for drop 02.
+          you backed the first drop. this is our thank you. a one-time code for drop 02.
         </p>
 
         <p style="margin: 0 0 32px; font-size: 14px; line-height: 1.5; letter-spacing: -0.04em; color: ${charcoal70};">
