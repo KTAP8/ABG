@@ -1,8 +1,16 @@
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 export interface FooterProps {
   bgClass?: string
 }
+
+const legalLinks = [
+  { to: '/terms', key: 'footer.legal.terms' },
+  { to: '/privacy', key: 'footer.legal.privacy' },
+  { to: '/shipping', key: 'footer.legal.shipping' },
+  { to: '/returns', key: 'footer.legal.returns' },
+] as const
 
 export function Footer({ bgClass = 'bg-cream' }: FooterProps) {
   const { t } = useTranslation()
@@ -10,11 +18,28 @@ export function Footer({ bgClass = 'bg-cream' }: FooterProps) {
   return (
     <footer className={`border-t border-charcoal/15 py-12 ${bgClass}`}>
       <div className="mx-auto max-w-7xl px-6 md:px-8 lg:px-[27px]">
-        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>
             <p className="max-w-sm font-body text-[13px] leading-snug tracking-[-0.04em] text-charcoal/70">
               {t('hero.sub')}
             </p>
+          </div>
+
+          <div className="space-y-3">
+            <p className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+              {t('footer.legal.title')}
+            </p>
+            <div className="flex flex-col gap-2">
+              {legalLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal transition-opacity hover:opacity-70"
+                >
+                  {t(link.key)}
+                </Link>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-4">

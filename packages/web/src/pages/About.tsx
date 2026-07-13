@@ -43,22 +43,25 @@ export default function About() {
     <div className="min-h-screen bg-cream">
       <Navbar overlay />
 
-      <section className="relative h-svh min-h-140 w-full overflow-hidden bg-charcoal">
-        <img
-          src="/images/about_hero.webp"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover object-center"
-        />
+      {/* Split frame under nav — image | manifesto */}
+      <section className="grid h-svh min-h-140 w-full grid-cols-1 bg-cream md:grid-cols-2">
+        <div className="relative min-h-[48svh] overflow-hidden bg-charcoal md:min-h-0">
+          <img
+            src="/images/about_hero.webp"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        </div>
 
-        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-8 md:px-8 md:pb-10 lg:px-[27px] lg:pb-12">
-          <div className="max-w-xl space-y-3">
-            <span className="block font-body text-[12px] lowercase tracking-[-0.04em] text-white/60">
+        <div className="flex flex-col justify-end px-6 pt-24 pb-12 md:justify-center md:px-10 md:pt-28 md:pb-16 lg:px-14 lg:pb-20">
+          <div className="max-w-md space-y-4">
+            <span className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/45">
               {t('about.eyebrow')}
             </span>
-            <h1 className="font-display text-[clamp(1.75rem,4vw,2.45rem)] font-bold leading-none tracking-[-0.07em] text-white select-none">
+            <h1 className="font-brand text-[clamp(2rem,4.5vw,3.25rem)] leading-none tracking-normal text-charcoal select-none">
               {t('about.intro.title')}
             </h1>
-            <p className="font-body text-[15px] leading-snug tracking-[-0.07em] text-white md:text-[18px]">
+            <p className="font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal/70 md:text-[17px]">
               {t('about.intro.sub')}
             </p>
           </div>

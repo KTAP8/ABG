@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export interface NavbarProps {
-  bgClass?: string
+  bgClass?: string;
   /** When true, skip the layout spacer so content can sit under the fixed nav */
-  overlay?: boolean
+  overlay?: boolean;
 }
 
 function AccountIcon() {
@@ -24,7 +24,7 @@ function AccountIcon() {
       <circle cx="12" cy="8" r="3.5" />
       <path d="M5.5 19.5c1.5-3.2 3.8-4.8 6.5-4.8s5 1.6 6.5 4.8" />
     </svg>
-  )
+  );
 }
 
 function CartIcon() {
@@ -44,37 +44,37 @@ function CartIcon() {
       <circle cx="10" cy="20" r="1.2" fill="currentColor" stroke="none" />
       <circle cx="16" cy="20" r="1.2" fill="currentColor" stroke="none" />
     </svg>
-  )
+  );
 }
 
 export function Navbar({ bgClass, overlay = false }: NavbarProps) {
-  const { t } = useTranslation()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { t } = useTranslation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: t('nav.products'), href: '/products' },
-    { label: t('nav.archive'), href: '/archive' },
-    { label: t('nav.about'), href: '/about' },
-    { label: t('nav.waitlist'), href: '/waitlist' },
-  ]
+    { label: t("nav.products"), href: "/products" },
+    { label: t("nav.archive"), href: "/archive" },
+    { label: t("nav.about"), href: "/about" },
+    { label: t("nav.waitlist"), href: "/waitlist" },
+  ];
 
   useEffect(() => {
-    if (!mobileMenuOpen) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    if (!mobileMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = prev
-    }
-  }, [mobileMenuOpen])
+      document.body.style.overflow = prev;
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <>
       {/* Desktop + closed mobile top bar */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-40 ${mobileMenuOpen ? 'md:block hidden' : ''} ${bgClass ?? ''}`}
+        className={`fixed top-0 left-0 right-0 z-40 ${mobileMenuOpen ? "md:block hidden" : ""} ${bgClass ?? ""}`}
         style={{
           backgroundImage:
-            'linear-gradient(to bottom, #3F3F44 0%, rgba(63, 63, 68, 0.72) 45%, transparent 100%)',
+            "linear-gradient(to bottom, #3F3F44 0%, rgba(63, 63, 68, 0.72) 45%, transparent 100%)",
         }}
       >
         <div className="relative flex h-16 items-start justify-between px-5 pt-3 md:h-20 md:px-10 md:pt-3.5">
@@ -107,7 +107,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
             <button
               type="button"
               className="hidden cursor-pointer text-cream/85 transition-colors hover:text-cream md:flex"
-              aria-label={t('nav.account')}
+              aria-label={t("nav.account")}
               onClick={() => {}}
             >
               <AccountIcon />
@@ -115,7 +115,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
             <button
               type="button"
               className="hidden cursor-pointer text-cream/85 transition-colors hover:text-cream md:flex"
-              aria-label={t('nav.cart')}
+              aria-label={t("nav.cart")}
               onClick={() => {}}
             >
               <CartIcon />
@@ -126,7 +126,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
               className="cursor-pointer font-body text-[14px] lowercase tracking-[-0.07em] text-cream/85 transition-colors hover:text-cream md:hidden"
               onClick={() => setMobileMenuOpen(true)}
             >
-              {t('nav.menu')}
+              {t("nav.menu")}
             </button>
           </div>
         </div>
@@ -138,7 +138,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
           <button
             type="button"
             className="absolute inset-0 cursor-pointer bg-black/20"
-            aria-label={t('nav.close')}
+            aria-label={t("nav.close")}
             onClick={() => setMobileMenuOpen(false)}
           />
 
@@ -161,7 +161,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
                 className="cursor-pointer font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                {t('nav.close')}
+                {t("nav.close")}
               </button>
             </div>
 
@@ -184,20 +184,20 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
               <button
                 type="button"
                 className="flex cursor-pointer items-center gap-2.5 font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
-                aria-label={t('nav.account')}
+                aria-label={t("nav.account")}
                 onClick={() => {}}
               >
                 <AccountIcon />
-                <span>{t('nav.account')}</span>
+                <span>{t("nav.account")}</span>
               </button>
               <button
                 type="button"
                 className="flex cursor-pointer items-center gap-2.5 font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
-                aria-label={t('nav.cart')}
+                aria-label={t("nav.cart")}
                 onClick={() => {}}
               >
                 <CartIcon />
-                <span>{t('nav.cart')}</span>
+                <span>{t("nav.cart")}</span>
               </button>
             </div>
           </div>
@@ -206,5 +206,5 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
 
       {!overlay && <div className="h-16 md:h-20" />}
     </>
-  )
+  );
 }

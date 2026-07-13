@@ -7,6 +7,10 @@ import Waitlist from './pages/Waitlist'
 import Iykyk from './pages/Iykyk'
 import Archive from './pages/Archive'
 import About from './pages/About'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
+import Shipping from './pages/Shipping'
+import Returns from './pages/Returns'
 
 export default function App() {
   return (
@@ -20,6 +24,10 @@ export default function App() {
         <Route path="/iykyk" element={<Iykyk />} />
         <Route path="/archive" element={<Archive />} />
         <Route path="/about" element={<About />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/shipping" element={<Shipping />} />
+        <Route path="/returns" element={<Returns />} />
       </Routes>
     </BrowserRouter>
   )
