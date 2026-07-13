@@ -32,7 +32,7 @@ router.post('/', async (c) => {
       await sendThankYouDiscountEmail(resend, fromEmail, email, {
         name,
         discountCode: result.discount_code,
-        discountAmount: result.discount_amount,
+        discountPercent: result.discount_percent,
       })
     } catch (err) {
       console.error('Failed to send confirmation email:', err)
@@ -43,7 +43,7 @@ router.post('/', async (c) => {
     {
       success: true,
       discount_code: result.discount_code,
-      discount_amount: result.discount_amount,
+      discount_percent: result.discount_percent,
     },
     201
   )

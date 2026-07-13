@@ -21,11 +21,11 @@ export function SizeSelector({ variants, selectedId, onSelect }: SizeSelectorPro
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="font-mono text-xs uppercase tracking-wider text-charcoal/50 font-bold">
+      <div className="flex items-center justify-between">
+        <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
           {t('product.size')}
         </span>
-        <span className="font-mono text-xs font-bold text-charcoal select-none">
+        <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal select-none">
           {selectedVariant?.size || ''}
         </span>
       </div>

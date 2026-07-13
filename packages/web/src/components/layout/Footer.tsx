@@ -8,54 +8,49 @@ export function Footer({ bgClass = 'bg-cream' }: FooterProps) {
   const { t } = useTranslation()
 
   return (
-    <footer className={`border-t border-charcoal py-12 ${bgClass}`}>
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {/* Left */}
-          <div className="space-y-4">
-
-            <p className="font-body text-xs uppercase tracking-widest text-charcoal font-bold">
+    <footer className={`border-t border-charcoal/15 py-12 ${bgClass}`}>
+      <div className="mx-auto max-w-7xl px-6 md:px-8 lg:px-[27px]">
+        <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+          <div>
+            <p className="max-w-sm font-body text-[13px] leading-snug tracking-[-0.04em] text-charcoal/70">
               {t('hero.sub')}
             </p>
           </div>
 
-          {/* Right */}
           <div className="space-y-4">
-            <div>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-xs uppercase tracking-widest text-charcoal hover:text-red transition-colors inline-flex items-center gap-1.5"
-              >
-                <span>INSTAGRAM</span>
-              </a>
-            </div>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal transition-opacity hover:opacity-70"
+            >
+              {t('footer.instagram')}
+            </a>
+
             <form className="space-y-2" onSubmit={(e) => e.preventDefault()}>
-              <div className="font-mono text-[10px] uppercase tracking-wider text-charcoal opacity-60">
-                SUBSCRIBE TO NEWSLETTER
-              </div>
-              <div className="flex border border-charcoal bg-transparent">
-                <span className="bg-charcoal text-cream font-mono text-xs px-3 flex items-center select-none">
-                  EMAIL &gt;
-                </span>
+              <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+                {t('footer.subscribe')}
+              </label>
+              <div className="flex border border-charcoal/15">
                 <input
                   type="email"
                   placeholder={t('footer.emailPlaceholder')}
-                  className="flex-1 px-3 py-2 bg-transparent font-mono text-xs text-charcoal placeholder-charcoal/40 focus:outline-none"
+                  className="flex-1 bg-transparent px-3 py-2 font-body text-[13px] tracking-[-0.04em] text-charcoal placeholder:text-charcoal/40 focus:outline-none"
                 />
-                <button className="px-4 py-2 bg-charcoal text-cream font-body text-xs uppercase tracking-widest hover:bg-black transition-colors cursor-pointer border-l border-charcoal">
-                  {t('footer.email')}
+                <button
+                  type="submit"
+                  className="cursor-pointer border-l border-charcoal/15 bg-charcoal px-4 py-2 font-body text-[12px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80"
+                >
+                  {t('footer.join')}
                 </button>
               </div>
             </form>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-charcoal pt-6 text-center">
-          <p className="font-mono text-[9px] uppercase tracking-wider text-charcoal/60">
-            {t('footer.rights')} 2026©
+        <div className="border-t border-charcoal/15 pt-6 text-center">
+          <p className="font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/50">
+            {t('footer.rights')} © 2026
           </p>
         </div>
       </div>

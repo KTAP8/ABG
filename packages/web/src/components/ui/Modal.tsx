@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface ModalProps {
   isOpen: boolean
@@ -9,6 +10,8 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children, bgClass = 'bg-cream' }: ModalProps) {
+  const { t } = useTranslation()
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -26,31 +29,29 @@ export function Modal({ isOpen, onClose, title, children, bgClass = 'bg-cream' }
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/30 backdrop-blur-[2px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/30 p-4 backdrop-blur-[2px]">
       <div
-        className={`relative w-full max-w-xl border border-charcoal flex flex-col ${bgClass}`}
+        className={`relative flex w-full max-w-xl flex-col border border-charcoal/15 ${bgClass}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Register */}
-        <div className={`flex items-center justify-between border-b border-charcoal px-6 py-4 font-mono text-xs ${bgClass}`}>
-          <span>{title ? `[MODAL: ${title.toUpperCase()}]` : '[SYSTEM_DIALOG]'}</span>
+        <div
+          className={`flex items-center justify-between border-b border-charcoal/15 px-6 py-4 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal ${bgClass}`}
+        >
+          <span>{title || t('modal.dialog')}</span>
           <button
+            type="button"
             onClick={onClose}
-            className="text-[10px] uppercase font-bold tracking-widest text-charcoal hover:text-red transition-colors cursor-pointer"
+            className="cursor-pointer text-[12px] lowercase tracking-[-0.04em] text-charcoal/55 transition-opacity hover:text-charcoal"
           >
-            [CLOSE]
+            {t('modal.close')}
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-auto max-h-[70vh] font-mono text-xs text-charcoal/80">
+        <div className="max-h-[70vh] overflow-auto p-6 font-body text-[14px] tracking-[-0.04em] text-charcoal/80">
           {children}
         </div>
       </div>
-      <div
-        className="absolute inset-0 z-[-1]"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 z-[-1]" onClick={onClose} />
     </div>
   )
 }

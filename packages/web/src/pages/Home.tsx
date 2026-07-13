@@ -38,99 +38,94 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-cream">
-      <Navbar />
-      <DropBanner />
+      <Navbar overlay />
 
-      {/* Redesigned Minimalist Hero */}
-      <section className="h-[calc(100vh-7rem)] min-h-[500px] border-b border-charcoal flex flex-col items-center justify-center text-center p-8 lg:p-16 relative">
-        <h1 className="font-display font-black text-[10vw] lg:text-[7vw] leading-[0.9] uppercase text-charcoal tracking-[-0.12em] mb-6 select-none z-10">
-          ACOUSTIC<br />
-          BUT<br />
-          GOATED
-        </h1>
-        <p className="font-mono text-xs uppercase tracking-widest text-charcoal max-w-lg z-10">
-          {t('hero.sub')}
-        </p>
-        <div className="absolute bottom-8 w-0.5 h-10 bg-charcoal animate-pulse hidden md:block" />
+      {/* Coming soon hero — Figma 408:58 */}
+      <section className="relative h-svh min-h-140 w-full overflow-hidden">
+        <img
+          src="/images/coming_soon_hero_image.webp"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+
+        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-8 md:px-8 md:pb-10 lg:px-[27px] lg:pb-12">
+          <div className="max-w-xl space-y-3">
+            <h1 className="font-brand text-[clamp(1.75rem,4vw,2.45rem)] leading-none tracking-normal text-white select-none">
+              {t('hero.title')}
+            </h1>
+            <p className="whitespace-pre-line font-body text-[15px] leading-snug tracking-[-0.07em] text-white md:text-[18px]">
+              {t('hero.description')}
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* Marquee Ticker Tape */}
-      <div className="border-b border-charcoal bg-charcoal overflow-hidden py-2 select-none">
-        <div className="animate-marquee whitespace-nowrap flex font-mono text-[9px] uppercase tracking-widest text-cream font-bold">
-          <span className="mx-6">* BATCH_01 RELEASE *</span>
-          <span className="mx-6">ACOUSTIC BUT GOATED</span>
-          <span className="mx-6">* NO RESTOCKS // ARCHIVED FOREVER *</span>
-          
-          {/* Duplicate content to loop smoothly */}
-          <span className="mx-6">* BATCH_01 RELEASE *</span>
-          <span className="mx-6">ACOUSTIC BUT GOATED</span>
-          <span className="mx-6">* NO RESTOCKS // ARCHIVED FOREVER *</span>
-        </div>
-      </div>
+      <DropBanner />
 
-      {/* Editorial Grid / Products */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
+      {/* Product section — continues hero language */}
+      <section className="w-full bg-cream px-6 py-16 md:px-8 md:py-20 lg:px-[27px] lg:py-24">
         {loading ? (
           <div className="py-24 text-center">
-            <span className="font-mono text-xs uppercase tracking-widest text-charcoal animate-pulse">
-              Loading...
+            <span className="font-body text-sm tracking-[-0.04em] text-charcoal/50 animate-pulse">
+              {t('home.loading')}
             </span>
           </div>
         ) : latestDrop && latestDrop.products ? (
-          <div className="flex flex-col items-center">
-            <div className="w-full mb-10 flex flex-col md:flex-row md:items-end justify-between border-b border-charcoal pb-4">
-              <h2 className="font-display font-black text-2xl md:text-3xl uppercase text-charcoal">
+          <div className="mx-auto flex w-full max-w-7xl flex-col">
+            <header className="mb-10 border-b border-charcoal/15 pb-6 md:mb-12">
+              <p className="mb-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+                {t('home.section_label')}
+              </p>
+              <h2 className="font-display text-2xl font-bold lowercase leading-none tracking-[-0.07em] text-charcoal md:text-[28px] lg:text-[32px]">
                 {latestDrop.name}
               </h2>
-            </div>
-            <div className="w-full">
-              <ProductGrid products={paginatedProducts} />
-            </div>
+              <p className="mt-3 max-w-md font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70">
+                {t('home.section_sub')}
+              </p>
+            </header>
+
+            <ProductGrid products={paginatedProducts} />
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-6 mt-12 font-mono text-[11px] select-none">
+              <div className="mt-12 flex items-center justify-center gap-8 font-body text-[13px] tracking-[-0.04em] text-charcoal select-none md:mt-16">
                 <button
+                  type="button"
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  className="px-4 py-2 border border-charcoal text-charcoal font-bold uppercase transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-charcoal hover:text-cream cursor-pointer"
+                  className="cursor-pointer lowercase text-charcoal/70 transition-opacity hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-30"
                 >
-                  &lt; {t('pagination.prev')}
+                  ← {t('pagination.prev')}
                 </button>
-                <span className="text-charcoal uppercase tracking-wider font-bold">
+                <span className="text-charcoal/50 lowercase">
                   {t('pagination.page')} {currentPage} / {totalPages}
                 </span>
                 <button
+                  type="button"
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  className="px-4 py-2 border border-charcoal text-charcoal font-bold uppercase transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-charcoal hover:text-cream cursor-pointer"
+                  className="cursor-pointer lowercase text-charcoal/70 transition-opacity hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-30"
                 >
-                  {t('pagination.next')} &gt;
+                  {t('pagination.next')} →
                 </button>
               </div>
             )}
           </div>
         ) : (
-          <div className="py-24 text-center border border-dashed border-charcoal/40">
-            <p className="font-mono text-sm uppercase tracking-wider text-charcoal opacity-70">
+          <div className="py-24 text-center">
+            <p className="font-body text-sm tracking-[-0.04em] text-charcoal/60">
               {t('something.coming')}
             </p>
           </div>
         )}
       </section>
 
-      {/* Section divider rule */}
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="hr-tech opacity-40" />
-      </div>
-
-      {/* Brand Statement */}
-      <section className="my-24 max-w-3xl mx-auto px-4 text-center">
-        <blockquote className="font-display font-black text-3xl md:text-5xl leading-tight text-charcoal uppercase mb-6">
-          {t('hero.sub')}
-        </blockquote>
-        <p className="font-mono text-xs tracking-wider leading-relaxed text-charcoal/70 uppercase">
-          The raw culture of Bangkok, captured and expressed through heavy cotton fibers. Produced in limited batches.
-        </p>
+      {/* Quiet closer */}
+      <section className="w-full bg-cream px-6 pb-20 pt-4 md:px-8 md:pb-24 lg:px-[27px]">
+        <div className="mx-auto max-w-7xl border-t border-charcoal/15 pt-10">
+          <p className="max-w-lg font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal/70 md:text-base">
+            {t('home.closer')}
+          </p>
+        </div>
       </section>
 
       <Footer />

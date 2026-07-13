@@ -8,7 +8,7 @@ export async function sendThankYouDiscountEmail(
   client: Resend,
   fromEmail: string,
   to: string,
-  data: { name: string; discountCode: string; discountAmount: number }
+  data: { name: string; discountCode: string; discountPercent: number }
 ) {
   return client.emails.send({
     from: fromEmail,
@@ -34,7 +34,7 @@ export async function sendThankYouDiscountEmail(
         <div style="border: 1px solid #333333; background: #111111; padding: 32px; margin: 32px 0; text-align: center; border-radius: 4px;">
           <p style="font-size: 32px; font-weight: bold; letter-spacing: 4px; margin: 0; color: #ffffff; font-family: monospace;">${data.discountCode}</p>
           <p style="margin: 16px 0 0 0; font-size: 14px; color: #888888; letter-spacing: 1px;">
-            Enjoy ${data.discountAmount} THB off your order
+            Enjoy ${data.discountPercent}% off your order
           </p>
         </div>
         

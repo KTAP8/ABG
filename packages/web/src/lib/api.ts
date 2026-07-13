@@ -101,7 +101,7 @@ export async function submitIykyk(data: {
   name: string
   email: string
   ig_handle?: string
-}): Promise<{ success: boolean; discount_code: string; discount_amount: number }> {
+}): Promise<{ success: boolean; discount_code: string; discount_percent: number }> {
   const res = await fetch(`${API_URL}/iykyk`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
 
 interface CountdownTimerProps {
-  targetDate: string // UTC ISO string
+  targetDate: string
   className?: string
   variant?: 'simple' | 'segmented'
 }
 
-export function CountdownTimer({ targetDate, className = '', variant = 'segmented' }: CountdownTimerProps) {
+export function CountdownTimer({
+  targetDate,
+  className = '',
+  variant = 'segmented',
+}: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState('')
 
   useEffect(() => {
@@ -22,7 +26,7 @@ export function CountdownTimer({ targetDate, className = '', variant = 'segmente
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24))
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
-      const minutes = Math.floor((diff / (1000 * 60)) % 60)
+      const minutes = Math.floor((diff / 1000 / 60) % 60)
       const seconds = Math.floor((diff / 1000) % 60)
 
       setTimeLeft(
@@ -37,24 +41,24 @@ export function CountdownTimer({ targetDate, className = '', variant = 'segmente
   }, [targetDate])
 
   const parts = timeLeft.split(':')
-  const labels = ['DAYS', 'HOURS', 'MINS', 'SECS']
+  const labels = ['days', 'hours', 'mins', 'secs']
 
   if (variant === 'simple' || parts.length < 4) {
     return (
-      <span className={`font-mono text-xs tracking-widest ${className}`}>
+      <span className={`font-body text-[13px] tracking-[-0.04em] tabular-nums ${className}`}>
         {timeLeft}
       </span>
     )
   }
 
   return (
-    <div className={`flex justify-center gap-3 ${className}`}>
+    <div className={`flex justify-center gap-4 ${className}`}>
       {parts.map((part, idx) => (
-        <div key={idx} className="flex flex-col items-center">
-          <div className="border border-charcoal bg-transparent px-3 py-1.5 font-mono text-lg md:text-2xl font-bold text-charcoal min-w-[2.8rem] md:min-w-[3.5rem] text-center select-none">
+        <div key={labels[idx]} className="flex flex-col items-center">
+          <span className="font-display text-2xl font-bold tabular-nums tracking-[-0.07em] text-charcoal md:text-3xl">
             {part}
-          </div>
-          <span className="font-mono text-[8px] tracking-wider text-charcoal/60 mt-1">
+          </span>
+          <span className="mt-1 font-body text-[10px] lowercase tracking-[-0.04em] text-charcoal/50">
             {labels[idx]}
           </span>
         </div>

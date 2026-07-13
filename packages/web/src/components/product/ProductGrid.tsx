@@ -9,7 +9,9 @@ interface ProductGridProps {
 
 export function ProductGrid({ products, className = '', cardBgClass }: ProductGridProps) {
   return (
-    <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 bg-charcoal gap-[1px] border border-charcoal ${className}`}>
+    <div
+      className={`grid grid-cols-2 gap-4 bg-cream sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-8 ${className}`}
+    >
       {products.map((product) => (
         <ProductCard key={product.id} product={product} bgClass={cardBgClass} />
       ))}

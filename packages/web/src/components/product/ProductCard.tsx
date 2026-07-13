@@ -12,168 +12,158 @@ interface ProductCardProps {
 
 export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps) {
   const { t } = useTranslation()
-  const isWhite = bgClass.includes('white')
-  const btnBgClass = isWhite ? 'bg-white' : 'bg-cream'
-  const btnBgOpacityClass = isWhite ? 'bg-white/90' : 'bg-cream/90'
   const [imageIndex, setImageIndex] = useState(0)
   const [isFavorite, setIsFavorite] = useState(false)
 
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0
   const isSoldOut = totalStock === 0
-
   const priceDisplay = `฿${product.price.toLocaleString('th-TH')}`
 
-  // Extract unique colors from variant data
   const colors = Array.from(
-    new Set(product.variants?.map(v => v.color).filter(Boolean))
+    new Set(product.variants?.map((v) => v.color).filter(Boolean))
   ) as string[]
 
   return (
-    <Link 
-      to={`/products/${product.slug}`} 
-      className={`group block overflow-hidden hover:no-underline select-none transition-all duration-300 ${bgClass}`}
+    <Link
+      to={`/products/${product.slug}`}
+      className={`group block select-none hover:no-underline ${bgClass}`}
     >
-      {/* Top half: Image / Carousel area */}
-      <div className="relative w-full aspect-[3/4] p-4 flex flex-col justify-center items-center overflow-hidden border-b border-charcoal/10 bg-white">
-        
-        {/* Absolute Header Overlay */}
-        <div className="absolute top-2 left-2 right-2 md:top-4 md:left-4 md:right-4 flex justify-between items-center z-10">
-          {/* Status Indicator */}
+      <div className="relative mb-3 aspect-3/4 overflow-hidden bg-white">
+        <div className="absolute top-3 left-3 right-3 z-10 flex items-start justify-between">
           {isSoldOut ? (
-            <span className="text-red font-mono text-[9px] font-bold tracking-wider flex items-center gap-1.5 uppercase">
-              <span className="w-1.5 h-1.5 bg-red inline-block" />
-              {t('product.soldout')}
+            <span className="font-body text-[11px] lowercase tracking-[-0.04em] text-red">
+              {t('product.soldout').toLowerCase()}
             </span>
           ) : totalStock <= 15 ? (
-            <span className="text-charcoal font-mono text-[9px] font-bold tracking-wider flex items-center gap-1.5 uppercase">
-              <span className="w-1.5 h-1.5 bg-charcoal inline-block animate-pulse" />
-              {totalStock} {t('product.lowstock').split('{{count}}')[1]?.trim() || 'LEFT'}
+            <span className="font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/55">
+              {t('product.lowstock', { count: totalStock })}
             </span>
           ) : (
-            <span className="text-charcoal opacity-60 font-mono text-[9px] tracking-wider flex items-center gap-1.5 uppercase">
-              <span className="w-1.5 h-1.5 bg-charcoal/40 inline-block" />
+            <span className="font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40">
               {t('product.available')}
             </span>
           )}
 
-          {/* Favorite Star Toggle */}
-          <button 
+          <button
+            type="button"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
               setIsFavorite(!isFavorite)
             }}
-            className="text-charcoal/60 hover:text-charcoal transition-colors cursor-pointer p-1 z-20"
+            className="cursor-pointer p-0.5 text-charcoal/40 transition-colors hover:text-charcoal"
             title="Favorite"
           >
-            <svg 
-              className="w-3.5 h-3.5" 
-              fill={isFavorite ? "var(--color-charcoal)" : "none"} 
-              stroke="currentColor" 
-              strokeWidth="1.5" 
+            <svg
+              className="h-3.5 w-3.5"
+              fill={isFavorite ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="1.5"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                d="M11.48 3.499c.195-.39.736-.39.93 0l2.35 4.76 5.244.762c.427.062.597.585.289.89l-3.8 3.705.897 5.228c.078.455-.4-.766-.347.886l-4.7-2.47-4.7 2.47c-.77.405-1.24-.038-1.162-.886l.898-5.228-3.8-3.705c-.308-.305-.138-.828.289-.89l5.244-.762 2.35-4.76z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
               />
             </svg>
           </button>
         </div>
 
-        {/* Product Image Display */}
         {product.images && product.images.length > 0 ? (
-          <img 
-            src={product.images[imageIndex].url} 
+          <img
+            src={product.images[imageIndex].url}
             alt={product.images[imageIndex].alt_text || product.name}
-            className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-500 ease-out"
+            className="h-full w-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-[1.02]"
           />
         ) : (
-          <BlueprintPlaceholder 
-            title={product.name} 
-            subtitle={priceDisplay} 
-            aspectRatio="3/4" 
+          <BlueprintPlaceholder
+            title={product.name}
+            subtitle={priceDisplay}
+            aspectRatio="3/4"
             className="border-0 bg-transparent"
           />
         )}
 
-        {/* Carousel Overlay Arrows */}
         {product.images && product.images.length > 1 && (
-          <div className="absolute inset-x-3 top-1/2 -translate-y-1/2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-20">
+          <div className="pointer-events-none absolute inset-x-3 top-1/2 z-20 flex -translate-y-1/2 items-center justify-between opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <button
+              type="button"
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                setImageIndex((prev) => (prev === 0 ? product.images!.length - 1 : prev - 1))
+                setImageIndex((prev) =>
+                  prev === 0 ? product.images!.length - 1 : prev - 1
+                )
               }}
-              className={`w-6 h-6 flex items-center justify-center ${btnBgOpacityClass} border border-charcoal text-charcoal hover:bg-charcoal hover:text-cream transition-colors duration-200 text-xs font-mono select-none pointer-events-auto cursor-pointer`}
+              className="pointer-events-auto flex h-7 w-7 cursor-pointer items-center justify-center bg-cream/90 font-body text-xs text-charcoal transition-opacity hover:opacity-80"
             >
-              &lt;
+              ‹
             </button>
             <button
+              type="button"
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                setImageIndex((prev) => (prev === product.images!.length - 1 ? 0 : prev + 1))
+                setImageIndex((prev) =>
+                  prev === product.images!.length - 1 ? 0 : prev + 1
+                )
               }}
-              className={`w-6 h-6 flex items-center justify-center ${btnBgOpacityClass} border border-charcoal text-charcoal hover:bg-charcoal hover:text-cream transition-colors duration-200 text-xs font-mono select-none pointer-events-auto cursor-pointer`}
+              className="pointer-events-auto flex h-7 w-7 cursor-pointer items-center justify-center bg-cream/90 font-body text-xs text-charcoal transition-opacity hover:opacity-80"
             >
-              &gt;
+              ›
             </button>
           </div>
         )}
 
-        {/* Action Icon Overlay (Bottom-Right) */}
-        <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-10">
+        <div className="absolute right-3 bottom-3 z-10">
           {isSoldOut ? (
             <button
+              type="button"
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 alert(`${t('product.notify_me')}: ${product.name}`)
               }}
-              className={`w-7 h-7 flex items-center justify-center ${btnBgClass} border border-charcoal text-charcoal hover:bg-red hover:text-cream hover:border-red transition-colors duration-200 cursor-pointer`}
+              className="flex h-7 w-7 cursor-pointer items-center justify-center text-charcoal/50 transition-colors hover:text-charcoal"
               title={t('product.notify_me')}
             >
-              <svg 
-                className="w-4 h-4" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="1.5" 
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
                 />
               </svg>
             </button>
           ) : (
-            <div className={`w-7 h-7 flex items-center justify-center ${btnBgClass} border border-charcoal text-charcoal font-mono text-sm select-none group-hover:bg-charcoal group-hover:text-cream transition-colors duration-200`}>
+            <span className="flex h-7 w-7 items-center justify-center font-body text-lg leading-none text-charcoal/40 transition-colors group-hover:text-charcoal">
               +
-            </div>
+            </span>
           )}
         </div>
       </div>
 
-      {/* Bottom half: Dark metadata area */}
-      <div className="bg-charcoal text-cream p-4 md:p-6 flex flex-col items-center justify-center text-center">
-        <h3 className="font-mono text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-cream leading-tight max-w-[90%] mb-1 select-all">
+      <div className="px-0.5 text-left">
+        <h3 className="font-body text-[13px] font-medium lowercase leading-snug tracking-[-0.04em] text-charcoal md:text-sm">
           {product.name}
         </h3>
-        <span className="font-mono text-[9px] md:text-[10px] text-cream/70">
+        <span className="mt-0.5 block font-body text-[12px] tracking-[-0.04em] text-charcoal/55 md:text-[13px]">
           {priceDisplay}
         </span>
 
-        {/* Color swatches */}
         {colors.length > 0 && (
-          <div className="flex gap-1.5 mt-3 select-none">
+          <div className="mt-2.5 flex gap-1.5 select-none">
             {colors.map((color) => (
-              <span 
-                key={color} 
-                className="w-2.5 h-2.5 border border-cream/20 inline-block hover:scale-110 hover:border-cream transition-transform duration-200"
+              <span
+                key={color}
+                className="inline-block h-2 w-2 border border-charcoal/15 transition-transform duration-200 hover:scale-110"
                 style={{ backgroundColor: resolveColorValue(color) }}
                 title={color}
               />

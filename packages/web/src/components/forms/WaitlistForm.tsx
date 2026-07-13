@@ -42,72 +42,74 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
 
   if (submitted) {
     return (
-      <div className="py-8 font-mono text-xs space-y-2.5 text-center">
-        <div className="text-green-700 font-bold tracking-wider uppercase">
-          ✓ Successfully Registered
-        </div>
-        <p className="font-body text-sm text-charcoal/80 max-w-xs mx-auto leading-relaxed">
+      <div className="space-y-2 py-4">
+        <p className="font-body text-[15px] lowercase tracking-[-0.04em] text-charcoal">
+          {t('waitlist.success')}
+        </p>
+        <p className="max-w-xs font-body text-sm leading-snug tracking-[-0.04em] text-charcoal/70">
           {t('waitlist.confirm')}
         </p>
       </div>
     )
   }
 
+  const fieldClass =
+    'w-full border-0 border-b border-charcoal/15 bg-transparent px-0 py-3 font-body text-[14px] tracking-[-0.04em] text-charcoal placeholder:text-charcoal/30 focus:border-charcoal/50 focus:outline-none'
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 text-left max-w-sm mx-auto pt-4">
-      
-      <div className="space-y-1.5">
-        <label className="block font-mono text-[10px] uppercase tracking-wider text-charcoal/60">
-          Email Address (Required)
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3.5 py-2.5 bg-white border border-charcoal/20 font-mono text-xs text-charcoal placeholder-charcoal/30 focus:outline-none focus:border-charcoal transition-all"
-          placeholder="your@email.com"
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-8 text-left">
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
+            {t('waitlist.email')}
+          </label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={fieldClass}
+            placeholder={t('waitlist.email_placeholder')}
+          />
+        </div>
 
-      <div className="space-y-1.5">
-        <label className="block font-mono text-[10px] uppercase tracking-wider text-charcoal/60">
-          LINE ID / Phone Number (Optional)
-        </label>
-        <input
-          type="text"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full px-3.5 py-2.5 bg-white border border-charcoal/20 font-mono text-xs text-charcoal placeholder-charcoal/30 focus:outline-none focus:border-charcoal transition-all"
-          placeholder="@line or 0xx-xxx-xxxx"
-        />
-      </div>
+        <div className="space-y-1">
+          <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
+            {t('waitlist.phone')}
+          </label>
+          <input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={fieldClass}
+            placeholder={t('waitlist.phone_placeholder')}
+          />
+        </div>
 
-      <div className="space-y-1.5">
-        <label className="block font-mono text-[10px] uppercase tracking-wider text-charcoal/60">
-          Campus / Location (Optional)
-        </label>
-        <input
-          type="text"
-          value={campus}
-          onChange={(e) => setCampus(e.target.value)}
-          className="w-full px-3.5 py-2.5 bg-white border border-charcoal/20 font-mono text-xs text-charcoal placeholder-charcoal/30 focus:outline-none focus:border-charcoal transition-all"
-          placeholder="Bangkok, CU, etc."
-        />
+        <div className="space-y-1">
+          <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">
+            {t('waitlist.campus')}
+          </label>
+          <input
+            type="text"
+            value={campus}
+            onChange={(e) => setCampus(e.target.value)}
+            className={fieldClass}
+            placeholder={t('waitlist.campus_placeholder')}
+          />
+        </div>
       </div>
 
       {error && (
-        <p className="font-mono text-[10px] text-red uppercase tracking-wider">
-          {error}
-        </p>
+        <p className="font-body text-[12px] tracking-[-0.04em] text-red">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-black border border-black text-white font-mono text-xs uppercase tracking-widest py-3.5 px-5 transition-all duration-200 cursor-pointer text-center hover:bg-white hover:text-black focus:outline-none disabled:bg-charcoal/10 disabled:border-charcoal/10 disabled:text-charcoal/30 disabled:cursor-not-allowed"
+        className="cursor-pointer bg-charcoal px-8 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 focus:outline-none disabled:cursor-not-allowed disabled:opacity-30"
       >
-        {loading ? 'JOINING...' : t('waitlist.submit').toUpperCase()}
+        {loading ? t('waitlist.joining') : t('waitlist.submit')}
       </button>
     </form>
   )

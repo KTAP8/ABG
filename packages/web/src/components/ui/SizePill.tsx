@@ -5,15 +5,19 @@ interface SizePillProps {
 }
 
 export function SizePill({ size, status, onClick }: SizePillProps) {
-  const baseClasses = 'px-3.5 py-1.5 font-mono text-xs uppercase tracking-wider border cursor-pointer transition-all'
+  const baseClasses =
+    'px-3.5 py-1.5 font-body text-[12px] lowercase tracking-[-0.04em] border transition-opacity'
   const statusClasses = {
-    available: 'bg-transparent border-charcoal text-charcoal hover:bg-charcoal hover:text-cream',
-    selected: 'bg-charcoal border-charcoal text-cream font-bold',
-    soldout: 'bg-charcoal/5 border-charcoal/20 text-charcoal/30 cursor-not-allowed line-through',
+    available:
+      'cursor-pointer border-charcoal/15 bg-transparent text-charcoal hover:border-charcoal/40',
+    selected: 'cursor-pointer border-charcoal bg-charcoal text-cream',
+    soldout:
+      'cursor-not-allowed border-charcoal/10 bg-transparent text-charcoal/30 line-through',
   }
 
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={status === 'soldout'}
       className={`${baseClasses} ${statusClasses[status]}`}

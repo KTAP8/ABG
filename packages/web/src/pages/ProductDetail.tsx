@@ -29,17 +29,14 @@ export default function ProductDetail() {
         const data = await getProduct(slug)
         setProduct(data)
         if (data.variants && data.variants.length > 0) {
-          // Find first variant that has a color, or default to the first variant's color
           const firstColorVariant = data.variants.find((v) => v.color)
           const initialColor = firstColorVariant?.color || data.variants[0].color || ''
           setSelectedColor(initialColor)
-
-          // Select the first variant matching that color
           const firstMatch = data.variants.find((v) => (v.color || '') === initialColor)
           setSelectedVariant(firstMatch || data.variants[0])
         }
       } catch (err) {
-        setError('Product not found')
+        setError(t('product.not_found'))
         console.error(err)
       } finally {
         setLoading(false)
@@ -47,24 +44,18 @@ export default function ProductDetail() {
     }
 
     fetchProduct()
-  }, [slug])
+  }, [slug, t])
 
-  // Extract unique colors from variant data
   const colors = Array.from(
-    new Set(product?.variants?.map((v) => v.color).filter(Boolean))
+    new Set(product?.variants?.map((v) => v.color).filter(Boolean)),
   ) as string[]
 
-  // Filter images by selected color (always include color-neutral images)
-  const filteredImages = product?.images?.filter(
-    (img) => !img.color || img.color === selectedColor
-  ) || []
+  const filteredImages =
+    product?.images?.filter((img) => !img.color || img.color === selectedColor) || []
 
-  // Filter variants by selected color (or empty if no color selected)
-  const variantsForColor = product?.variants?.filter(
-    (v) => (v.color || '') === selectedColor
-  ) || []
+  const variantsForColor =
+    product?.variants?.filter((v) => (v.color || '') === selectedColor) || []
 
-  // Track the active image index in the viewport using Intersection Observer
   useEffect(() => {
     if (!product || filteredImages.length === 0) return
 
@@ -82,7 +73,7 @@ export default function ProductDetail() {
           root: null,
           rootMargin: '-20% 0px -50% 0px',
           threshold: 0.2,
-        }
+        },
       )
       observer.observe(el)
       return { observer, el }
@@ -98,12 +89,10 @@ export default function ProductDetail() {
   const handleColorChange = (color: string) => {
     setSelectedColor(color)
     if (product?.variants) {
-      // Try to find a variant matching the current size and new color
       const currentSize = selectedVariant?.size
       const exactMatch = product.variants.find(
-        (v) => v.color === color && v.size === currentSize
+        (v) => v.color === color && v.size === currentSize,
       )
-      // Fallback to first available variant of new color
       const fallbackMatch = product.variants.find((v) => v.color === color)
       setSelectedVariant(exactMatch || fallbackMatch || null)
     }
@@ -121,8 +110,10 @@ export default function ProductDetail() {
     return (
       <div className="min-h-screen bg-cream">
         <Navbar />
-        <div className="h-screen flex items-center justify-center">
-          <p className="font-body text-charcoal">Loading...</p>
+        <div className="flex h-screen items-center justify-center">
+          <p className="font-body text-sm tracking-[-0.04em] text-charcoal/50 animate-pulse">
+            {t('product.loading')}
+          </p>
         </div>
       </div>
     )
@@ -132,9 +123,10 @@ export default function ProductDetail() {
     return (
       <div className="min-h-screen bg-cream">
         <Navbar />
-        <div className="h-screen flex items-center justify-center">
-          <p className="font-body text-charcoal">{error}</p>
+        <div className="flex h-screen items-center justify-center">
+          <p className="font-body text-sm tracking-[-0.04em] text-charcoal/60">{error}</p>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -142,101 +134,83 @@ export default function ProductDetail() {
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0
   const isSoldOut = totalStock === 0
   const isVariantSoldOut = selectedVariant ? selectedVariant.stock === 0 : isSoldOut
-
   const priceDisplay = `฿${product.price.toLocaleString('en-US')}`
-
-  const displayName = product.name
-  const displayDescription = product.description
-
-  const sizeGuideContent = t('product.sizeguide.content')
-  const materialContent = t('product.material.laundry')
 
   return (
     <div className="min-h-screen bg-cream">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
-          {/* Thumbnails Column (Leftmost) */}
-          <div className="hidden md:flex md:col-span-1 flex-col gap-3 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1">
-            {filteredImages.length > 1 && filteredImages.map((image, index) => (
-              <button
-                key={image.id}
-                onClick={() => scrollToImage(index)}
-                className={`w-full aspect-[3/4] border bg-white overflow-hidden transition-all duration-200 cursor-pointer ${
-                  index === activeImageIndex
-                    ? 'border-charcoal opacity-100'
-                    : 'border-charcoal/20 opacity-45 hover:opacity-85'
-                }`}
-              >
-                <img
-                  src={image.url}
-                  alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover grayscale"
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* Stacked Images Column (Center) */}
-          <div className="col-span-1 md:col-span-7 space-y-6">
-            {filteredImages.length > 0 ? (
+      <main className="mx-auto max-w-7xl px-6 pt-6 pb-12 md:px-8 md:pt-8 md:pb-16 lg:px-[27px]">
+        <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-12 md:gap-12">
+          <div className="sticky top-24 hidden max-h-[calc(100vh-8rem)] flex-col gap-3 overflow-y-auto pr-1 md:col-span-1 md:flex">
+            {filteredImages.length > 1 &&
               filteredImages.map((image, index) => (
-                <div 
-                  key={image.id} 
-                  id={`product-image-${index}`}
-                  className="relative w-full aspect-[3/4] bg-white overflow-hidden"
+                <button
+                  key={image.id}
+                  type="button"
+                  onClick={() => scrollToImage(index)}
+                  className={`aspect-3/4 w-full cursor-pointer overflow-hidden border bg-white transition-opacity duration-200 ${
+                    index === activeImageIndex
+                      ? 'border-charcoal opacity-100'
+                      : 'border-charcoal/15 opacity-45 hover:opacity-85'
+                  }`}
                 >
                   <img
                     src={image.url}
-                    alt={image.alt_text || `${displayName} - view ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+              ))}
+          </div>
+
+          <div className="col-span-1 space-y-6 md:col-span-7">
+            {filteredImages.length > 0 ? (
+              filteredImages.map((image, index) => (
+                <div
+                  key={image.id}
+                  id={`product-image-${index}`}
+                  className="relative aspect-3/4 w-full overflow-hidden bg-white"
+                >
+                  <img
+                    src={image.url}
+                    alt={image.alt_text || `${product.name} - view ${index + 1}`}
+                    className="h-full w-full object-cover"
                   />
                 </div>
               ))
             ) : (
-              <div className="aspect-[3/4] bg-cream" />
+              <div className="aspect-3/4 bg-white" />
             )}
           </div>
 
-          {/* Sticky Details Column (Right) */}
-          <div className="col-span-1 md:col-span-4 md:sticky md:top-24">
+          <div className="col-span-1 md:sticky md:top-24 md:col-span-4">
             <div className="space-y-6 pr-2">
-              
-              {/* Region 1: Header Info (Status, Brand Category, Title, Price) */}
-              <div className="space-y-2 pb-6 border-b border-charcoal/10">
+              <div className="space-y-2 border-b border-charcoal/15 pb-6">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-[9px] tracking-wider text-charcoal/40 uppercase select-none">
-                    SAMYAN BAD DIH SERIES
+                  <span className="font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40 select-none">
+                    {t('product.series')}
                   </span>
-                  
-                  {/* Status Badge */}
-                  <span className={`px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${
-                    isVariantSoldOut 
-                      ? 'bg-red/10 text-red border border-red/15' 
-                      : 'bg-green-500/10 text-green-700 border border-green-500/15'
-                  }`} style={{ 
-                    color: isVariantSoldOut ? '#C0392B' : '#27AE60',
-                    backgroundColor: isVariantSoldOut ? 'rgba(192, 57, 43, 0.08)' : 'rgba(39, 174, 96, 0.08)',
-                    borderColor: isVariantSoldOut ? 'rgba(192, 57, 43, 0.15)' : 'rgba(39, 174, 96, 0.15)'
-                  }}>
-                    {isVariantSoldOut ? 'SOLD OUT' : 'IN STOCK'}
+                  <span
+                    className={`font-body text-[11px] lowercase tracking-[-0.04em] ${
+                      isVariantSoldOut ? 'text-red' : 'text-charcoal/55'
+                    }`}
+                  >
+                    {isVariantSoldOut ? t('product.soldout') : t('product.in_stock')}
                   </span>
                 </div>
 
-                <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-charcoal tracking-tight select-all leading-tight">
-                  {displayName}
+                <h1 className="font-display text-2xl font-bold lowercase leading-tight tracking-[-0.07em] text-charcoal md:text-3xl">
+                  {product.name}
                 </h1>
 
-                <p className="font-mono text-xl font-black text-charcoal select-all">
+                <p className="font-body text-lg tracking-[-0.04em] text-charcoal">
                   {priceDisplay}
                 </p>
               </div>
 
-              {/* Region 2: Purchase Control Group (Variants Selection + CTA Order Button) */}
-              <div className="space-y-6 pb-6 border-b border-charcoal/10">
+              <div className="space-y-6 border-b border-charcoal/15 pb-6">
                 <div className="space-y-4">
-                  {/* Color Selector */}
                   {colors.length > 0 && (
                     <ColorSelector
                       colors={colors}
@@ -245,7 +219,6 @@ export default function ProductDetail() {
                     />
                   )}
 
-                  {/* Size Selector */}
                   {variantsForColor.length > 0 && (
                     <SizeSelector
                       variants={variantsForColor}
@@ -262,67 +235,66 @@ export default function ProductDetail() {
                 />
               </div>
 
-              {/* Region 3: Information Group (Description + Details List + Material Accordion) */}
               <div className="space-y-6 pt-2">
-                {displayDescription && (
+                {product.description && (
                   <div className="space-y-2">
-                    <span className="font-mono text-[9px] tracking-wider text-charcoal/40 uppercase block select-none">
-                      Description
+                    <span className="block font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40 select-none">
+                      {t('product.description_label')}
                     </span>
-                    <p className="font-body text-sm leading-relaxed text-charcoal/80">
-                      {displayDescription}
+                    <p className="font-body text-sm leading-snug tracking-[-0.04em] text-charcoal/70">
+                      {product.description}
                     </p>
                   </div>
                 )}
 
-                {/* Tech Specs */}
-                <div className="space-y-3 font-mono text-xs pt-2">
-                  <span className="font-mono text-[9px] tracking-wider text-charcoal/40 uppercase block select-none">
-                    Specifications
+                <div className="space-y-3 pt-2">
+                  <span className="block font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40 select-none">
+                    {t('product.specs_label')}
                   </span>
-                  
-                  <div className="grid grid-cols-3 py-1.5 border-b border-charcoal/5">
-                    <span className="col-span-1 text-charcoal/40">FIT</span>
-                    <span className="col-span-2 text-charcoal font-bold text-right uppercase">Boxy / Oversized</span>
+
+                  <div className="grid grid-cols-3 border-b border-charcoal/10 py-2">
+                    <span className="col-span-1 font-body text-[12px] lowercase text-charcoal/40">
+                      {t('product.spec.fit')}
+                    </span>
+                    <span className="col-span-2 text-right font-body text-[12px] lowercase text-charcoal">
+                      {t('product.spec.fit_value')}
+                    </span>
                   </div>
 
-                  <div className="grid grid-cols-3 py-1.5 border-b border-charcoal/5">
-                    <span className="col-span-1 text-charcoal/40">COMPOSITION</span>
-                    <span className="col-span-2 text-charcoal font-bold text-right uppercase">100% Cotton</span>
+                  <div className="grid grid-cols-3 border-b border-charcoal/10 py-2">
+                    <span className="col-span-1 font-body text-[12px] lowercase text-charcoal/40">
+                      {t('product.spec.composition')}
+                    </span>
+                    <span className="col-span-2 text-right font-body text-[12px] lowercase text-charcoal">
+                      {t('product.spec.composition_value')}
+                    </span>
                   </div>
 
-                  {selectedVariant && (
-                    <div className="grid grid-cols-3 py-1.5 border-b border-charcoal/5">
-                      <span className="col-span-1 text-charcoal/40">SKU</span>
-                      <span className="col-span-2 text-charcoal font-bold text-right uppercase select-all">
-                        {`ABG-${selectedVariant.id.slice(0, 8).toUpperCase()}`}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-center py-1.5">
-                    <span className="text-charcoal/40 uppercase tracking-wider">SIZE GUIDE</span>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/40">
+                      {t('product.sizeguide.title')}
+                    </span>
                     <button
+                      type="button"
                       onClick={() => setShowSizeGuide(true)}
-                      className="font-mono text-[9px] uppercase tracking-wider text-charcoal font-bold hover:text-red transition-colors cursor-pointer border border-charcoal/20 px-2 py-0.5 bg-white hover:bg-charcoal hover:text-cream"
+                      className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/70 transition-opacity hover:text-charcoal"
                     >
-                      VIEW CHART
+                      {t('product.sizeguide.view')}
                     </button>
                   </div>
                 </div>
 
-                <div className="border-t border-charcoal/10 pt-4">
+                <div className="border-t border-charcoal/15 pt-4">
                   <Accordion
                     items={[
                       {
                         title: t('product.material.laundry_title'),
-                        content: materialContent,
+                        content: t('product.material.laundry'),
                       },
                     ]}
                   />
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -333,7 +305,7 @@ export default function ProductDetail() {
         onClose={() => setShowSizeGuide(false)}
         title={t('product.sizeguide.title')}
       >
-        <p className="font-body text-sm text-charcoal">{sizeGuideContent}</p>
+        <p className="font-body text-sm text-charcoal">{t('product.sizeguide.content')}</p>
       </Modal>
 
       <Footer />

@@ -15,9 +15,9 @@ export function OrderButton({ googleFormUrl, isSoldOut, stock, className = '' }:
       <button
         disabled
         type="button"
-        className={`w-full bg-charcoal/10 border border-charcoal/10 text-charcoal/40 font-mono text-xs uppercase tracking-widest py-3.5 px-5 select-none cursor-not-allowed ${className}`}
+        className={`w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none ${className}`}
       >
-        {t('product.soldout').toUpperCase()}
+        {t('product.soldout')}
       </button>
     )
   }
@@ -27,9 +27,9 @@ export function OrderButton({ googleFormUrl, isSoldOut, stock, className = '' }:
       <button
         disabled
         type="button"
-        className={`w-full bg-charcoal/10 border border-charcoal/10 text-charcoal/40 font-mono text-xs uppercase tracking-widest py-3.5 px-5 select-none cursor-not-allowed ${className}`}
+        className={`w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none ${className}`}
       >
-        {t('product.comingsoon').toUpperCase()}
+        {t('product.comingsoon')}
       </button>
     )
   }
@@ -37,19 +37,19 @@ export function OrderButton({ googleFormUrl, isSoldOut, stock, className = '' }:
   const showStockWarning = stock !== undefined && stock > 0 && stock <= 15
 
   return (
-    <div className={`space-y-3.5 ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       {showStockWarning && (
-        <div className="font-mono text-xs tracking-wider text-red font-bold text-center select-none py-1">
-          {t('product.lowstock', { count: stock }).toUpperCase()}
-        </div>
+        <p className="text-center font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55 select-none">
+          {t('product.lowstock', { count: stock })}
+        </p>
       )}
 
       <a href={googleFormUrl} target="_blank" rel="noopener noreferrer" className="block">
         <button
           type="button"
-          className="w-full bg-black border border-black text-white font-mono text-xs uppercase tracking-widest py-3.5 px-5 transition-all duration-200 cursor-pointer text-center hover:bg-white hover:text-black focus:outline-none"
+          className="w-full cursor-pointer bg-charcoal px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 focus:outline-none"
         >
-          {t('product.orderbutton').toUpperCase()}
+          {t('product.orderbutton')}
         </button>
       </a>
     </div>

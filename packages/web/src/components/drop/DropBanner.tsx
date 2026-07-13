@@ -21,7 +21,7 @@ export function DropBanner() {
     }
 
     fetchActiveDrop()
-    const interval = setInterval(fetchActiveDrop, 60000) // Refresh every minute
+    const interval = setInterval(fetchActiveDrop, 60000)
     return () => clearInterval(interval)
   }, [])
 
@@ -30,19 +30,20 @@ export function DropBanner() {
   return (
     <Link
       to={`/drop/${activeDrop.slug}`}
-      className="sticky top-14 z-30 bg-charcoal border-b border-charcoal py-2.5 text-center text-cream hover:bg-black transition-colors block"
+      className="block border-b border-charcoal/10 bg-cream py-3 text-center text-charcoal transition-opacity hover:opacity-70"
     >
-      <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-2 font-mono text-[10px] tracking-wider uppercase">
-        <span className="flex items-center gap-1.5 font-bold text-red">
-          <span className="w-1.5 h-1.5 bg-red animate-pulse inline-block" />
-          [SYSTEM_NOTICE: UPCOMING_DROP]
-        </span>
-        <span className="opacity-40 hidden sm:inline">||</span>
-        <span className="font-bold">{activeDrop.name}</span>
-        <span className="opacity-40 hidden sm:inline">||</span>
-        <div className="flex items-center gap-1">
-          <span>STARTS_IN:</span>
-          <CountdownTimer targetDate={activeDrop.drop_at} variant="simple" className="text-red font-bold" />
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-1 px-4 font-body text-[13px] tracking-[-0.04em] sm:flex-row sm:gap-3">
+        <span className="text-charcoal/55 lowercase">upcoming drop</span>
+        <span className="hidden text-charcoal/25 sm:inline">·</span>
+        <span className="font-medium lowercase">{activeDrop.name}</span>
+        <span className="hidden text-charcoal/25 sm:inline">·</span>
+        <div className="flex items-center gap-1.5 text-charcoal/70">
+          <span className="lowercase">starts in</span>
+          <CountdownTimer
+            targetDate={activeDrop.drop_at}
+            variant="simple"
+            className="font-medium text-charcoal"
+          />
         </div>
       </div>
     </Link>
