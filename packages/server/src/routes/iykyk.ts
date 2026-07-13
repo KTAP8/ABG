@@ -29,7 +29,7 @@ router.post('/', async (c) => {
     try {
       const resend = createEmailClient(c.env.RESEND_API_KEY)
       const fromEmail = c.env.RESEND_FROM_EMAIL || 'drop@abg.studio'
-      await sendThankYouDiscountEmail(resend, fromEmail, email, {
+      await sendThankYouDiscountEmail(resend, fromEmail, email, c.env.WEB_URL, {
         name,
         discountCode: result.discount_code,
         discountPercent: result.discount_percent,

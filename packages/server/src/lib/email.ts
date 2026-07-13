@@ -8,46 +8,64 @@ export async function sendThankYouDiscountEmail(
   client: Resend,
   fromEmail: string,
   to: string,
+  webUrl: string,
   data: { name: string; discountCode: string; discountPercent: number }
 ) {
+  const fontStack = "'Helvetica Neue', Helvetica, Arial, sans-serif"
+  const cream = '#F5F1E8'
+  const charcoal = '#3F3F44'
+  const charcoal70 = 'rgba(63, 63, 68, 0.7)'
+  const charcoal50 = 'rgba(63, 63, 68, 0.5)'
+  const hairline = 'rgba(63, 63, 68, 0.15)'
+  const logoUrl = `${webUrl.replace(/\/$/, '')}/logos/abg_logo_grey.svg`
+
   return client.emails.send({
     from: fromEmail,
     to,
-    subject: 'Thank you for supporting our first drop - Your exclusive discount code',
+    subject: 'your supporter code for drop 02',
     html: `
-      <div style="font-family: 'Courier New', Courier, monospace; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #000000; color: #ffffff;">
-        <div style="text-align: center; margin-bottom: 40px;">
-          <h1 style="font-size: 28px; font-weight: 900; letter-spacing: 4px; margin: 0; text-transform: uppercase;">ABG</h1>
-          <p style="font-size: 12px; color: #888888; letter-spacing: 2px; margin-top: 5px;">DROP 02 EXCLUSIVE</p>
-        </div>
-        
-        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 24px;">Hey ${data.name},</p>
-        
-        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
-          Thank you for supporting our first drop. Your belief in us from the very beginning means everything.
+      <div style="font-family: ${fontStack}; max-width: 560px; margin: 0 auto; padding: 48px 24px 56px; background-color: ${cream}; color: ${charcoal};">
+        <img
+          src="${logoUrl}"
+          alt="abg"
+          width="54"
+          height="34"
+          style="display: block; width: 54px; height: auto; margin: 0 0 40px; border: 0;"
+        />
+
+        <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.5; letter-spacing: -0.04em;">
+          hey ${data.name},
         </p>
-        
-        <p style="font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
-          As a token of our appreciation, we've set aside a special discount exclusively for you to use on our second drop:
+
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.5; letter-spacing: -0.04em;">
+          you backed the first drop. this is our thank you — a one-time code for drop 02.
         </p>
-        
-        <div style="border: 1px solid #333333; background: #111111; padding: 32px; margin: 32px 0; text-align: center; border-radius: 4px;">
-          <p style="font-size: 32px; font-weight: bold; letter-spacing: 4px; margin: 0; color: #ffffff; font-family: monospace;">${data.discountCode}</p>
-          <p style="margin: 16px 0 0 0; font-size: 14px; color: #888888; letter-spacing: 1px;">
-            Enjoy ${data.discountPercent}% off your order
+
+        <p style="margin: 0 0 32px; font-size: 14px; line-height: 1.5; letter-spacing: -0.04em; color: ${charcoal70};">
+          ${data.discountPercent}% off. use it once. don't tell anyone.
+        </p>
+
+        <div style="border-top: 1px solid ${hairline}; border-bottom: 1px solid ${hairline}; padding: 28px 0; margin: 0 0 32px;">
+          <p style="margin: 0 0 8px; font-size: 11px; line-height: 1.4; letter-spacing: -0.04em; color: ${charcoal50}; text-transform: lowercase;">
+            your code
+          </p>
+          <p style="margin: 0; font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; color: ${charcoal};">
+            ${data.discountCode}
           </p>
         </div>
-        
-        <p style="font-size: 14px; line-height: 1.6; color: #888888; margin-top: 32px; border-top: 1px solid #222222; padding-top: 24px;">
-          This is a one-time use code. It is our way of saying thanks for being here early.
+
+        <p style="margin: 0 0 32px; font-size: 13px; line-height: 1.5; letter-spacing: -0.04em; color: ${charcoal70};">
+          one-time use. save it somewhere safe.
         </p>
-        
-        <p style="font-size: 14px; line-height: 1.6; color: #ffffff; margin-bottom: 0;">
-          See you at the next drop,
-        </p>
-        <p style="font-size: 14px; font-weight: bold; color: #ffffff; margin-top: 4px;">
-          The ABG Team
-        </p>
+
+        <div style="border-top: 1px solid ${hairline}; padding-top: 24px;">
+          <p style="margin: 0 0 4px; font-size: 14px; line-height: 1.5; letter-spacing: -0.04em; color: ${charcoal70};">
+            see you at the next drop,
+          </p>
+          <p style="margin: 0; font-size: 14px; line-height: 1.5; letter-spacing: -0.04em; color: ${charcoal};">
+            abg
+          </p>
+        </div>
       </div>
     `,
   })
