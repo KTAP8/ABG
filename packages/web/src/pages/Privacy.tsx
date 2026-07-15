@@ -5,7 +5,7 @@ export default function Privacy() {
   const { t } = useTranslation()
 
   return (
-    <LegalPageLayout title={t('legal.privacy.title')} lastUpdated="July 13, 2026">
+    <LegalPageLayout title={t('legal.privacy.title')} lastUpdated="July 14, 2026">
       <p>
         This Privacy Policy explains what personal data ABG ("we", "us", "our") collects through
         this Site, why we collect it, and how you can reach us about it.
@@ -17,6 +17,12 @@ export default function Privacy() {
         <ul>
           <li>Email address, when you join the waitlist or newsletter</li>
           <li>Name, email, and social handle, when you claim a discount code (IYKYK)</li>
+          <li>
+            Account details when you sign in with Google (name, email address, and profile image
+            provided by Google), plus optional profile preferences you choose during onboarding —
+            how you found us, shopping preference (men / women / both), and how you want drop alerts
+            (email and/or LINE)
+          </li>
           <li>
             Name, contact details, shipping address, and size, when you submit an order through an
             external order form linked from the Site
@@ -50,6 +56,14 @@ export default function Privacy() {
             <strong>Resend</strong>, to send transactional and drop-related emails
           </li>
           <li>
+            <strong>Google</strong>, for Google sign-in (OAuth). Information Google shares with us
+            is also subject to Google's privacy policy
+          </li>
+          <li>
+            <strong>Neon</strong>, to store account and profile data in our database, and to run
+            managed authentication (Neon Auth)
+          </li>
+          <li>
             <strong>Google Forms</strong>, to collect waitlist and order submissions. Information
             you enter directly into a Google Form is also subject to Google's own privacy policy
           </li>
@@ -64,8 +78,9 @@ export default function Privacy() {
         <p>
           The Site does not currently use analytics or advertising cookies or tracking pixels. It
           may use essential, strictly-necessary cookies to make basic functionality work (for
-          example, remembering a language preference). If we add analytics or marketing cookies in
-          the future, we'll update this section and, where required, ask for your consent first.
+          example, remembering a language preference, or keeping you signed in after Google
+          authentication). If we add analytics or marketing cookies in the future, we'll update
+          this section and, where required, ask for your consent first.
         </p>
       </section>
 

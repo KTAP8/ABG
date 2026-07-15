@@ -14,15 +14,15 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "latest",
-    "better-auth": "latest",
     "dotenv": "^16.x",
     "drizzle-orm": "latest",
     "hono": "^4.x",
+    "jose": "^6.2.3",
     "multer": "^1.x",
     "nanoid": "^5.x",
     "resend": "latest",
-    "zod": "^3.x",
-    "tsx": "^4.x"
+    "tsx": "^4.x",
+    "zod": "^3.x"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.x",

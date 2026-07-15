@@ -123,3 +123,17 @@ export const iykyk_signups = pgTable('iykyk_signups', {
     .references(() => coupons.id),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })
+
+/** App-owned profile linked to neon_auth.user.id (no FK into managed schema). */
+export const user_profiles = pgTable('user_profiles', {
+  user_id: text('user_id').primaryKey(),
+  email: text('email').notNull(),
+  display_name: text('display_name'),
+  heard_from: text('heard_from'), // ig|friend|facebook|found_myself
+  shop_for: text('shop_for'), // men|women|both
+  notify_channel: text('notify_channel'), // email|line|both
+  line_id: text('line_id'),
+  onboarding_completed_at: timestamp('onboarding_completed_at', { withTimezone: true }),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+})

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../lib/auth-context";
 
 export interface NavbarProps {
   bgClass?: string;
@@ -49,7 +50,11 @@ function CartIcon() {
 
 export function Navbar({ bgClass, overlay = false }: NavbarProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { user, needsOnboarding, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { label: t("nav.products"), href: "/products" },
@@ -66,6 +71,52 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
       document.body.style.overflow = prev;
     };
   }, [mobileMenuOpen]);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (!target || !accountMenuRef.current?.contains(target)) {
+        setAccountMenuOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAccountMenuOpen(false);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [accountMenuOpen]);
+
+  const goAccount = () => {
+    setMobileMenuOpen(false);
+    if (!user) {
+      setAccountMenuOpen(false);
+      navigate("/login?redirect=/profile");
+      return;
+    }
+    if (needsOnboarding) {
+      setAccountMenuOpen(false);
+      navigate("/onboarding");
+      return;
+    }
+    setAccountMenuOpen((open) => !open);
+  };
+
+  const handleSignOut = async () => {
+    setAccountMenuOpen(false);
+    setMobileMenuOpen(false);
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <>
@@ -104,14 +155,47 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
           </div>
 
           <div className="relative z-10 flex items-center gap-4 md:gap-5">
-            <button
-              type="button"
-              className="hidden cursor-pointer text-cream/85 transition-colors hover:text-cream md:flex"
-              aria-label={t("nav.account")}
-              onClick={() => {}}
-            >
-              <AccountIcon />
-            </button>
+            <div className="relative hidden md:block" ref={accountMenuRef}>
+              <button
+                type="button"
+                className="flex cursor-pointer text-cream/85 transition-colors hover:text-cream"
+                aria-label={t("nav.account")}
+                aria-expanded={accountMenuOpen}
+                onClick={goAccount}
+              >
+                <AccountIcon />
+              </button>
+              {user && accountMenuOpen && (
+                <div className="absolute right-0 top-full mt-3 min-w-[160px] border border-white/15 bg-charcoal p-3 text-cream">
+                  <p className="mb-2 truncate font-body text-[11px] tracking-[-0.04em] text-cream/60">
+                    {user.email || user.name}
+                  </p>
+                  <Link
+                    to="/profile"
+                    className="mb-2 block font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-70"
+                    onClick={() => setAccountMenuOpen(false)}
+                  >
+                    {t("nav.profile")}
+                  </Link>
+                  {needsOnboarding && (
+                    <Link
+                      to="/onboarding"
+                      className="mb-2 block font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-70"
+                      onClick={() => setAccountMenuOpen(false)}
+                    >
+                      {t("nav.finish_profile")}
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    className="cursor-pointer font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-70"
+                    onClick={() => void handleSignOut()}
+                  >
+                    {t("nav.sign_out")}
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               type="button"
               className="hidden cursor-pointer text-cream/85 transition-colors hover:text-cream md:flex"
@@ -180,16 +264,34 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
             </div>
 
             {/* Account + cart */}
-            <div className="flex items-center gap-8 border-t border-white/15 px-5 py-5">
+            <div className="flex flex-col gap-4 border-t border-white/15 px-5 py-5">
               <button
                 type="button"
                 className="flex cursor-pointer items-center gap-2.5 font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
                 aria-label={t("nav.account")}
-                onClick={() => {}}
+                onClick={goAccount}
               >
                 <AccountIcon />
-                <span>{t("nav.account")}</span>
+                <span>{user ? t("nav.account") : t("nav.sign_in")}</span>
               </button>
+              {user && (
+                <>
+                  <Link
+                    to="/profile"
+                    className="self-start font-body text-[14px] lowercase tracking-[-0.07em] text-cream/70 transition-opacity hover:opacity-70"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t("nav.profile")}
+                  </Link>
+                  <button
+                    type="button"
+                    className="cursor-pointer self-start font-body text-[14px] lowercase tracking-[-0.07em] text-cream/70 transition-opacity hover:opacity-70"
+                    onClick={() => void handleSignOut()}
+                  >
+                    {t("nav.sign_out")}
+                  </button>
+                </>
+              )}
               <button
                 type="button"
                 className="flex cursor-pointer items-center gap-2.5 font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"

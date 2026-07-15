@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { joinWaitlist } from '../../lib/api'
+import { useAuth } from '../../lib/auth-context'
 
 interface WaitlistFormProps {
   dropId?: string
@@ -8,12 +9,19 @@ interface WaitlistFormProps {
 
 export function WaitlistForm({ dropId }: WaitlistFormProps) {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [campus, setCampus] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (user?.email) {
+      setEmail(user.email)
+    }
+  }, [user?.email])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,9 +36,9 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
         campus: campus || undefined,
       })
       setSubmitted(true)
-      setEmail('')
       setPhone('')
       setCampus('')
+      if (!user?.email) setEmail('')
       setTimeout(() => setSubmitted(false), 5000)
     } catch (err) {
       setError(t('waitlist.error'))
@@ -70,6 +78,7 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
             onChange={(e) => setEmail(e.target.value)}
             className={fieldClass}
             placeholder={t('waitlist.email_placeholder')}
+            readOnly={Boolean(user?.email)}
           />
         </div>
 

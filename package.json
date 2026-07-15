@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "concurrently \"pnpm --filter web dev\" \"pnpm --filter server dev\"",
     "build": "pnpm --filter web build",
-    "build:pages": "VITE_API_URL=https://abg-api.touch-apinankul.workers.dev/api pnpm --filter web build",
+    "build:pages": "VITE_API_URL=https://abg-api.touch-apinankul.workers.dev/api VITE_NEON_AUTH_URL=https://ep-cool-cherry-ao56rt68.neonauth.c-2.ap-southeast-1.aws.neon.tech/neondb/auth pnpm --filter web build",
     "deploy:api": "pnpm --filter server run deploy",
     "deploy:web": "pnpm build:pages && pnpm --filter server exec wrangler pages deploy ../web/dist --project-name=abg-web --commit-dirty=true",
     "db:push": "pnpm --filter server db:push",
