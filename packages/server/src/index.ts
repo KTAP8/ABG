@@ -8,6 +8,7 @@ import productsRouter from './routes/products'
 import waitlistRouter from './routes/waitlist'
 import iykykRouter from './routes/iykyk'
 import meRouter from './routes/me'
+import cartRouter from './routes/cart'
 import adminRouter from './routes/admin/index'
 import type { Env } from './types'
 
@@ -23,7 +24,7 @@ app.use('*', async (c, next) => {
       return c.env.WEB_URL
     },
     credentials: true,
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowHeaders: ['Content-Type', 'Authorization', 'X-Guest-Cart-Id'],
   })
   return corsMiddleware(c, next)
 })
@@ -35,6 +36,7 @@ app.route('/api/products', productsRouter)
 app.route('/api/waitlist', waitlistRouter)
 app.route('/api/iykyk', iykykRouter)
 app.route('/api/me', meRouter)
+app.route('/api/cart', cartRouter)
 app.route('/api/admin', adminRouter)
 
 app.onError((err, c) => {

@@ -197,3 +197,134 @@ export async function updateProfile(data: {
   if (!res.ok) throw new Error('Failed to update profile')
   return res.json()
 }
+
+export interface CartItem {
+  id: string
+  cart_id: string
+  variant_id: string
+  quantity: number
+  available_stock: number
+  size: string
+  color: string | null
+  sku: string | null
+  product_id: string
+  product_slug: string
+  product_name: string
+  product_name_th: string | null
+  price: number
+  image_url: string | null
+  sold_out: boolean
+}
+
+export interface CartResponse {
+  id: string | null
+  items: CartItem[]
+  item_count: number
+  subtotal: number
+}
+
+type CartHeaderOptions = {
+  /** When signed in, send Bearer only (no guest header). */
+  signedIn: boolean
+  /** Guest UUID — only sent when not signed in. */
+  guestId: string | null
+  /** Require auth token (merge). */
+  requireAuth?: boolean
+}
+
+async function cartHeaders(opts: CartHeaderOptions): Promise<HeadersInit> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+
+  if (opts.signedIn || opts.requireAuth) {
+    const token = await getAccessToken()
+    if (!token) {
+      if (opts.requireAuth) throw new Error('Not authenticated')
+    } else {
+      headers.Authorization = `Bearer ${token}`
+    }
+  }
+
+  // Guest header only for guest CRUD — never alongside signed-in normal requests
+  if (!opts.signedIn && opts.guestId) {
+    headers['X-Guest-Cart-Id'] = opts.guestId
+  }
+
+  return headers
+}
+
+export async function getCart(opts: CartHeaderOptions): Promise<CartResponse> {
+  const headers = await cartHeaders(opts)
+  const res = await fetch(`${API_URL}/cart`, { headers })
+  if (!res.ok) throw new Error('Failed to fetch cart')
+  return res.json()
+}
+
+export async function addCartItem(
+  variantId: string,
+  quantity: number,
+  opts: CartHeaderOptions,
+): Promise<CartResponse> {
+  const headers = await cartHeaders(opts)
+  const res = await fetch(`${API_URL}/cart/items`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ variant_id: variantId, quantity }),
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error((body as { error?: string }).error || 'Failed to add to cart')
+  }
+  return res.json()
+}
+
+export async function updateCartItem(
+  itemId: string,
+  quantity: number,
+  opts: CartHeaderOptions,
+): Promise<CartResponse> {
+  const headers = await cartHeaders(opts)
+  const res = await fetch(`${API_URL}/cart/items/${itemId}`, {
+    method: 'PATCH',
+    headers,
+    body: JSON.stringify({ quantity }),
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error((body as { error?: string }).error || 'Failed to update cart')
+  }
+  return res.json()
+}
+
+export async function removeCartItem(itemId: string, opts: CartHeaderOptions): Promise<CartResponse> {
+  const headers = await cartHeaders(opts)
+  const res = await fetch(`${API_URL}/cart/items/${itemId}`, {
+    method: 'DELETE',
+    headers,
+  })
+  if (!res.ok) throw new Error('Failed to remove cart item')
+  return res.json()
+}
+
+export async function clearCart(opts: CartHeaderOptions): Promise<CartResponse> {
+  const headers = await cartHeaders(opts)
+  const res = await fetch(`${API_URL}/cart`, {
+    method: 'DELETE',
+    headers,
+  })
+  if (!res.ok) throw new Error('Failed to clear cart')
+  return res.json()
+}
+
+/** Merge guest cart into user cart. Auth required. Guest id in body only. */
+export async function mergeCart(guestId: string): Promise<CartResponse> {
+  const headers = await cartHeaders({ signedIn: true, guestId: null, requireAuth: true })
+  const res = await fetch(`${API_URL}/cart/merge`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ guest_id: guestId }),
+  })
+  if (!res.ok) throw new Error('Failed to merge cart')
+  return res.json()
+}

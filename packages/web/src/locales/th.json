@@ -1,0 +1,17 @@
+{
+  "product.add_to_cart": "เพิ่มลงตะกร้า",
+  "product.select_variant": "เลือกไซส์",
+  "cart.title": "ตะกร้า",
+  "cart.empty": "ยังไม่มีอะไร",
+  "cart.subtotal": "ยอดรวม",
+  "cart.quantity": "จำนวน",
+  "cart.quantity_decrease": "ลดจำนวน",
+  "cart.quantity_increase": "เพิ่มจำนวน",
+  "cart.remove": "ลบ",
+  "cart.added": "เพิ่มลงตะกร้าแล้ว",
+  "cart.updated": "อัปเดตตะกร้าแล้ว",
+  "cart.sold_out": "หมดแล้ว",
+  "cart.add_error": "เพิ่มลงตะกร้าไม่ได้",
+  "cart.sign_in_prompt": "เข้าสู่ระบบเพื่อเก็บตะกร้าไว้กับบัญชีของคุณ",
+  "cart.checkout_soon": "ชำระเงินเร็วๆ นี้"
+}

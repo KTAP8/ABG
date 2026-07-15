@@ -5,15 +5,18 @@ import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { ColorSelector } from '../components/product/ColorSelector'
 import { SizeSelector } from '../components/product/SizeSelector'
-import { OrderButton } from '../components/product/OrderButton'
 import { Accordion } from '../components/ui/Accordion'
 import { Modal } from '../components/ui/Modal'
 import { getProduct } from '../lib/api'
 import type { Product, ProductVariant } from '../lib/api'
+import { useCart } from '../lib/cart-context'
+import { useToast } from '../lib/toast-context'
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>()
   const { t } = useTranslation()
+  const { addItem } = useCart()
+  const { showToast } = useToast()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -21,6 +24,7 @@ export default function ProductDetail() {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [adding, setAdding] = useState(false)
   const imageColumnRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -137,6 +141,24 @@ export default function ProductDetail() {
   const isSoldOut = totalStock === 0
   const isVariantSoldOut = selectedVariant ? selectedVariant.stock === 0 : isSoldOut
   const priceDisplay = `฿${product.price.toLocaleString('en-US')}`
+  const showStockWarning =
+    selectedVariant !== null &&
+    selectedVariant.stock > 0 &&
+    selectedVariant.stock <= 15
+
+  const handleAddToCart = async () => {
+    if (!selectedVariant || isVariantSoldOut || adding) return
+    setAdding(true)
+    try {
+      await addItem(selectedVariant.id, 1)
+      showToast(t('cart.added'))
+    } catch (err) {
+      console.error(err)
+      showToast(err instanceof Error ? err.message : t('cart.add_error'))
+    } finally {
+      setAdding(false)
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-cream md:h-svh md:overflow-hidden">
@@ -239,11 +261,40 @@ export default function ProductDetail() {
                   )}
                 </div>
 
-                <OrderButton
-                  googleFormUrl={product.google_form_url}
-                  isSoldOut={isVariantSoldOut}
-                  stock={selectedVariant?.stock}
-                />
+                <div className="space-y-3">
+                  {showStockWarning && (
+                    <p className="text-center font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55 select-none">
+                      {t('product.lowstock', { count: selectedVariant!.stock })}
+                    </p>
+                  )}
+
+                  {isVariantSoldOut ? (
+                    <button
+                      disabled
+                      type="button"
+                      className="w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none"
+                    >
+                      {t('product.soldout')}
+                    </button>
+                  ) : !selectedVariant ? (
+                    <button
+                      disabled
+                      type="button"
+                      className="w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none"
+                    >
+                      {t('product.select_variant')}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={adding}
+                      onClick={() => void handleAddToCart()}
+                      className="w-full cursor-pointer bg-charcoal px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {adding ? t('product.loading') : t('product.add_to_cart')}
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-6 pt-2">

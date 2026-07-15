@@ -16,6 +16,6 @@ export type Env = {
   }
   Variables: {
     db: Db
-    user: AuthUser
+    user?: AuthUser
   }
 }

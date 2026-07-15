@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../lib/auth-context";
+import { useCart } from "../../lib/cart-context";
 
 export interface NavbarProps {
   bgClass?: string;
@@ -52,6 +53,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, needsOnboarding, signOut } = useAuth();
+  const { itemCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
@@ -196,14 +198,18 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
                 </div>
               )}
             </div>
-            <button
-              type="button"
-              className="hidden cursor-pointer text-cream/85 transition-colors hover:text-cream md:flex"
+            <Link
+              to="/cart"
+              className="relative hidden cursor-pointer text-cream/85 transition-colors hover:text-cream md:flex"
               aria-label={t("nav.cart")}
-              onClick={() => {}}
             >
               <CartIcon />
-            </button>
+              {itemCount > 0 && (
+                <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center bg-red px-1 font-body text-[10px] leading-none text-cream">
+                  {itemCount > 99 ? "99+" : itemCount}
+                </span>
+              )}
+            </Link>
 
             <button
               type="button"
@@ -292,15 +298,20 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
                   </button>
                 </>
               )}
-              <button
-                type="button"
-                className="flex cursor-pointer items-center gap-2.5 font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
+              <Link
+                to="/cart"
+                className="relative flex cursor-pointer items-center gap-2.5 font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
                 aria-label={t("nav.cart")}
-                onClick={() => {}}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <CartIcon />
                 <span>{t("nav.cart")}</span>
-              </button>
+                {itemCount > 0 && (
+                  <span className="bg-red px-1.5 py-0.5 font-body text-[10px] leading-none text-cream">
+                    {itemCount > 99 ? "99+" : itemCount}
+                  </span>
+                )}
+              </Link>
             </div>
           </div>
         </div>

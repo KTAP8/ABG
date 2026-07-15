@@ -33,6 +33,9 @@ me.use('*', requireUser)
 
 me.get('/', async (c) => {
   const user = c.get('user')
+  if (!user) {
+    throw new AppError(401, 'Unauthorized')
+  }
   const db = c.get('db')
 
   const [profile] = await db
@@ -54,6 +57,9 @@ me.get('/', async (c) => {
 
 me.patch('/', async (c) => {
   const user = c.get('user')
+  if (!user) {
+    throw new AppError(401, 'Unauthorized')
+  }
   const db = c.get('db')
   const body = await c.req.json().catch(() => null)
   const parsed = patchProfileSchema.safeParse(body)
@@ -124,6 +130,9 @@ me.patch('/', async (c) => {
 
 me.post('/onboarding', async (c) => {
   const user = c.get('user')
+  if (!user) {
+    throw new AppError(401, 'Unauthorized')
+  }
   const db = c.get('db')
   const body = await c.req.json().catch(() => null)
   const parsed = onboardingSchema.safeParse(body)

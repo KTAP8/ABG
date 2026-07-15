@@ -137,3 +137,34 @@ export const user_profiles = pgTable('user_profiles', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 })
+
+/**
+ * Cart identity: exactly one of user_id or guest_id (enforced in app code).
+ * Cart contents live here — never in localStorage.
+ */
+export const carts = pgTable('carts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: text('user_id').unique(),
+  guest_id: text('guest_id').unique(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+})
+
+export const cart_items = pgTable(
+  'cart_items',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    cart_id: uuid('cart_id')
+      .notNull()
+      .references(() => carts.id, { onDelete: 'cascade' }),
+    variant_id: uuid('variant_id')
+      .notNull()
+      .references(() => product_variants.id),
+    quantity: integer('quantity').notNull().default(1),
+    created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    unique_cart_variant: unique().on(table.cart_id, table.variant_id),
+  }),
+)
