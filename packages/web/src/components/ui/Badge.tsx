@@ -7,7 +7,7 @@ interface BadgeProps {
 export function Badge({ variant, children, className = '' }: BadgeProps) {
   const variants = {
     soldout: 'text-red',
-    lowstock: 'text-charcoal/55',
+    lowstock: 'bg-red px-1.5 py-0.5 text-white',
     live: 'text-charcoal',
     upcoming: 'text-charcoal/55',
   }

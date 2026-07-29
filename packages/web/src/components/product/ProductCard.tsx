@@ -34,6 +34,10 @@ export function ProductCard({ product, bgClass = 'bg-cream' }: ProductCardProps)
             <span className="font-body text-[11px] lowercase tracking-[-0.04em] text-red">
               {t('product.soldout').toLowerCase()}
             </span>
+          ) : totalStock < 3 ? (
+            <span className="bg-red px-1.5 py-0.5 font-body text-[11px] lowercase tracking-[-0.04em] text-white">
+              {t('product.lowstock', { count: totalStock })}
+            </span>
           ) : totalStock <= 15 ? (
             <span className="font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/55">
               {t('product.lowstock', { count: totalStock })}

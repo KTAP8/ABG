@@ -144,7 +144,7 @@ export default function ProductDetail() {
   const showStockWarning =
     selectedVariant !== null &&
     selectedVariant.stock > 0 &&
-    selectedVariant.stock <= 15
+    selectedVariant.stock < 3
 
   const handleAddToCart = async () => {
     if (!selectedVariant || isVariantSoldOut || adding) return
@@ -263,8 +263,10 @@ export default function ProductDetail() {
 
                 <div className="space-y-3">
                   {showStockWarning && (
-                    <p className="text-center font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55 select-none">
-                      {t('product.lowstock', { count: selectedVariant!.stock })}
+                    <p className="text-center select-none">
+                      <span className="inline-block bg-red px-2 py-1 font-body text-[12px] lowercase tracking-[-0.04em] text-white">
+                        {t('product.lowstock', { count: selectedVariant!.stock })}
+                      </span>
                     </p>
                   )}
 

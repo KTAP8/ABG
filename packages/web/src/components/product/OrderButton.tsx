@@ -34,13 +34,15 @@ export function OrderButton({ googleFormUrl, isSoldOut, stock, className = '' }:
     )
   }
 
-  const showStockWarning = stock !== undefined && stock > 0 && stock <= 15
+  const showStockWarning = stock !== undefined && stock > 0 && stock < 3
 
   return (
     <div className={`space-y-3 ${className}`}>
       {showStockWarning && (
-        <p className="text-center font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55 select-none">
-          {t('product.lowstock', { count: stock })}
+        <p className="text-center select-none">
+          <span className="inline-block bg-red px-2 py-1 font-body text-[12px] lowercase tracking-[-0.04em] text-white">
+            {t('product.lowstock', { count: stock })}
+          </span>
         </p>
       )}
 
