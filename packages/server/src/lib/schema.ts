@@ -168,3 +168,44 @@ export const cart_items = pgTable(
     unique_cart_variant: unique().on(table.cart_id, table.variant_id),
   }),
 )
+
+/** Pending until Stripe confirms payment. Stock is held while status is pending. */
+export const orders = pgTable('orders', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  stripe_session_id: text('stripe_session_id').unique(),
+  cart_id: uuid('cart_id').references(() => carts.id, { onDelete: 'set null' }),
+  user_id: text('user_id'),
+  email: text('email'),
+  status: text('status').notNull().default('pending'), // pending | paid | expired
+  subtotal: integer('subtotal').notNull(),
+  discount: integer('discount').notNull().default(0),
+  shipping: integer('shipping').notNull(),
+  total: integer('total').notNull(),
+  coupon_id: uuid('coupon_id').references(() => coupons.id),
+  shipping_name: text('shipping_name'),
+  shipping_line1: text('shipping_line1'),
+  shipping_line2: text('shipping_line2'),
+  shipping_city: text('shipping_city'),
+  shipping_state: text('shipping_state'),
+  shipping_postal_code: text('shipping_postal_code'),
+  shipping_country: text('shipping_country'),
+  shipping_phone: text('shipping_phone'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+})
+
+export const order_items = pgTable('order_items', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  order_id: uuid('order_id')
+    .notNull()
+    .references(() => orders.id, { onDelete: 'cascade' }),
+  variant_id: uuid('variant_id')
+    .notNull()
+    .references(() => product_variants.id),
+  quantity: integer('quantity').notNull(),
+  unit_price: integer('unit_price').notNull(),
+  product_name: text('product_name').notNull(),
+  size: text('size').notNull(),
+  color: text('color'),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+})

@@ -9,6 +9,8 @@ import waitlistRouter from './routes/waitlist'
 import iykykRouter from './routes/iykyk'
 import meRouter from './routes/me'
 import cartRouter from './routes/cart'
+import checkoutRouter from './routes/checkout'
+import stripeWebhookRouter from './routes/stripeWebhook'
 import adminRouter from './routes/admin/index'
 import type { Env } from './types'
 
@@ -37,6 +39,8 @@ app.route('/api/waitlist', waitlistRouter)
 app.route('/api/iykyk', iykykRouter)
 app.route('/api/me', meRouter)
 app.route('/api/cart', cartRouter)
+app.route('/api/checkout', checkoutRouter)
+app.route('/api/stripe', stripeWebhookRouter)
 app.route('/api/admin', adminRouter)
 
 app.onError((err, c) => {

@@ -57,6 +57,20 @@
       "when": 1784100000000,
       "tag": "0007_cart",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1784200000000,
+      "tag": "0008_orders",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784300000000,
+      "tag": "0009_order_phone",
+      "breakpoints": true
     }
   ]
 }

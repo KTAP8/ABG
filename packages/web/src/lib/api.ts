@@ -328,3 +328,67 @@ export async function mergeCart(guestId: string): Promise<CartResponse> {
   if (!res.ok) throw new Error('Failed to merge cart')
   return res.json()
 }
+
+export interface CheckoutQuote {
+  subtotal: number
+  discount: number
+  shipping: number
+  total: number
+}
+
+export interface CheckoutOrder {
+  status: string
+  email: string | null
+  subtotal: number
+  discount: number
+  shipping: number
+  total: number
+  items: {
+    product_name: string
+    size: string
+    color: string | null
+    quantity: number
+    unit_price: number
+  }[]
+}
+
+async function checkoutError(res: Response, fallback: string) {
+  const body = await res.json().catch(() => ({}))
+  const code = (body as { error?: string }).error
+  const error = new Error(code || fallback)
+  return error
+}
+
+export async function quoteCheckout(
+  couponCode: string | undefined,
+  opts: CartHeaderOptions,
+): Promise<CheckoutQuote> {
+  const headers = await cartHeaders(opts)
+  const res = await fetch(`${API_URL}/checkout/quote`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ coupon_code: couponCode || undefined }),
+  })
+  if (!res.ok) throw await checkoutError(res, 'quote_failed')
+  return res.json()
+}
+
+export async function createCheckoutSession(
+  couponCode: string | undefined,
+  opts: CartHeaderOptions,
+): Promise<{ url: string }> {
+  const headers = await cartHeaders(opts)
+  const res = await fetch(`${API_URL}/checkout/session`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ coupon_code: couponCode || undefined }),
+  })
+  if (!res.ok) throw await checkoutError(res, 'checkout_failed')
+  return res.json()
+}
+
+export async function getCheckoutOrder(sessionId: string): Promise<CheckoutOrder> {
+  const res = await fetch(`${API_URL}/checkout/orders/${encodeURIComponent(sessionId)}`)
+  if (!res.ok) throw await checkoutError(res, 'order_not_found')
+  return res.json()
+}
