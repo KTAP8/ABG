@@ -56,6 +56,8 @@ export interface Product {
   gender?: string
   is_active: boolean
   google_form_url?: string
+  shop_position?: number | null
+  shop_featured?: boolean
   created_at: string
   variants?: ProductVariant[]
   images?: ProductImage[]
@@ -102,6 +104,24 @@ export interface MeResponse {
   }
   profile: UserProfile | null
   needs_onboarding: boolean
+}
+
+export function sortShopProducts<T extends { shop_position?: number | null }>(products: T[]): T[] {
+  return [...products].sort((a, b) => {
+    if (a.shop_position == null && b.shop_position == null) return 0
+    if (a.shop_position == null) return 1
+    if (b.shop_position == null) return -1
+    return a.shop_position - b.shop_position
+  })
+}
+
+export async function saveShopOrder(items: { id: string; featured: boolean }[]): Promise<void> {
+  const res = await fetch(`${API_URL}/admin/shop-order`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  })
+  if (!res.ok) throw new Error('shop_order_failed')
 }
 
 export async function getDrops(params?: { category?: string; gender?: string }): Promise<Drop[]> {
@@ -332,6 +352,10 @@ export async function mergeCart(guestId: string): Promise<CartResponse> {
 export interface CheckoutQuote {
   subtotal: number
   discount: number
+  bundleDiscount: number
+  couponDiscount: number
+  couplePairs: number
+  bestiePairs: number
   shipping: number
   total: number
 }

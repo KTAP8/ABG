@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { ProductGrid } from '../components/product/ProductGrid'
-import { getDrops } from '../lib/api'
+import { getDrops, sortShopProducts } from '../lib/api'
 import type { Product } from '../lib/api'
 
 const CATEGORY_KEYS = [
@@ -38,7 +38,7 @@ export default function Products() {
           category: selectedCategory || undefined,
           gender: selectedGender || undefined,
         })
-        const allProducts = drops.flatMap((drop) => drop.products || [])
+        const allProducts = sortShopProducts(drops.flatMap((drop) => drop.products || []))
         setProducts(allProducts)
         setVisibleCount(8)
       } catch (err) {
@@ -86,7 +86,7 @@ export default function Products() {
       <Navbar />
 
       <main className="w-full bg-cream px-6 pt-8 pb-16 md:px-8 md:pt-10 md:pb-20 lg:px-[27px] lg:pb-24">
-        <div className="mx-auto w-full max-w-7xl">
+        <div className="mx-auto w-full max-w-7xl lg:px-20 xl:px-32">
           <header className="mb-10 border-b border-charcoal/15 pb-6 md:mb-12">
             <p className="mb-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
               {t('products.section_label')}
@@ -99,29 +99,39 @@ export default function Products() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="cursor-pointer border border-charcoal/15 bg-cream px-3 py-2 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none"
-              >
-                {CATEGORY_KEYS.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {t(cat.key)}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full cursor-pointer appearance-none border border-charcoal/15 bg-cream py-2 pr-9 pl-3 text-left font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none sm:w-auto"
+                >
+                  {CATEGORY_KEYS.map((cat) => (
+                    <option key={cat.value} value={cat.value}>
+                      {t(cat.key)}
+                    </option>
+                  ))}
+                </select>
+                <svg viewBox="0 0 12 12" aria-hidden="true" className="pointer-events-none absolute top-1/2 right-3 h-3 w-3 -translate-y-1/2 text-charcoal">
+                  <path d="M2 4.5 L6 8.5 L10 4.5" fill="none" stroke="currentColor" strokeWidth="1.25" />
+                </svg>
+              </div>
 
-              <select
-                value={selectedGender}
-                onChange={(e) => setSelectedGender(e.target.value)}
-                className="cursor-pointer border border-charcoal/15 bg-cream px-3 py-2 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none"
-              >
-                {GENDER_KEYS.map((gender) => (
-                  <option key={gender.value} value={gender.value}>
-                    {t(gender.key)}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={selectedGender}
+                  onChange={(e) => setSelectedGender(e.target.value)}
+                  className="w-full cursor-pointer appearance-none border border-charcoal/15 bg-cream py-2 pr-9 pl-3 text-left font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none sm:w-auto"
+                >
+                  {GENDER_KEYS.map((gender) => (
+                    <option key={gender.value} value={gender.value}>
+                      {t(gender.key)}
+                    </option>
+                  ))}
+                </select>
+                <svg viewBox="0 0 12 12" aria-hidden="true" className="pointer-events-none absolute top-1/2 right-3 h-3 w-3 -translate-y-1/2 text-charcoal">
+                  <path d="M2 4.5 L6 8.5 L10 4.5" fill="none" stroke="currentColor" strokeWidth="1.25" />
+                </svg>
+              </div>
 
               {hasFilters && (
                 <button
@@ -145,7 +155,7 @@ export default function Products() {
           ) : products.length > 0 ? (
             <div className="flex w-full flex-col items-center">
               <div className="w-full">
-                <ProductGrid products={displayedProducts} />
+                <ProductGrid products={displayedProducts} showAddToCart />
               </div>
 
               <div

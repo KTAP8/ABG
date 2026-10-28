@@ -20,6 +20,7 @@ import Onboarding from './pages/Onboarding'
 import Profile from './pages/Profile'
 import Cart from './pages/Cart'
 import CheckoutSuccess from './pages/CheckoutSuccess'
+import ShopOrder from './pages/ShopOrder'
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout/success" element={<CheckoutSuccess />} />
+              {import.meta.env.DEV && <Route path="/admin/shop" element={<ShopOrder />} />}
             </Routes>
           </CartProvider>
         </AuthProvider>

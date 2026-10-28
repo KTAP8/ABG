@@ -200,17 +200,17 @@ export default function ProductDetail() {
                     <div
                       key={image.id}
                       id={`product-image-${index}`}
-                      className="relative aspect-3/4 w-full overflow-hidden bg-white"
+                      className="relative flex h-[min(72svh,calc(100vw*4/3))] w-full shrink-0 items-center justify-center md:h-[calc(100svh-6rem)]"
                     >
                       <img
                         src={image.url}
                         alt={image.alt_text || `${product.name} - view ${index + 1}`}
-                        className="h-full w-full object-cover"
+                        className="max-h-full max-w-full object-contain"
                       />
                     </div>
                   ))
                 ) : (
-                  <div className="aspect-3/4 bg-white" />
+                  <div className="h-[min(72svh,calc(100vw*4/3))] md:h-[calc(100svh-6rem)]" />
                 )}
               </div>
             </div>
@@ -305,7 +305,7 @@ export default function ProductDetail() {
                     <span className="block font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40 select-none">
                       {t('product.description_label')}
                     </span>
-                    <p className="font-body text-sm leading-snug tracking-[-0.04em] text-charcoal/70">
+                    <p className="whitespace-pre-line font-body text-sm leading-snug tracking-[-0.04em] text-charcoal/70">
                       {product.description}
                     </p>
                   </div>
@@ -354,7 +354,9 @@ export default function ProductDetail() {
                       items={[
                         {
                           title: t('product.material.laundry_title'),
-                          content: product.care,
+                          content: (
+                            <p className="whitespace-pre-line">{product.care}</p>
+                          ),
                         },
                       ]}
                     />
@@ -371,7 +373,9 @@ export default function ProductDetail() {
         onClose={() => setShowSizeGuide(false)}
         title={t('product.sizeguide.title')}
       >
-        <p className="font-body text-sm text-charcoal">{product.size_guide}</p>
+        <p className="whitespace-pre-line font-body text-sm leading-relaxed tracking-[-0.04em] text-charcoal/80">
+          {product.size_guide}
+        </p>
       </Modal>
 
       <div className="md:hidden">

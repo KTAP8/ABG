@@ -5,15 +5,21 @@ interface ProductGridProps {
   products: (Product & { images?: ProductImage[] })[]
   className?: string
   cardBgClass?: string
+  showAddToCart?: boolean
 }
 
-export function ProductGrid({ products, className = '', cardBgClass }: ProductGridProps) {
+export function ProductGrid({ products, className = '', cardBgClass, showAddToCart }: ProductGridProps) {
   return (
     <div
-      className={`grid grid-cols-2 gap-4 bg-cream sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-8 ${className}`}
+      className={`grid grid-cols-2 gap-3 bg-cream md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-4 ${className}`}
     >
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} bgClass={cardBgClass} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          bgClass={cardBgClass}
+          showAddToCart={showAddToCart}
+        />
       ))}
     </div>
   )

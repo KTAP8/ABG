@@ -12,6 +12,7 @@ import cartRouter from './routes/cart'
 import checkoutRouter from './routes/checkout'
 import stripeWebhookRouter from './routes/stripeWebhook'
 import adminRouter from './routes/admin/index'
+import shopOrderRouter from './routes/shopOrder'
 import type { Env } from './types'
 
 const app = new Hono<Env>()
@@ -41,6 +42,7 @@ app.route('/api/me', meRouter)
 app.route('/api/cart', cartRouter)
 app.route('/api/checkout', checkoutRouter)
 app.route('/api/stripe', stripeWebhookRouter)
+app.route('/api/admin/shop-order', shopOrderRouter)
 app.route('/api/admin', adminRouter)
 
 app.onError((err, c) => {

@@ -5,11 +5,16 @@ import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { useCart } from '../lib/cart-context'
 import { useAuth } from '../lib/auth-context'
-import { createCheckoutSession, quoteCheckout } from '../lib/api'
+import { createCheckoutSession, quoteCheckout, type CheckoutQuote } from '../lib/api'
 import { getGuestId } from '../lib/guest-id'
 
-const FREE_SHIPPING_AT = 900
+const FREE_SHIPPING_AT = 1000
 const SHIPPING_FEE = 50
+const UNCOMMON_HENLEY_ID = '84c31f18-564d-49c5-8591-d93a78ff1b06'
+const PLUNGE_LONG_SLEEVE_ID = '081ab031-7177-4dfb-9be8-539ea77e4e97'
+const PLUNGE_VARIANT_ID = 'a4b16246-91ac-441d-b9ed-f3b347b01257'
+const PLUNGE_IMAGE = 'https://pub-127e329007874b38b388402427a3e27f.r2.dev/women-surplice/front.webp'
+const PAIR_SAVE = 190
 
 function formatPrice(price: number) {
   return `฿${price.toLocaleString('en-US')}`
@@ -25,13 +30,15 @@ function errorText(t: (key: string) => string, err: unknown) {
 export default function Cart() {
   const { t, i18n } = useTranslation()
   const { user } = useAuth()
-  const { items, itemCount, subtotal, loading, updateQuantity, removeItem } = useCart()
+  const { items, itemCount, subtotal, loading, updateQuantity, removeItem, addItem } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [appliedCode, setAppliedCode] = useState<string | null>(null)
-  const [discount, setDiscount] = useState(0)
-  const [quotedShipping, setQuotedShipping] = useState<number | null>(null)
+  const [quote, setQuote] = useState<CheckoutQuote | null>(null)
   const [formError, setFormError] = useState('')
   const [applying, setApplying] = useState(false)
+  const [addingPlunge, setAddingPlunge] = useState(false)
+  const [addonOpen, setAddonOpen] = useState(false)
+  const [addonDismissed, setAddonDismissed] = useState(false)
   const [checkingOut, setCheckingOut] = useState(false)
 
   const cartOpts = () => ({
@@ -40,25 +47,27 @@ export default function Cart() {
   })
 
   useEffect(() => {
-    if (!appliedCode) return
+    if (itemCount === 0) {
+      setQuote(null)
+      return
+    }
     let cancelled = false
-    void quoteCheckout(appliedCode, cartOpts())
-      .then((quote) => {
-        if (cancelled) return
-        setDiscount(quote.discount)
-        setQuotedShipping(quote.shipping)
+    void quoteCheckout(appliedCode ?? undefined, cartOpts())
+      .then((next) => {
+        if (!cancelled) setQuote(next)
       })
       .catch((err) => {
         if (cancelled) return
-        setAppliedCode(null)
-        setDiscount(0)
-        setQuotedShipping(null)
-        setFormError(errorText(t, err))
+        if (appliedCode) {
+          setAppliedCode(null)
+          setFormError(errorText(t, err))
+        }
+        setQuote(null)
       })
     return () => {
       cancelled = true
     }
-  }, [appliedCode, subtotal, user?.id, t])
+  }, [appliedCode, subtotal, itemCount, user?.id, t])
 
   const nameFor = (item: (typeof items)[number]) => {
     if (i18n.language?.startsWith('th') && item.product_name_th) {
@@ -67,10 +76,25 @@ export default function Cart() {
     return item.product_name
   }
 
+  const discount = quote?.discount ?? 0
   const afterDiscount = Math.max(0, subtotal - discount)
-  const shipping = quotedShipping ?? (afterDiscount >= FREE_SHIPPING_AT ? 0 : SHIPPING_FEE)
+  const shipping = quote?.shipping ?? (afterDiscount >= FREE_SHIPPING_AT ? 0 : SHIPPING_FEE)
   const total = afterDiscount + shipping
   const hasSoldOut = items.some((item) => item.sold_out)
+  const quantityOf = (productId: string) =>
+    items.filter((item) => item.product_id === productId).reduce((sum, item) => sum + item.quantity, 0)
+  const showPlungeOffer = quantityOf(UNCOMMON_HENLEY_ID) > quantityOf(PLUNGE_LONG_SLEEVE_ID)
+
+  useEffect(() => {
+    if (!showPlungeOffer) {
+      setAddonOpen(false)
+      setAddonDismissed(false)
+      return
+    }
+    if (!addonDismissed) setAddonOpen(true)
+  }, [showPlungeOffer, addonDismissed])
+  const couplePairs = quote?.couplePairs ?? 0
+  const bestiePairs = quote?.bestiePairs ?? 0
 
   const applyCoupon = async () => {
     const code = couponInput.trim()
@@ -78,14 +102,10 @@ export default function Cart() {
     setApplying(true)
     setFormError('')
     try {
-      const quote = await quoteCheckout(code, cartOpts())
+      const next = await quoteCheckout(code, cartOpts())
       setAppliedCode(code)
-      setDiscount(quote.discount)
-      setQuotedShipping(quote.shipping)
+      setQuote(next)
     } catch (err) {
-      setAppliedCode(null)
-      setDiscount(0)
-      setQuotedShipping(null)
       setFormError(errorText(t, err))
     } finally {
       setApplying(false)
@@ -95,9 +115,24 @@ export default function Cart() {
   const clearCoupon = () => {
     setAppliedCode(null)
     setCouponInput('')
-    setDiscount(0)
-    setQuotedShipping(null)
     setFormError('')
+  }
+
+  const dismissAddon = () => {
+    setAddonOpen(false)
+    setAddonDismissed(true)
+  }
+
+  const addPlunge = async () => {
+    setAddingPlunge(true)
+    setFormError('')
+    try {
+      await addItem(PLUNGE_VARIANT_ID, 1)
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : t('cart.add_error'))
+    } finally {
+      setAddingPlunge(false)
+    }
   }
 
   const checkout = async () => {
@@ -226,21 +261,53 @@ export default function Cart() {
                 <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal/60">
                   {t('cart.subtotal')}
                 </span>
-                <span className="font-body text-lg tracking-[-0.04em] text-charcoal">
+                <span
+                  className={`font-body text-lg tracking-[-0.04em] ${
+                    (quote?.discount ?? 0) > 0
+                      ? 'text-charcoal/40 line-through'
+                      : 'text-charcoal'
+                  }`}
+                >
                   {formatPrice(subtotal)}
                 </span>
               </div>
 
+              {couplePairs > 0 && (
+                <div className="flex items-baseline justify-between gap-6">
+                  <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal/60">
+                    {t('cart.pair.couple')}
+                    {couplePairs > 1 ? ` × ${couplePairs}` : ''}
+                  </span>
+                  <span className="shrink-0 font-body text-sm tracking-[-0.04em] text-red">
+                    −{formatPrice(PAIR_SAVE * couplePairs)}
+                  </span>
+                </div>
+              )}
+
+              {bestiePairs > 0 && (
+                <div className="flex items-baseline justify-between gap-6">
+                  <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal/60">
+                    {t('cart.pair.bestie')}
+                    {bestiePairs > 1 ? ` × ${bestiePairs}` : ''}
+                  </span>
+                  <span className="shrink-0 font-body text-sm tracking-[-0.04em] text-red">
+                    −{formatPrice(PAIR_SAVE * bestiePairs)}
+                  </span>
+                </div>
+              )}
+
               {appliedCode ? (
                 <div className="space-y-2">
-                  <div className="flex items-baseline justify-between">
-                    <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal/60">
-                      {t('cart.discount')} ({appliedCode})
-                    </span>
-                    <span className="font-body text-sm tracking-[-0.04em] text-charcoal">
-                      −{formatPrice(discount)}
-                    </span>
-                  </div>
+                  {(quote?.couponDiscount ?? 0) > 0 && (
+                    <div className="flex items-baseline justify-between">
+                      <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal/60">
+                        {t('cart.discount')} ({appliedCode})
+                      </span>
+                      <span className="font-body text-sm tracking-[-0.04em] text-red">
+                        −{formatPrice(quote?.couponDiscount ?? 0)}
+                      </span>
+                    </div>
+                  )}
                   <button
                     type="button"
                     className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50"
@@ -283,10 +350,10 @@ export default function Cart() {
               </div>
 
               <div className="flex items-baseline justify-between">
-                <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal">
+                <span className="font-body text-sm font-bold lowercase tracking-[-0.04em] text-charcoal">
                   {t('cart.total')}
                 </span>
-                <span className="font-body text-lg tracking-[-0.04em] text-charcoal">
+                <span className="font-body text-2xl font-bold tracking-[-0.04em] text-charcoal">
                   {formatPrice(total)}
                 </span>
               </div>
@@ -318,6 +385,67 @@ export default function Cart() {
           </div>
         )}
       </main>
+      {addonOpen && (
+        <div className="animate-offer-backdrop fixed inset-0 z-50 flex items-center justify-center bg-charcoal/60 p-4 md:p-8">
+          <div
+            className="animate-offer-in grid max-h-[92svh] w-full max-w-3xl grid-cols-1 overflow-y-auto border border-charcoal bg-cream md:grid-cols-2 md:overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="plunge-offer-title"
+          >
+            <div className="relative h-[34svh] min-h-48 bg-cream md:h-auto md:min-h-[480px]">
+              <img
+                src={PLUNGE_IMAGE}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover object-[center_32%]"
+              />
+            </div>
+            <div className="flex flex-col justify-between px-6 py-6 md:px-8 md:py-8">
+              <div>
+                <div className="flex items-start justify-between gap-4">
+                  <p className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/55">
+                    {t('cart.addon.question')}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={dismissAddon}
+                    aria-label={t('modal.close')}
+                    className="cursor-pointer text-charcoal/55 transition-opacity hover:text-charcoal"
+                  >
+                    <svg viewBox="0 0 16 16" aria-hidden="true" className="h-4 w-4">
+                      <path d="M2 2 L14 14 M14 2 L2 14" fill="none" stroke="currentColor" strokeWidth="1.25" />
+                    </svg>
+                  </button>
+                </div>
+                <h2
+                  id="plunge-offer-title"
+                  className="mt-6 font-display text-[clamp(1.75rem,3vw,2.4rem)] font-bold lowercase leading-[0.95] tracking-[-0.07em] text-charcoal"
+                >
+                  {t('cart.addon.offer')}
+                </h2>
+              </div>
+              <div className="mt-8">
+                <div className="flex items-end gap-3">
+                  <p className="font-display text-6xl font-bold leading-none tracking-[-0.07em] text-red">
+                    {t('cart.addon.price')}
+                  </p>
+                  <p className="mb-1 font-body text-sm lowercase tracking-[-0.04em] text-charcoal/40 line-through">
+                    {t('cart.addon.was')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={addingPlunge}
+                  onClick={() => void addPlunge()}
+                  className="mt-8 w-full cursor-pointer bg-charcoal px-5 py-4 font-body text-[15px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {t('cart.addon.add')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   )

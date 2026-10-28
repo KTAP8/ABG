@@ -17,13 +17,17 @@ import { createStripe, integrationIdentifier } from './stripe'
 import { createEmailClient, sendOrderConfirmationEmail } from './email'
 import type Stripe from 'stripe'
 
-export const FREE_SHIPPING_THRESHOLD = 900
+export const FREE_SHIPPING_THRESHOLD = 1000
 export const SHIPPING_FEE = 50
+export const UNCOMMON_HENLEY_ID = '84c31f18-564d-49c5-8591-d93a78ff1b06'
+export const PLUNGE_LONG_SLEEVE_ID = '081ab031-7177-4dfb-9be8-539ea77e4e97'
+const PAIR_SAVE = 190
 // Stripe rejects an expiry under 30 minutes from when it receives the request.
 const CHECKOUT_HOLD_SECONDS = 31 * 60
 
 export type CheckoutLine = {
   variantId: string
+  productId: string
   quantity: number
   unitPrice: number
   productName: string
@@ -35,6 +39,10 @@ export type CheckoutLine = {
 export type CheckoutQuote = {
   subtotal: number
   discount: number
+  bundleDiscount: number
+  couponDiscount: number
+  couplePairs: number
+  bestiePairs: number
   shipping: number
   total: number
   couponId: string | null
@@ -49,6 +57,7 @@ export async function loadCartLines(db: Db, cartId: string): Promise<CheckoutLin
   const rows = await db
     .select({
       variantId: product_variants.id,
+      productId: products.id,
       quantity: cart_items.quantity,
       unitPrice: products.price,
       productName: products.name,
@@ -63,6 +72,7 @@ export async function loadCartLines(db: Db, cartId: string): Promise<CheckoutLin
 
   return rows.map((row) => ({
     variantId: row.variantId,
+    productId: row.productId,
     quantity: row.quantity,
     unitPrice: row.unitPrice,
     productName: row.productName,
@@ -87,24 +97,27 @@ async function resolveCoupon(
     .where(sql`lower(${coupons.code}) = ${trimmed.toLowerCase()}`)
     .limit(1)
 
-  if (!coupon || coupon.used_at) {
-    throw new AppError(400, coupon?.used_at ? 'coupon_used' : 'coupon_invalid')
-  }
+  if (!coupon) throw new AppError(400, 'coupon_invalid')
 
-  const [held] = await db
-    .select({ id: orders.id })
-    .from(orders)
-    .where(
-      and(
-        eq(orders.coupon_id, coupon.id),
-        eq(orders.status, 'pending'),
-        sql`${orders.cart_id} is distinct from ${cartId}`,
-      ),
-    )
-    .limit(1)
+  const now = new Date()
+  if (coupon.starts_at && coupon.starts_at > now) throw new AppError(400, 'coupon_invalid')
+  if (coupon.expires_at && coupon.expires_at <= now) throw new AppError(400, 'coupon_invalid')
+  if (!coupon.multi_use && coupon.used_at) throw new AppError(400, 'coupon_used')
 
-  if (held) {
-    throw new AppError(400, 'coupon_used')
+  if (!coupon.multi_use) {
+    const [held] = await db
+      .select({ id: orders.id })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.coupon_id, coupon.id),
+          eq(orders.status, 'pending'),
+          sql`${orders.cart_id} is distinct from ${cartId}`,
+        ),
+      )
+      .limit(1)
+
+    if (held) throw new AppError(400, 'coupon_used')
   }
 
   let discount = 0
@@ -155,7 +168,10 @@ export async function quoteCheckout(
   }
 
   const subtotal = lines.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0)
-  const { couponId, discount } = await resolveCoupon(db, cart.id, couponCode, subtotal)
+  const { couplePairs, bestiePairs, bundleDiscount } = pairDiscount(lines)
+  const merchandise = Math.max(0, subtotal - bundleDiscount)
+  const { couponId, discount: couponDiscount } = await resolveCoupon(db, cart.id, couponCode, merchandise)
+  const discount = bundleDiscount + couponDiscount
   const afterDiscount = subtotal - discount
   const shipping = shippingFor(afterDiscount)
   const total = afterDiscount + shipping
@@ -164,8 +180,27 @@ export async function quoteCheckout(
 
   return {
     cartId: cart.id,
-    quote: { subtotal, discount, shipping, total, couponId, lines },
+    quote: {
+      subtotal,
+      discount,
+      bundleDiscount,
+      couponDiscount,
+      couplePairs,
+      bestiePairs,
+      shipping,
+      total,
+      couponId,
+      lines,
+    },
   }
+}
+
+function pairDiscount(lines: CheckoutLine[]) {
+  const quantityOf = (productId: string) =>
+    lines.filter((line) => line.productId === productId).reduce((sum, line) => sum + line.quantity, 0)
+  const couplePairs = Math.min(quantityOf(UNCOMMON_HENLEY_ID), quantityOf(PLUNGE_LONG_SLEEVE_ID))
+  const bestiePairs = Math.floor((quantityOf(PLUNGE_LONG_SLEEVE_ID) - couplePairs) / 2)
+  return { couplePairs, bestiePairs, bundleDiscount: (couplePairs + bestiePairs) * PAIR_SAVE }
 }
 
 async function decrementStock(db: Db, lines: CheckoutLine[]) {
@@ -440,6 +475,7 @@ async function finalizePaid(
           db,
           lines.map((line) => ({
             variantId: line.variantId,
+            productId: '',
             quantity: line.quantity,
             unitPrice: line.unitPrice,
             productName: line.productName,
@@ -478,7 +514,13 @@ async function finalizePaid(
     await db
       .update(coupons)
       .set({ used_at: new Date() })
-      .where(and(eq(coupons.id, order.coupon_id), sql`${coupons.used_at} is null`))
+      .where(
+        and(
+          eq(coupons.id, order.coupon_id),
+          eq(coupons.multi_use, false),
+          sql`${coupons.used_at} is null`,
+        ),
+      )
   }
 
   if (order.cart_id) {

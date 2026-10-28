@@ -44,6 +44,8 @@ export const products = pgTable('products', {
   gender: text('gender').default('unisex'), // 'men', 'women', 'unisex'
   is_active: boolean('is_active').default(true),
   google_form_url: text('google_form_url'),
+  shop_position: integer('shop_position'),
+  shop_featured: boolean('shop_featured').notNull().default(false),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })
 
@@ -108,6 +110,10 @@ export const coupons = pgTable('coupons', {
   discount_percent: integer('discount_percent'),
   max_discount_amount: integer('max_discount_amount'),
   used_at: timestamp('used_at', { withTimezone: true }),
+  /** Many redemptions. Single-use codes leave this false and burn used_at. */
+  multi_use: boolean('multi_use').notNull().default(false),
+  starts_at: timestamp('starts_at', { withTimezone: true }),
+  expires_at: timestamp('expires_at', { withTimezone: true }),
   note: text('note'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })

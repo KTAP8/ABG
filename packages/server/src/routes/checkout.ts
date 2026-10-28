@@ -42,6 +42,10 @@ checkout.post('/quote', async (c) => {
   return c.json({
     subtotal: quote.subtotal,
     discount: quote.discount,
+    bundleDiscount: quote.bundleDiscount,
+    couponDiscount: quote.couponDiscount,
+    couplePairs: quote.couplePairs,
+    bestiePairs: quote.bestiePairs,
     shipping: quote.shipping,
     total: quote.total,
   })
