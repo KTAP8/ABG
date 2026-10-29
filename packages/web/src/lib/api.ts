@@ -115,6 +115,116 @@ export function sortShopProducts<T extends { shop_position?: number | null }>(pr
   })
 }
 
+export interface CatalogVariant {
+  id: string
+  size: string
+  color: string | null
+  stock: number | null
+}
+
+export interface CatalogImage {
+  id?: string
+  url: string
+  position: number | null
+  alt_text: string | null
+}
+
+export interface CatalogSpec {
+  id: string
+  label: string
+  value: string
+  position: number | null
+}
+
+export interface CatalogProduct {
+  id: string
+  slug: string
+  name: string
+  name_th: string | null
+  description: string | null
+  description_th: string | null
+  price: number
+  category: string | null
+  gender: string | null
+  is_active: boolean | null
+  drop_id: string | null
+  variants: CatalogVariant[]
+  images: CatalogImage[]
+  specs: CatalogSpec[]
+}
+
+export interface CatalogDrop {
+  id: string
+  slug: string
+  name: string
+  name_th: string | null
+  description: string | null
+  description_th: string | null
+  drop_at: string
+  is_active: boolean | null
+  products: CatalogProduct[]
+}
+
+export interface CatalogResponse {
+  drops: CatalogDrop[]
+  loose: CatalogProduct[]
+}
+
+export async function getCatalog(): Promise<CatalogResponse> {
+  const res = await fetch(`${API_URL}/admin/catalog`)
+  if (!res.ok) throw new Error('catalog_failed')
+  return res.json()
+}
+
+export async function saveCatalogDrop(drop: {
+  id: string
+  name: string
+  name_th: string | null
+  description: string | null
+  description_th: string | null
+  drop_at: string
+  is_active: boolean
+}): Promise<void> {
+  const res = await fetch(`${API_URL}/admin/catalog`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ kind: 'drop', ...drop }),
+  })
+  if (!res.ok) throw new Error('catalog_failed')
+}
+
+export async function saveCatalogProduct(product: CatalogProduct): Promise<CatalogProduct> {
+  const res = await fetch(`${API_URL}/admin/catalog`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      kind: 'product',
+      id: product.id,
+      name: product.name,
+      name_th: product.name_th,
+      description: product.description,
+      description_th: product.description_th,
+      price: product.price,
+      category: product.category || 'accessories',
+      gender: product.gender || 'unisex',
+      is_active: product.is_active !== false,
+      drop_id: product.drop_id,
+      variants: product.variants.map((variant) => ({
+        id: variant.id,
+        stock: variant.stock ?? 0,
+      })),
+      images: product.images.map((image) => ({
+        id: image.id,
+        url: image.url,
+        alt_text: image.alt_text,
+      })),
+    }),
+  })
+  if (!res.ok) throw new Error('catalog_failed')
+  const body = (await res.json()) as { product: CatalogProduct }
+  return body.product
+}
+
 export async function saveShopOrder(items: { id: string; featured: boolean }[]): Promise<void> {
   const res = await fetch(`${API_URL}/admin/shop-order`, {
     method: 'PUT',
