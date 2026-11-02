@@ -27,7 +27,6 @@ export function PairOffer({ products }: { products: Product[] }) {
   const navigate = useNavigate()
   const [busy, setBusy] = useState<'couple' | 'bestie' | null>(null)
   const [error, setError] = useState('')
-  const [openId, setOpenId] = useState<string | null>(null)
 
   const henley = products.find((product) => product.id === UNCOMMON_HENLEY_ID)
   const plunge = products.find((product) => product.id === PLUNGE_LONG_SLEEVE_ID)
@@ -91,76 +90,70 @@ export function PairOffer({ products }: { products: Product[] }) {
   return (
     <section className="w-full bg-cream px-6 pt-12 pb-4 md:px-8 md:pt-16 lg:px-[27px]">
       <div className="mx-auto w-full max-w-7xl lg:px-20 xl:px-32">
-        <header className="mb-6 flex flex-col gap-6 md:mb-8 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-xl">
-            <h2 className="font-brand text-[clamp(2.6rem,6vw,4.5rem)] leading-[0.9] tracking-normal text-charcoal">
-              {t('promo.name')}
-            </h2>
-            <p className="mt-3 max-w-sm font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal/70 md:text-base">
-              {t('promo.line')}
-            </p>
-          </div>
+        <header className="mb-6 flex flex-col gap-6 md:mb-8 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-x-12 md:gap-y-3">
+          <h2 className="max-w-xl font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-none tracking-[-0.07em] text-charcoal md:col-start-1 md:row-start-1 md:self-end">
+            {t('promo.name')}
+          </h2>
+          <p className="max-w-sm font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal/70 md:col-start-1 md:row-start-2 md:text-base">
+            {t('promo.line')}
+          </p>
 
           {coupleReady && (
-            <div className="md:text-right">
-              <p className="font-display text-4xl font-bold leading-none tracking-[-0.07em] text-charcoal">
+            <>
+              <p className="font-display text-4xl font-bold leading-none tracking-[-0.07em] text-charcoal md:col-start-2 md:row-start-1 md:self-end md:text-right">
                 {formatPrice(coupleNow)}
               </p>
-              <p className="mt-2 flex flex-wrap items-baseline gap-x-3 md:justify-end">
-                <span className="font-body text-sm tracking-[-0.04em] text-charcoal/40 line-through">
-                  {formatPrice(coupleWas)}
-                </span>
-                <span className="font-body text-sm tracking-[-0.04em] text-red">
-                  −{formatPrice(PAIR_SAVE)}
-                </span>
-                <span className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/60">
-                  {t('promo.shipping')}
-                </span>
-              </p>
-              {singleHenleySize ? (
-                <button
-                  type="button"
-                  disabled={busy !== null}
-                  onClick={() => void addCouple()}
-                  className={`${buttonClass} mt-4 w-full md:w-auto`}
-                >
-                  {busy === 'couple' ? t('product.loading') : t('promo.add')}
-                </button>
-              ) : (
-                <Link
-                  to={`/products/${henley.slug}`}
-                  className={`${buttonClass} mt-4 block w-full no-underline md:inline-block md:w-auto`}
-                >
-                  {t('promo.add')}
-                </Link>
-              )}
-            </div>
+              <div className="md:col-start-2 md:row-start-2 md:text-right">
+                <p className="flex flex-wrap items-baseline gap-x-3 md:justify-end">
+                  <span className="font-body text-sm tracking-[-0.04em] text-charcoal/40 line-through">
+                    {formatPrice(coupleWas)}
+                  </span>
+                  <span className="font-body text-sm tracking-[-0.04em] text-red">
+                    −{formatPrice(PAIR_SAVE)}
+                  </span>
+                  <span className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/60">
+                    {t('promo.shipping')}
+                  </span>
+                </p>
+                {singleHenleySize ? (
+                  <button
+                    type="button"
+                    disabled={busy !== null}
+                    onClick={() => void addCouple()}
+                    className={`${buttonClass} mt-4 w-full md:w-auto`}
+                  >
+                    {busy === 'couple' ? t('product.loading') : t('promo.add')}
+                  </button>
+                ) : (
+                  <Link
+                    to={`/products/${henley.slug}`}
+                    className={`${buttonClass} mt-4 block w-full no-underline md:inline-block md:w-auto`}
+                  >
+                    {t('promo.add')}
+                  </Link>
+                )}
+              </div>
+            </>
           )}
         </header>
 
         <div className="grid grid-cols-2 items-start gap-3 md:gap-4">
           {shots.map(({ product, caption }) => {
             const image = product.images?.[0]
-            const open = openId === product.id
             return (
               <figure key={product.id}>
-                <button
-                  type="button"
-                  aria-expanded={open}
-                  aria-label={`${nameFor(product)}. ${t('promo.expand')}`}
-                  onClick={() => setOpenId(open ? null : product.id)}
-                  className={`block w-full cursor-pointer overflow-hidden text-left transition-[max-height] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none max-h-[58vw] hover:max-h-[1800px] md:max-h-[420px] md:hover:max-h-[1800px] lg:max-h-[460px] lg:hover:max-h-[1800px] ${
-                    open ? 'max-h-[1800px]! md:max-h-[1800px]! lg:max-h-[1800px]!' : ''
-                  }`}
+                <Link
+                  to={`/products/${product.slug}`}
+                  className="block overflow-hidden no-underline max-h-[58vw] md:max-h-[420px] lg:max-h-[460px]"
                 >
                   {image ? (
                     <img
                       src={image.url}
-                      alt=""
+                      alt={nameFor(product)}
                       className="block h-auto w-full"
                     />
                   ) : null}
-                </button>
+                </Link>
                 <figcaption className="mt-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
                   {caption}
                 </figcaption>
