@@ -57,6 +57,17 @@ export const product_specs = pgTable('product_specs', {
   position: integer('position').default(0),
 })
 
+export const product_size_chart = pgTable('product_size_chart', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  product_id: uuid('product_id').references(() => products.id),
+  size: text('size').notNull(),
+  bust: text('bust'),
+  length: text('length'),
+  sleeve_length: text('sleeve_length'),
+  shoulder: text('shoulder'),
+  position: integer('position').default(0),
+})
+
 export const product_variants = pgTable('product_variants', {
   id: uuid('id').primaryKey().defaultRandom(),
   product_id: uuid('product_id').references(() => products.id),

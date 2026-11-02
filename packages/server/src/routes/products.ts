@@ -1,6 +1,13 @@
 import { Hono } from 'hono'
-import { products, product_variants, product_images, product_categories, product_specs } from '../lib/schema'
-import { eq } from 'drizzle-orm'
+import {
+  products,
+  product_variants,
+  product_images,
+  product_categories,
+  product_specs,
+  product_size_chart,
+} from '../lib/schema'
+import { asc, eq } from 'drizzle-orm'
 import type { Env } from '../types'
 
 const router = new Hono<Env>()
@@ -49,11 +56,18 @@ router.get('/:slug', async (c) => {
     .where(eq(product_specs.product_id, productData.id))
     .orderBy(product_specs.position)
 
+  const size_chart = await db
+    .select()
+    .from(product_size_chart)
+    .where(eq(product_size_chart.product_id, productData.id))
+    .orderBy(asc(product_size_chart.position))
+
   return c.json({
     ...productData,
     variants,
     images,
     specs,
+    size_chart,
   })
 })
 

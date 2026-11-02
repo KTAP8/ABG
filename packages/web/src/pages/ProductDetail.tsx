@@ -7,6 +7,11 @@ import { ColorSelector } from '../components/product/ColorSelector'
 import { SizeSelector } from '../components/product/SizeSelector'
 import { Accordion } from '../components/ui/Accordion'
 import { Modal } from '../components/ui/Modal'
+import {
+  SizeGuideContent,
+  hasStructuredSizeChart,
+  productHasSizeGuide,
+} from '../components/product/SizeGuideContent'
 import { getProduct } from '../lib/api'
 import type { Product, ProductVariant } from '../lib/api'
 import { useCart } from '../lib/cart-context'
@@ -311,7 +316,8 @@ export default function ProductDetail() {
                   </div>
                 )}
 
-                {(product.specs?.length || product.size_guide) && (
+                {(product.specs?.length ||
+                  productHasSizeGuide(product.size_guide, product.size_chart)) && (
                   <div className="space-y-3 pt-2">
                     <span className="block font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/40 select-none">
                       {t('product.specs_label')}
@@ -331,7 +337,7 @@ export default function ProductDetail() {
                       </div>
                     ))}
 
-                    {product.size_guide && (
+                    {productHasSizeGuide(product.size_guide, product.size_chart) && (
                       <div className="flex items-center justify-between py-2">
                         <span className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/40">
                           {t('product.sizeguide.title')}
@@ -372,10 +378,11 @@ export default function ProductDetail() {
         isOpen={showSizeGuide}
         onClose={() => setShowSizeGuide(false)}
         title={t('product.sizeguide.title')}
+        maxWidthClass={
+          hasStructuredSizeChart(product.size_chart) ? 'max-w-3xl' : 'max-w-xl'
+        }
       >
-        <p className="whitespace-pre-line font-body text-sm leading-relaxed tracking-[-0.04em] text-charcoal/80">
-          {product.size_guide}
-        </p>
+        <SizeGuideContent sizeGuide={product.size_guide} sizeChart={product.size_chart} />
       </Modal>
 
       <div className="md:hidden">

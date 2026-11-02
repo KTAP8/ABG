@@ -7,9 +7,17 @@ interface ModalProps {
   title?: string
   children: React.ReactNode
   bgClass?: string
+  maxWidthClass?: string
 }
 
-export function Modal({ isOpen, onClose, title, children, bgClass = 'bg-cream' }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  bgClass = 'bg-cream',
+  maxWidthClass = 'max-w-xl',
+}: ModalProps) {
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -31,7 +39,7 @@ export function Modal({ isOpen, onClose, title, children, bgClass = 'bg-cream' }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/30 p-4 backdrop-blur-[2px]">
       <div
-        className={`relative flex w-full max-w-xl flex-col border border-charcoal/15 ${bgClass}`}
+        className={`relative flex w-full ${maxWidthClass} flex-col border border-charcoal/15 ${bgClass}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div

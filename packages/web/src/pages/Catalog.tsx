@@ -11,6 +11,7 @@ import {
   type CatalogImage,
   type CatalogProduct,
   type CatalogResponse,
+  type CatalogSizeChartRow,
 } from '../lib/api'
 
 const fieldClass =
@@ -32,6 +33,38 @@ function textOrNull(value: string) {
   return trimmed ? trimmed : null
 }
 
+function catalogErrorMessage(err: unknown, translate: (key: string) => string) {
+  const code = err instanceof Error ? err.message : 'catalog_failed'
+  const key = `admin.catalog.errors.${code}`
+  const translated = translate(key)
+  return translated === key ? translate('admin.catalog.error') : translated
+}
+
+function normalizeProduct(product: CatalogProduct): CatalogProduct {
+  return {
+    ...product,
+    size_guide: product.size_guide ?? null,
+    size_chart: (product.size_chart ?? []).map((row) => ({
+      id: row.id,
+      size: row.size,
+      bust: row.bust ?? null,
+      length: row.length ?? null,
+      sleeve_length: row.sleeve_length ?? null,
+      shoulder: row.shoulder ?? null,
+    })),
+  }
+}
+
+function normalizeCatalog(catalog: CatalogResponse): CatalogResponse {
+  return {
+    drops: catalog.drops.map((drop) => ({
+      ...drop,
+      products: drop.products.map(normalizeProduct),
+    })),
+    loose: catalog.loose.map(normalizeProduct),
+  }
+}
+
 function placeProduct(catalog: CatalogResponse, product: CatalogProduct): CatalogResponse {
   const without = (items: CatalogProduct[]) => items.filter((item) => item.id !== product.id)
   const drops = catalog.drops.map((drop) => ({ ...drop, products: without(drop.products) }))
@@ -49,6 +82,7 @@ function placeProduct(catalog: CatalogResponse, product: CatalogProduct): Catalo
 export default function Catalog() {
   const { t } = useTranslation()
   const dragIndex = useRef<number | null>(null)
+  const chartDragIndex = useRef<number | null>(null)
   const [catalog, setCatalog] = useState<CatalogResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [openId, setOpenId] = useState<string | null>(null)
@@ -60,7 +94,7 @@ export default function Catalog() {
   useEffect(() => {
     const load = async () => {
       try {
-        setCatalog(await getCatalog())
+        setCatalog(normalizeCatalog(await getCatalog()))
       } catch (err) {
         console.error('Failed to load catalog', err)
         setError(t('admin.catalog.error'))
@@ -124,24 +158,42 @@ export default function Catalog() {
     setError('')
     setSavedId(null)
     try {
-      const saved = await saveCatalogProduct({
-        ...product,
-        name: product.name.trim(),
-        name_th: textOrNull(product.name_th ?? ''),
-        description: textOrNull(product.description ?? ''),
-        description_th: textOrNull(product.description_th ?? ''),
-        category: product.category || 'accessories',
-        gender: GENDERS.includes(product.gender as (typeof GENDERS)[number]) ? product.gender : 'unisex',
-        is_active: product.is_active !== false,
-      })
-      setCatalog((current) => (current ? placeProduct(current, saved) : current))
+      const saved = await saveCatalogProduct(
+        normalizeProduct({
+          ...product,
+          name: product.name.trim(),
+          name_th: textOrNull(product.name_th ?? ''),
+          description: textOrNull(product.description ?? ''),
+          description_th: textOrNull(product.description_th ?? ''),
+          size_guide: textOrNull(product.size_guide ?? ''),
+          category: product.category || 'accessories',
+          gender: GENDERS.includes(product.gender as (typeof GENDERS)[number]) ? product.gender : 'unisex',
+          is_active: product.is_active !== false,
+          size_chart: product.size_chart.filter((row) => row.size.trim()),
+          variants:
+            product.variants.length > 0
+              ? product.variants.filter((row) => row.size.trim())
+              : product.variants,
+        }),
+      )
+      setCatalog((current) => (current ? placeProduct(current, normalizeProduct(saved)) : current))
       setSavedId(product.id)
     } catch (err) {
       console.error('Failed to save product', err)
-      setError(t('admin.catalog.error'))
+      setError(catalogErrorMessage(err, t))
     } finally {
       setSavingId(null)
     }
+  }
+
+  function moveChartRow(product: CatalogProduct, index: number) {
+    const from = chartDragIndex.current
+    if (from === null || from === index) return
+    const size_chart = [...product.size_chart]
+    const [moved] = size_chart.splice(from, 1)
+    size_chart.splice(index, 0, moved)
+    chartDragIndex.current = index
+    updateProduct(product.id, { size_chart })
   }
 
   function moveImage(product: CatalogProduct, index: number) {
@@ -231,6 +283,13 @@ export default function Catalog() {
                       onImageDragEnd={() => {
                         dragIndex.current = null
                       }}
+                      onChartDragStart={(index) => {
+                        chartDragIndex.current = index
+                      }}
+                      onChartDragOver={(index) => moveChartRow(product, index)}
+                      onChartDragEnd={() => {
+                        chartDragIndex.current = null
+                      }}
                     />
                   ))}
                 </div>
@@ -266,6 +325,13 @@ export default function Catalog() {
                       onImageDragOver={(index) => moveImage(product, index)}
                       onImageDragEnd={() => {
                         dragIndex.current = null
+                      }}
+                      onChartDragStart={(index) => {
+                        chartDragIndex.current = index
+                      }}
+                      onChartDragOver={(index) => moveChartRow(product, index)}
+                      onChartDragEnd={() => {
+                        chartDragIndex.current = null
                       }}
                     />
                   ))}
@@ -412,6 +478,9 @@ function ProductRow({
   onImageDragStart,
   onImageDragOver,
   onImageDragEnd,
+  onChartDragStart,
+  onChartDragOver,
+  onChartDragEnd,
 }: {
   product: CatalogProduct
   drops: CatalogDrop[]
@@ -427,11 +496,78 @@ function ProductRow({
   onImageDragStart: (index: number) => void
   onImageDragOver: (index: number) => void
   onImageDragEnd: () => void
+  onChartDragStart: (index: number) => void
+  onChartDragOver: (index: number) => void
+  onChartDragEnd: () => void
 }) {
   const { t } = useTranslation()
   const active = product.is_active !== false
   const categories = Array.from(new Set([product.category || 'accessories', ...CATEGORIES]))
   const genders = Array.from(new Set([product.gender || 'unisex', ...GENDERS]))
+  const chartCellClass = `${fieldClass} min-w-0 px-2 py-1.5 text-[12px]`
+
+  function patchChartRow(index: number, patch: Partial<CatalogSizeChartRow>) {
+    onChange({
+      size_chart: product.size_chart.map((row, rowIndex) =>
+        rowIndex === index ? { ...row, ...patch } : row,
+      ),
+    })
+  }
+
+  function addChartRow() {
+    onChange({
+      size_chart: [
+        ...product.size_chart,
+        { size: '', bust: null, length: null, sleeve_length: null, shoulder: null },
+      ],
+    })
+  }
+
+  function patchVariant(index: number, patch: Partial<CatalogProduct['variants'][number]>) {
+    onChange({
+      variants: product.variants.map((row, rowIndex) =>
+        rowIndex === index ? { ...row, ...patch } : row,
+      ),
+    })
+  }
+
+  function addVariantRow() {
+    onChange({
+      variants: [
+        ...product.variants,
+        { size: '', color: null, stock: 0 },
+      ],
+    })
+  }
+
+  function removeVariantRow(index: number) {
+    if (product.variants.length <= 1) return
+    onChange({ variants: product.variants.filter((_, rowIndex) => rowIndex !== index) })
+  }
+
+  function addChartFromVariants() {
+    const existing = new Set(product.size_chart.map((row) => row.size.trim().toUpperCase()))
+    const variantSizes = Array.from(
+      new Set(product.variants.map((variant) => variant.size.trim()).filter(Boolean)),
+    )
+    const fresh = variantSizes
+      .filter((size) => !existing.has(size.toUpperCase()))
+      .map(
+        (size): CatalogSizeChartRow => ({
+          size,
+          bust: null,
+          length: null,
+          sleeve_length: null,
+          shoulder: null,
+        }),
+      )
+    if (!fresh.length) return
+    onChange({ size_chart: [...product.size_chart, ...fresh] })
+  }
+
+  function removeChartRow(index: number) {
+    onChange({ size_chart: product.size_chart.filter((_, rowIndex) => rowIndex !== index) })
+  }
 
   return (
     <article className="border border-charcoal/15">
@@ -560,37 +696,64 @@ function ProductRow({
             </label>
           </div>
 
-          {product.variants.length > 0 && (
-            <div className="mt-6">
-              <p className={labelClass}>{t('admin.catalog.stock')}</p>
-              <ul className="border-t border-charcoal/15">
-                {product.variants.map((variant) => (
+          <div className="mt-6">
+            <p className={labelClass}>{t('admin.catalog.variants')}</p>
+            <div className="overflow-x-auto border border-charcoal/15">
+              <div className="grid min-w-[36rem] grid-cols-[minmax(0,1fr)_minmax(0,1fr)_5rem_minmax(0,1.2fr)_4rem] gap-2 border-b border-charcoal/15 bg-cream px-2 py-2 font-body text-[11px] uppercase tracking-[-0.04em] text-charcoal/50">
+                <span>{t('product.size')}</span>
+                <span>{t('admin.catalog.variant_color')}</span>
+                <span>{t('admin.catalog.stock')}</span>
+                <span>{t('admin.catalog.variant_sku')}</span>
+                <span />
+              </div>
+              <ul>
+                {product.variants.map((variant, index) => (
                   <li
-                    key={variant.id}
-                    className="flex items-center justify-between gap-4 border-b border-charcoal/15 py-2"
+                    key={variant.id ?? `variant-${index}`}
+                    className="grid min-w-[36rem] grid-cols-[minmax(0,1fr)_minmax(0,1fr)_5rem_minmax(0,1.2fr)_4rem] items-center gap-2 border-b border-charcoal/15 px-2 py-2"
                   >
-                    <span className="font-body text-[13px] tracking-[-0.04em] text-charcoal">
-                      {variant.size}
-                      {variant.color ? ` / ${variant.color}` : ''}
-                    </span>
+                    <input
+                      value={variant.size}
+                      onChange={(event) => patchVariant(index, { size: event.target.value })}
+                      className={chartCellClass}
+                    />
+                    <input
+                      value={variant.color ?? ''}
+                      onChange={(event) => patchVariant(index, { color: event.target.value })}
+                      className={chartCellClass}
+                    />
                     <input
                       inputMode="numeric"
                       value={variant.stock ?? 0}
                       onChange={(event) => {
                         if (!/^\d+$/.test(event.target.value)) return
-                        onChange({
-                          variants: product.variants.map((row) =>
-                            row.id === variant.id ? { ...row, stock: Number(event.target.value) } : row,
-                          ),
-                        })
+                        patchVariant(index, { stock: Number(event.target.value) })
                       }}
-                      className={`${fieldClass} w-24`}
+                      className={chartCellClass}
                     />
+                    <span className="truncate font-body text-[11px] tracking-[-0.04em] text-charcoal/50">
+                      {variant.id ? variant.sku ?? '—' : '—'}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={product.variants.length <= 1}
+                      onClick={() => removeVariantRow(index)}
+                      className="cursor-pointer font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/60 underline decoration-charcoal/30 underline-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
+                    >
+                      {t('admin.catalog.remove_variant')}
+                    </button>
                   </li>
                 ))}
               </ul>
             </div>
-          )}
+            <button
+              type="button"
+              onClick={addVariantRow}
+              className="mt-3 cursor-pointer border border-charcoal px-3 py-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal"
+            >
+              {t('admin.catalog.add_variant')}
+            </button>
+          </div>
 
           <div className="mt-6">
             <p className={labelClass}>{t('admin.catalog.photos')}</p>
@@ -644,6 +807,104 @@ function ProductRow({
               >
                 {t('admin.catalog.add_photo')}
               </button>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <label className="block">
+              <span className={labelClass}>{t('admin.catalog.size_guide')}</span>
+              <textarea
+                value={product.size_guide ?? ''}
+                onChange={(event) => onChange({ size_guide: event.target.value })}
+                rows={5}
+                className={fieldClass}
+              />
+            </label>
+          </div>
+
+          <div className="mt-6">
+            <p className={labelClass}>{t('admin.catalog.size_chart')}</p>
+            <div className="overflow-x-auto border border-charcoal/15">
+              <div className="grid min-w-[44rem] grid-cols-[2rem_4rem_repeat(4,minmax(0,1fr))_4rem] gap-0 border-b border-charcoal/15 bg-cream px-2 py-2 font-body text-[11px] uppercase tracking-[-0.04em] text-charcoal/50">
+                <span aria-hidden>#</span>
+                <span>{t('admin.catalog.chart_size')}</span>
+                <span>{t('admin.catalog.chart_bust')}</span>
+                <span>{t('admin.catalog.chart_length')}</span>
+                <span>{t('admin.catalog.chart_sleeve')}</span>
+                <span>{t('admin.catalog.chart_shoulder')}</span>
+                <span />
+              </div>
+              <ul>
+                {product.size_chart.map((row, index) => (
+                  <li
+                    key={row.id ?? `chart-${index}`}
+                    onDragOver={(event) => {
+                      event.preventDefault()
+                      onChartDragOver(index)
+                    }}
+                    className="grid min-w-[44rem] grid-cols-[2rem_4rem_repeat(4,minmax(0,1fr))_4rem] items-center gap-2 border-b border-charcoal/15 px-2 py-2"
+                  >
+                    <span
+                      draggable
+                      onDragStart={() => onChartDragStart(index)}
+                      onDragEnd={onChartDragEnd}
+                      className="cursor-grab px-1 font-body text-[12px] text-charcoal/40 active:cursor-grabbing"
+                    >
+                      {index + 1}
+                    </span>
+                    <input
+                      value={row.size}
+                      onChange={(event) => patchChartRow(index, { size: event.target.value })}
+                      className={chartCellClass}
+                    />
+                    <input
+                      value={row.bust ?? ''}
+                      onChange={(event) => patchChartRow(index, { bust: event.target.value })}
+                      className={chartCellClass}
+                    />
+                    <input
+                      value={row.length ?? ''}
+                      onChange={(event) => patchChartRow(index, { length: event.target.value })}
+                      className={chartCellClass}
+                    />
+                    <input
+                      value={row.sleeve_length ?? ''}
+                      onChange={(event) => patchChartRow(index, { sleeve_length: event.target.value })}
+                      className={chartCellClass}
+                    />
+                    <input
+                      value={row.shoulder ?? ''}
+                      onChange={(event) => patchChartRow(index, { shoulder: event.target.value })}
+                      className={chartCellClass}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeChartRow(index)}
+                      className="cursor-pointer font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/60 underline decoration-charcoal/30 underline-offset-2"
+                    >
+                      {t('admin.catalog.remove_chart_row')}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={addChartRow}
+                className="cursor-pointer border border-charcoal px-3 py-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal"
+              >
+                {t('admin.catalog.add_chart_row')}
+              </button>
+              {product.variants.length > 0 && (
+                <button
+                  type="button"
+                  onClick={addChartFromVariants}
+                  className="cursor-pointer border border-charcoal/20 px-3 py-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal"
+                >
+                  {t('admin.catalog.add_chart_from_sizes')}
+                </button>
+              )}
             </div>
           </div>
 

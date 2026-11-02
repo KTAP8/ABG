@@ -41,6 +41,17 @@ export interface ProductSpec {
   position: number
 }
 
+export interface ProductSizeChartRow {
+  id: string
+  product_id?: string | null
+  size: string
+  bust?: string | null
+  length?: string | null
+  sleeve_length?: string | null
+  shoulder?: string | null
+  position?: number | null
+}
+
 export interface Product {
   id: string
   slug: string
@@ -62,6 +73,7 @@ export interface Product {
   variants?: ProductVariant[]
   images?: ProductImage[]
   specs?: ProductSpec[]
+  size_chart?: ProductSizeChartRow[]
 }
 
 export interface ProductVariant {
@@ -116,7 +128,8 @@ export function sortShopProducts<T extends { shop_position?: number | null }>(pr
 }
 
 export interface CatalogVariant {
-  id: string
+  id?: string
+  sku?: string | null
   size: string
   color: string | null
   stock: number | null
@@ -136,6 +149,15 @@ export interface CatalogSpec {
   position: number | null
 }
 
+export interface CatalogSizeChartRow {
+  id?: string
+  size: string
+  bust: string | null
+  length: string | null
+  sleeve_length: string | null
+  shoulder: string | null
+}
+
 export interface CatalogProduct {
   id: string
   slug: string
@@ -143,6 +165,7 @@ export interface CatalogProduct {
   name_th: string | null
   description: string | null
   description_th: string | null
+  size_guide: string | null
   price: number
   category: string | null
   gender: string | null
@@ -151,6 +174,7 @@ export interface CatalogProduct {
   variants: CatalogVariant[]
   images: CatalogImage[]
   specs: CatalogSpec[]
+  size_chart: CatalogSizeChartRow[]
 }
 
 export interface CatalogDrop {
@@ -204,23 +228,39 @@ export async function saveCatalogProduct(product: CatalogProduct): Promise<Catal
       name_th: product.name_th,
       description: product.description,
       description_th: product.description_th,
+      size_guide: product.size_guide,
       price: product.price,
       category: product.category || 'accessories',
       gender: product.gender || 'unisex',
       is_active: product.is_active !== false,
       drop_id: product.drop_id,
-      variants: product.variants.map((variant) => ({
-        id: variant.id,
-        stock: variant.stock ?? 0,
-      })),
+      variants: product.variants
+        .filter((variant) => variant.size.trim())
+        .map((variant) => ({
+          ...(variant.id ? { id: variant.id } : {}),
+          size: variant.size.trim(),
+          color: variant.color?.trim() ? variant.color.trim() : null,
+          stock: variant.stock ?? 0,
+        })),
       images: product.images.map((image) => ({
         id: image.id,
         url: image.url,
         alt_text: image.alt_text,
       })),
+      size_chart: product.size_chart.map((row) => ({
+        id: row.id,
+        size: row.size.trim(),
+        bust: row.bust?.trim() ? row.bust.trim() : null,
+        length: row.length?.trim() ? row.length.trim() : null,
+        sleeve_length: row.sleeve_length?.trim() ? row.sleeve_length.trim() : null,
+        shoulder: row.shoulder?.trim() ? row.shoulder.trim() : null,
+      })),
     }),
   })
-  if (!res.ok) throw new Error('catalog_failed')
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? 'catalog_failed')
+  }
   const body = (await res.json()) as { product: CatalogProduct }
   return body.product
 }
