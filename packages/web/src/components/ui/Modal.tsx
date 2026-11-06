@@ -8,6 +8,7 @@ interface ModalProps {
   children: React.ReactNode
   bgClass?: string
   maxWidthClass?: string
+  closeLabel?: string
 }
 
 export function Modal({
@@ -17,6 +18,7 @@ export function Modal({
   children,
   bgClass = 'bg-cream',
   maxWidthClass = 'max-w-xl',
+  closeLabel,
 }: ModalProps) {
   const { t } = useTranslation()
 
@@ -51,7 +53,7 @@ export function Modal({
             onClick={onClose}
             className="cursor-pointer text-[12px] lowercase tracking-[-0.04em] text-charcoal/55 transition-opacity hover:text-charcoal"
           >
-            {t('modal.close')}
+            {closeLabel || t('modal.close')}
           </button>
         </div>
 

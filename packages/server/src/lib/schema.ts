@@ -211,6 +211,24 @@ export const orders = pgTable('orders', {
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 })
 
+export const order_surveys = pgTable('order_surveys', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  order_id: uuid('order_id')
+    .notNull()
+    .unique()
+    .references(() => orders.id),
+  hangout: text('hangout'),
+  silhouette: text('silhouette'),
+  line: text('line'),
+  next_piece: text('next_piece'),
+  heard_from: text('heard_from'),
+  age_range: text('age_range'),
+  language: text('language'),
+  status: text('status').notNull().default('partial'), // partial | completed | skipped
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+})
+
 export const order_items = pgTable('order_items', {
   id: uuid('id').primaryKey().defaultRandom(),
   order_id: uuid('order_id')

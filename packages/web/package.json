@@ -12,6 +12,7 @@
     "@neondatabase/neon-js": "0.6.2-beta",
     "framer-motion": "^11.x",
     "i18next": "^23.x",
+    "lucide-react": "^1.69.0",
     "motion": "^11.x",
     "react": "^18.x",
     "react-dom": "^18.x",

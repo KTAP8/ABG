@@ -524,6 +524,7 @@ export interface CheckoutOrder {
     quantity: number
     unit_price: number
   }[]
+  survey?: { status: string } | null
 }
 
 async function checkoutError(res: Response, fallback: string) {
@@ -565,4 +566,19 @@ export async function getCheckoutOrder(sessionId: string): Promise<CheckoutOrder
   const res = await fetch(`${API_URL}/checkout/orders/${encodeURIComponent(sessionId)}`)
   if (!res.ok) throw await checkoutError(res, 'order_not_found')
   return res.json()
+}
+
+export async function saveCheckoutSurvey(
+  sessionId: string,
+  payload: {
+    status: 'partial' | 'completed' | 'skipped'
+    answers: Record<string, string | undefined>
+  },
+): Promise<void> {
+  const res = await fetch(`${API_URL}/checkout/orders/${encodeURIComponent(sessionId)}/survey`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) throw await checkoutError(res, 'survey_failed')
 }

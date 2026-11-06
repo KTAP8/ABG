@@ -3,6 +3,7 @@ import {
   cart_items,
   coupons,
   order_items,
+  order_surveys,
   orders,
   product_images,
   product_variants,
@@ -625,5 +626,95 @@ export async function getOrderBySession(db: Db, sessionId: string) {
     shipping: order.shipping,
     total: order.total,
     items,
+    survey: await surveyStatusForOrder(db, order.id, order.email),
   }
+}
+
+export const SURVEY_HANGOUT = ['home', 'cafe_main', 'cafe_niche', 'community', 'friend', 'campus'] as const
+export const SURVEY_SILHOUETTE = ['oversize', 'baby', 'longsleeve', 'neckline'] as const
+export const SURVEY_LINE = ['attitude', 'anti_graphic', 'scarcity', 'no_copy'] as const
+export const SURVEY_NEXT_PIECE = ['top', 'sleeve', 'bottoms', 'object'] as const
+export const SURVEY_HEARD_FROM = ['word', 'instagram', 'facebook', 'tiktok', 'line'] as const
+export const SURVEY_AGE = ['18_22', '23_27', '28_34', '35_plus'] as const
+export const SURVEY_LANGUAGE = ['en', 'th', 'either'] as const
+
+export type OrderSurveyAnswers = {
+  hangout?: (typeof SURVEY_HANGOUT)[number]
+  silhouette?: (typeof SURVEY_SILHOUETTE)[number]
+  line?: (typeof SURVEY_LINE)[number]
+  next_piece?: (typeof SURVEY_NEXT_PIECE)[number]
+  heard_from?: (typeof SURVEY_HEARD_FROM)[number]
+  age_range?: (typeof SURVEY_AGE)[number]
+  language?: (typeof SURVEY_LANGUAGE)[number]
+}
+
+async function surveyStatusForOrder(db: Db, orderId: string, email: string | null) {
+  const [own] = await db
+    .select({ status: order_surveys.status })
+    .from(order_surveys)
+    .where(eq(order_surveys.order_id, orderId))
+    .limit(1)
+  if (own) return { status: own.status }
+
+  if (!email) return null
+
+  const [other] = await db
+    .select({ status: order_surveys.status })
+    .from(order_surveys)
+    .innerJoin(orders, eq(orders.id, order_surveys.order_id))
+    .where(and(eq(orders.email, email), sql`${orders.id} <> ${orderId}::uuid`))
+    .limit(1)
+  if (other) return { status: other.status }
+  return null
+}
+
+export async function saveOrderSurvey(
+  db: Db,
+  sessionId: string,
+  answers: OrderSurveyAnswers,
+  status: 'partial' | 'completed' | 'skipped',
+) {
+  const [order] = await db
+    .select({ id: orders.id, email: orders.email, status: orders.status })
+    .from(orders)
+    .where(eq(orders.stripe_session_id, sessionId))
+    .limit(1)
+  if (!order) throw new AppError(404, 'order_not_found')
+  if (order.status !== 'paid') throw new AppError(400, 'survey_not_ready')
+
+  const [own] = await db
+    .select({ id: order_surveys.id })
+    .from(order_surveys)
+    .where(eq(order_surveys.order_id, order.id))
+    .limit(1)
+
+  if (!own && order.email) {
+    const [other] = await db
+      .select({ id: order_surveys.id })
+      .from(order_surveys)
+      .innerJoin(orders, eq(orders.id, order_surveys.order_id))
+      .where(and(eq(orders.email, order.email), sql`${orders.id} <> ${order.id}::uuid`))
+      .limit(1)
+    if (other) throw new AppError(400, 'survey_done')
+  }
+
+  const row = {
+    hangout: answers.hangout ?? null,
+    silhouette: answers.silhouette ?? null,
+    line: answers.line ?? null,
+    next_piece: answers.next_piece ?? null,
+    heard_from: answers.heard_from ?? null,
+    age_range: answers.age_range ?? null,
+    language: answers.language ?? null,
+    status,
+    updated_at: new Date(),
+  }
+
+  if (own) {
+    await db.update(order_surveys).set(row).where(eq(order_surveys.order_id, order.id))
+  } else {
+    await db.insert(order_surveys).values({ order_id: order.id, ...row })
+  }
+
+  return { status }
 }

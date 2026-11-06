@@ -4,15 +4,36 @@ import { optionalAuth } from '../middleware/optionalAuth'
 import { AppError } from '../middleware/errorHandler'
 import { parseGuestId } from '../lib/cart'
 import {
+  SURVEY_AGE,
+  SURVEY_HANGOUT,
+  SURVEY_HEARD_FROM,
+  SURVEY_LANGUAGE,
+  SURVEY_LINE,
+  SURVEY_NEXT_PIECE,
+  SURVEY_SILHOUETTE,
   createCheckoutSession,
   customerEmailForUser,
   getOrderBySession,
   quoteCheckout,
+  saveOrderSurvey,
 } from '../lib/checkout'
 import type { Env } from '../types'
 
 const bodySchema = z.object({
   coupon_code: z.string().max(80).optional(),
+})
+
+const surveySchema = z.object({
+  status: z.enum(['partial', 'completed', 'skipped']),
+  answers: z.object({
+    hangout: z.enum(SURVEY_HANGOUT).optional(),
+    silhouette: z.enum(SURVEY_SILHOUETTE).optional(),
+    line: z.enum(SURVEY_LINE).optional(),
+    next_piece: z.enum(SURVEY_NEXT_PIECE).optional(),
+    heard_from: z.enum(SURVEY_HEARD_FROM).optional(),
+    age_range: z.enum(SURVEY_AGE).optional(),
+    language: z.enum(SURVEY_LANGUAGE).optional(),
+  }),
 })
 
 const checkout = new Hono<Env>()
@@ -79,6 +100,19 @@ checkout.get('/orders/:sessionId', async (c) => {
   const order = await getOrderBySession(c.get('db'), c.req.param('sessionId'))
   if (!order) throw new AppError(404, 'order_not_found')
   return c.json(order)
+})
+
+checkout.post('/orders/:sessionId/survey', async (c) => {
+  const body = await c.req.json().catch(() => null)
+  const parsed = surveySchema.safeParse(body)
+  if (!parsed.success) throw new AppError(400, 'invalid_survey')
+  const survey = await saveOrderSurvey(
+    c.get('db'),
+    c.req.param('sessionId'),
+    parsed.data.answers,
+    parsed.data.status,
+  )
+  return c.json({ ok: true, survey })
 })
 
 export default checkout

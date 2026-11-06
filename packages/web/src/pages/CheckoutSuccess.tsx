@@ -3,7 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
-import { getCheckoutOrder, type CheckoutOrder } from '../lib/api'
+import { getCheckoutOrder, saveCheckoutSurvey, type CheckoutOrder } from '../lib/api'
+import { BuyerGame, shouldOpenBuyerGame } from '../components/checkout/BuyerGame'
 
 function formatPrice(price: number) {
   return `฿${price.toLocaleString('en-US')}`
@@ -15,6 +16,7 @@ export default function CheckoutSuccess() {
   const sessionId = params.get('session_id')
   const [order, setOrder] = useState<CheckoutOrder | null>(null)
   const [error, setError] = useState('')
+  const [gameOpen, setGameOpen] = useState(false)
 
   useEffect(() => {
     if (!sessionId) {
@@ -30,6 +32,9 @@ export default function CheckoutSuccess() {
         const next = await getCheckoutOrder(sessionId)
         if (cancelled) return
         setOrder(next)
+        if (next.status === 'paid' && shouldOpenBuyerGame(next.survey)) {
+          setGameOpen(true)
+        }
         if (next.status === 'pending' && attempts < 5) {
           attempts += 1
           window.setTimeout(() => void load(), 2000)
@@ -95,6 +100,22 @@ export default function CheckoutSuccess() {
           {t('checkout.success.back')}
         </Link>
       </main>
+      <BuyerGame
+        isOpen={gameOpen}
+        onClose={() => setGameOpen(false)}
+        onSave={async ({ answers, status }) => {
+          if (!sessionId) return
+          try {
+            await saveCheckoutSurvey(sessionId, {
+              status,
+              answers,
+            })
+            setOrder((current) => (current ? { ...current, survey: { status } } : current))
+          } catch (err) {
+            console.error('Failed to save buyer game', err)
+          }
+        }}
+      />
       <Footer />
     </div>
   )
