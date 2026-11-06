@@ -272,6 +272,7 @@
   "product.notify_me": "notify me",
   "product.sizeguide.title": "size guide",
   "product.sizeguide.view": "view",
+  "product.sizeguide.hide": "hide",
   "product.sizeguide.footnote": "*Measurements are in inches. Please allow for a slight variation due to manual measurement.",
   "product.sizeguide.col.size": "size",
   "product.sizeguide.col.bust": "bust (in)",

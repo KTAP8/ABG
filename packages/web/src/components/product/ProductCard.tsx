@@ -2,9 +2,15 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Product, ProductImage } from '../../lib/api'
 import { BlueprintPlaceholder } from '../ui/BlueprintPlaceholder'
+import { Modal } from '../ui/Modal'
 import { useTranslation } from 'react-i18next'
 import { resolveColorValue } from './ColorSelector'
 import { useCart } from '../../lib/cart-context'
+import {
+  SizeGuideContent,
+  hasStructuredSizeChart,
+  productHasSizeGuide,
+} from './SizeGuideContent'
 
 interface ProductCardProps {
   product: Product & { images?: ProductImage[] }
@@ -17,6 +23,9 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
   const { addItem } = useCart()
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
+  const [sizeOpen, setSizeOpen] = useState(false)
+  const [showGuide, setShowGuide] = useState(false)
+  const [needsSize, setNeedsSize] = useState(false)
 
   const totalStock = product.variants?.reduce((sum, v) => sum + v.stock, 0) || 0
   const isSoldOut = totalStock === 0
@@ -30,19 +39,46 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
   ) as string[]
   const inStock = (product.variants ?? []).filter((variant) => variant.stock > 0)
   const [selectedId, setSelectedId] = useState(inStock.length === 1 ? inStock[0].id : '')
+  const showColorOnPill = colors.length > 1
+  const hasGuide = productHasSizeGuide(product.size_guide, product.size_chart)
 
-  async function addToCart() {
-    if (!selectedId || adding) return
+  function closeSizePrompt() {
+    setSizeOpen(false)
+    setShowGuide(false)
+    setNeedsSize(false)
+  }
+
+  async function addToCart(variantId: string) {
+    if (!variantId || adding) return
     setAdding(true)
     setAddError('')
     try {
-      await addItem(selectedId, 1)
+      await addItem(variantId, 1)
+      closeSizePrompt()
     } catch (err) {
       console.error('Failed to add from shop card', err)
       setAddError(t('cart.add_error'))
     } finally {
       setAdding(false)
     }
+  }
+
+  function onCardAdd() {
+    if (isSoldOut || adding) return
+    if (inStock.length === 1 && inStock[0]) {
+      void addToCart(inStock[0].id)
+      return
+    }
+    setAddError('')
+    setSizeOpen(true)
+  }
+
+  function onModalAdd() {
+    if (!selectedId) {
+      setNeedsSize(true)
+      return
+    }
+    void addToCart(selectedId)
   }
 
   return (
@@ -106,40 +142,91 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
     </Link>
     {showAddToCart && (
       <div className="mt-3">
-        {inStock.length > 1 && (
-          <div className="mb-2 flex flex-wrap gap-1">
-            {inStock.map((variant) => {
-              const selected = selectedId === variant.id
-              return (
-                <button
-                  key={variant.id}
-                  type="button"
-                  onClick={() => setSelectedId(variant.id)}
-                  className={`cursor-pointer border px-2 py-1 font-body text-[11px] lowercase tracking-[-0.04em] ${
-                    selected
-                      ? 'border-charcoal bg-charcoal text-cream'
-                      : 'border-charcoal/20 text-charcoal'
-                  }`}
-                >
-                  {variant.size}
-                </button>
-              )
-            })}
-          </div>
-        )}
         <button
           type="button"
-          disabled={isSoldOut || !selectedId || adding}
-          onClick={() => void addToCart()}
+          disabled={isSoldOut || adding}
+          onClick={onCardAdd}
           className="w-full cursor-pointer bg-charcoal px-3 py-2.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:bg-charcoal/10 disabled:text-charcoal/40"
         >
           {isSoldOut ? t('product.soldout') : adding ? t('product.loading') : t('product.add_to_cart')}
         </button>
-        {addError && (
+        {addError && !sizeOpen && (
           <p className="mt-1 font-body text-[12px] lowercase tracking-[-0.04em] text-red">{addError}</p>
         )}
       </div>
     )}
+
+    <Modal
+      isOpen={sizeOpen}
+      onClose={closeSizePrompt}
+      title={t('product.select_variant')}
+      maxWidthClass={showGuide && hasStructuredSizeChart(product.size_chart) ? 'max-w-3xl' : 'max-w-xl'}
+    >
+      <div className="space-y-5">
+        <div>
+          <div className={`flex flex-wrap gap-1.5 ${needsSize ? 'border border-red p-2' : ''}`}>
+            {inStock.map((variant) => {
+              const selected = selectedId === variant.id
+              const label =
+                showColorOnPill && variant.color
+                  ? `${variant.size} / ${variant.color}`
+                  : variant.size
+              return (
+                <button
+                  key={variant.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedId(variant.id)
+                    setNeedsSize(false)
+                  }}
+                  className={`cursor-pointer border px-3 py-1.5 font-body text-[12px] lowercase tracking-[-0.04em] ${
+                    selected
+                      ? 'border-charcoal bg-charcoal text-cream'
+                      : 'border-charcoal/20 text-charcoal hover:border-charcoal'
+                  }`}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+          {needsSize && (
+            <p className="mt-2 font-body text-[12px] lowercase tracking-[-0.04em] text-red">
+              {t('product.select_variant')}
+            </p>
+          )}
+        </div>
+
+        {hasGuide && (
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowGuide((open) => !open)}
+              className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/70 underline decoration-charcoal/30 underline-offset-4 hover:text-charcoal"
+            >
+              {showGuide ? t('product.sizeguide.hide') : t('product.sizeguide.title')}
+            </button>
+            {showGuide && (
+              <div className="mt-4">
+                <SizeGuideContent sizeGuide={product.size_guide} sizeChart={product.size_chart} />
+              </div>
+            )}
+          </div>
+        )}
+
+        <button
+          type="button"
+          disabled={adding}
+          onClick={onModalAdd}
+          className="w-full cursor-pointer bg-charcoal px-3 py-2.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {adding ? t('product.loading') : t('product.add_to_cart')}
+        </button>
+        {addError && (
+          <p className="font-body text-[12px] lowercase tracking-[-0.04em] text-red">{addError}</p>
+        )}
+      </div>
+    </Modal>
     </div>
   )
 }
