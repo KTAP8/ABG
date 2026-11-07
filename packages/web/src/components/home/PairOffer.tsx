@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../../lib/cart-context'
 import type { Product } from '../../lib/api'
+import { productProps, track } from '../../lib/analytics'
 
 const UNCOMMON_HENLEY_ID = '84c31f18-564d-49c5-8591-d93a78ff1b06'
 const PLUNGE_LONG_SLEEVE_ID = '081ab031-7177-4dfb-9be8-539ea77e4e97'
@@ -19,6 +20,14 @@ function inStock(product: Product) {
 
 function stockOf(product: Product) {
   return (product.variants ?? []).reduce((sum, variant) => sum + variant.stock, 0)
+}
+
+/** A child component, because PairOffer can return null before any hook would run. */
+function PairOfferImpression({ offer }: { offer: 'couple' | 'bestie' | 'both' }) {
+  useEffect(() => {
+    track('pair_offer_viewed', { offer })
+  }, [offer])
+  return null
 }
 
 export function PairOffer({ products }: { products: Product[] }) {
@@ -41,6 +50,9 @@ export function PairOffer({ products }: { products: Product[] }) {
   const bestieReady = Boolean(plungeVariant) && stockOf(plunge) >= 2
   if (!coupleReady && !bestieReady) return null
 
+  const henleyProps = productProps(henley)
+  const plungeProps = productProps(plunge)
+
   const nameFor = (product: Product) => {
     if (i18n.language?.startsWith('th') && product.name_th) return product.name_th
     return product.name
@@ -55,8 +67,23 @@ export function PairOffer({ products }: { products: Product[] }) {
     setBusy('couple')
     setError('')
     try {
+      // Tracked one at a time, because the second add can fail after the first succeeds.
       await addItem(henleySizes[0].id, 1)
+      track('item_added_to_cart', {
+        ...henleyProps,
+        size: henleySizes[0].size,
+        sku: henleySizes[0].sku,
+        quantity: 1,
+        source: 'pair_couple',
+      })
       await addItem(plungeVariant.id, 1)
+      track('item_added_to_cart', {
+        ...plungeProps,
+        size: plungeVariant.size,
+        sku: plungeVariant.sku,
+        quantity: 1,
+        source: 'pair_couple',
+      })
       navigate('/cart')
     } catch (err) {
       console.error('Failed to add the pair', err)
@@ -71,6 +98,13 @@ export function PairOffer({ products }: { products: Product[] }) {
     setError('')
     try {
       await addItem(plungeVariant.id, 2)
+      track('item_added_to_cart', {
+        ...plungeProps,
+        size: plungeVariant.size,
+        sku: plungeVariant.sku,
+        quantity: 2,
+        source: 'pair_bestie',
+      })
       navigate('/cart')
     } catch (err) {
       console.error('Failed to add two plunges', err)
@@ -89,6 +123,9 @@ export function PairOffer({ products }: { products: Product[] }) {
 
   return (
     <section className="w-full bg-cream px-6 pt-12 pb-4 md:px-8 md:pt-16 lg:px-[27px]">
+      <PairOfferImpression
+        offer={coupleReady && bestieReady ? 'both' : coupleReady ? 'couple' : 'bestie'}
+      />
       <div className="mx-auto w-full max-w-7xl lg:px-20 xl:px-32">
         <header className="mb-6 flex flex-col gap-6 md:mb-8 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-x-12 md:gap-y-3">
           <h2 className="max-w-xl font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-none tracking-[-0.07em] text-charcoal md:col-start-1 md:row-start-1 md:self-end">

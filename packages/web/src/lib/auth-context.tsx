@@ -16,6 +16,7 @@ import {
   type AuthSessionUser,
 } from './auth'
 import { getMe, type MeResponse } from './api'
+import { identifyUser, resetAnalyticsUser } from './analytics'
 import { useToast } from './toast-context'
 
 type AuthContextValue = {
@@ -98,8 +99,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void refresh()
   }, [refresh])
 
+  useEffect(() => {
+    if (loading || !user?.id) return
+    identifyUser(user.id, {
+      onboarding_completed: !needsOnboarding,
+      heard_from: profile?.heard_from,
+      shop_for: profile?.shop_for,
+    })
+  }, [loading, user?.id, needsOnboarding, profile?.heard_from, profile?.shop_for])
+
   const handleSignOut = useCallback(async () => {
     await authSignOut()
+    resetAnalyticsUser()
     setUser(null)
     setProfile(null)
     setNeedsOnboarding(false)

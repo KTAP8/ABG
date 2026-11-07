@@ -20,6 +20,7 @@
     "jose": "^6.2.3",
     "multer": "^1.x",
     "nanoid": "^5.x",
+    "posthog-node": "^5.63.0",
     "resend": "latest",
     "stripe": "22.4.0",
     "tsx": "^4.x",

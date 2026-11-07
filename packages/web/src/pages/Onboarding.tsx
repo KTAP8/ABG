@@ -7,6 +7,7 @@ import { Footer } from '../components/layout/Footer'
 import { useAuth } from '../lib/auth-context'
 import { submitOnboarding } from '../lib/api'
 import { useToast } from '../lib/toast-context'
+import { track } from '../lib/analytics'
 
 const HEARD_FROM = ['ig', 'friend', 'facebook', 'found_myself'] as const
 const SHOP_FOR = ['men', 'women', 'both'] as const
@@ -73,6 +74,7 @@ export default function Onboarding() {
     (step === 0 && heardFrom) || (step === 1 && shopFor) || (step === 2 && notifyChannel)
 
   const handleSkip = () => {
+    track('onboarding_finished', { skipped: true })
     navigate('/', { replace: true })
   }
 
@@ -94,6 +96,7 @@ export default function Onboarding() {
         email: user.email || undefined,
         display_name: user.name || undefined,
       })
+      track('onboarding_finished', { skipped: false })
       await refresh()
       showToast(t('toast.onboarding.complete'))
       navigate('/', { replace: true })

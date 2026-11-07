@@ -389,5 +389,11 @@
   "checkout.error.order_not_found": "we couldn't find that order.",
   "checkout.error.generic": "checkout didn't go through. try again.",
   "modal.close": "close",
-  "modal.dialog": "dialog"
+  "modal.dialog": "dialog",
+  "consent.title": "cookies, your call",
+  "consent.body": "we use analytics and masked session replays to see how the site is used and improve it. decline and we only keep anonymous counts, with no cookies.",
+  "consent.accept": "accept",
+  "consent.decline": "decline",
+  "consent.learn_more": "privacy policy",
+  "footer.legal.cookies": "cookie settings"
 }

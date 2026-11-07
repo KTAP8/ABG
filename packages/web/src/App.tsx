@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './lib/auth-context'
 import { AuthToasts } from './lib/auth-toasts'
+import { ConsentBanner } from './components/ConsentBanner'
 import { CartProvider } from './lib/cart-context'
 import { ToastProvider } from './lib/toast-context'
 import Home from './pages/Home'
@@ -51,6 +52,7 @@ export default function App() {
               {import.meta.env.DEV && <Route path="/admin/shop" element={<ShopOrder />} />}
               {import.meta.env.DEV && <Route path="/admin/catalog" element={<Catalog />} />}
             </Routes>
+            <ConsentBanner />
           </CartProvider>
         </AuthProvider>
       </ToastProvider>

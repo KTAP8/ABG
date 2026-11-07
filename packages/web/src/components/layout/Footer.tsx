@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { isAnalyticsEnabled, openConsentSettings } from '../../lib/analytics'
 
 export interface FooterProps {
   bgClass?: string
@@ -39,6 +40,15 @@ export function Footer({ bgClass = 'bg-cream' }: FooterProps) {
                   {t(link.key)}
                 </Link>
               ))}
+              {isAnalyticsEnabled() && (
+                <button
+                  type="button"
+                  onClick={openConsentSettings}
+                  className="cursor-pointer text-left font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal transition-opacity hover:opacity-70"
+                >
+                  {t('footer.legal.cookies')}
+                </button>
+              )}
             </div>
           </div>
 

@@ -6,6 +6,7 @@ import { Modal } from '../ui/Modal'
 import { useTranslation } from 'react-i18next'
 import { resolveColorValue } from './ColorSelector'
 import { useCart } from '../../lib/cart-context'
+import { productProps, track } from '../../lib/analytics'
 import {
   SizeGuideContent,
   hasStructuredSizeChart,
@@ -54,6 +55,14 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
     setAddError('')
     try {
       await addItem(variantId, 1)
+      const variant = product.variants?.find((item) => item.id === variantId)
+      track('item_added_to_cart', {
+        ...productProps(product),
+        size: variant?.size,
+        sku: variant?.sku,
+        quantity: 1,
+        source: 'listing',
+      })
       closeSizePrompt()
     } catch (err) {
       console.error('Failed to add from shop card', err)
@@ -178,6 +187,12 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
                   onClick={() => {
                     setSelectedId(variant.id)
                     setNeedsSize(false)
+                    track('size_selected', {
+                      product_id: product.id,
+                      size: variant.size,
+                      sku: variant.sku,
+                      source: 'listing',
+                    })
                   }}
                   className={`cursor-pointer border px-3 py-1.5 font-body text-[12px] lowercase tracking-[-0.04em] ${
                     selected
@@ -201,7 +216,12 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
           <div>
             <button
               type="button"
-              onClick={() => setShowGuide((open) => !open)}
+              onClick={() => {
+                if (!showGuide) {
+                  track('size_guide_opened', { product_id: product.id, source: 'listing' })
+                }
+                setShowGuide(!showGuide)
+              }}
               className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/70 underline decoration-charcoal/30 underline-offset-4 hover:text-charcoal"
             >
               {showGuide ? t('product.sizeguide.hide') : t('product.sizeguide.title')}

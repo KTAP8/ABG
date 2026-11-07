@@ -16,6 +16,7 @@ import type { CartIdentity } from './cart'
 import { findCart } from './cart'
 import { createStripe, integrationIdentifier } from './stripe'
 import { createEmailClient, sendOrderConfirmationEmail } from './email'
+import type { Analytics } from './analytics'
 import type Stripe from 'stripe'
 
 export const FREE_SHIPPING_THRESHOLD = 1000
@@ -237,8 +238,16 @@ async function incrementStock(db: Db, lines: { variantId: string; quantity: numb
   }
 }
 
+type ExpiredReason = 'timeout' | 'superseded' | 'stripe_error' | 'stock_failure'
+
+type ExpiryTracking = { analytics: Analytics; analyticsId?: string; reason: ExpiredReason }
+
+function trackExpired({ analytics, analyticsId, reason }: ExpiryTracking, orderId: string) {
+  analytics.captureOrderEvent('order_expired', { orderId, analyticsId, properties: { reason } })
+}
+
 /** Restore stock only when this call is the one that moves pending → expired. */
-export async function expireOrder(db: Db, orderId: string) {
+export async function expireOrder(db: Db, orderId: string, tracking: ExpiryTracking) {
   const [expired] = await db
     .update(orders)
     .set({ status: 'expired', updated_at: new Date() })
@@ -253,28 +262,41 @@ export async function expireOrder(db: Db, orderId: string) {
     .where(eq(order_items.order_id, orderId))
 
   await incrementStock(db, items)
+  trackExpired(tracking, orderId)
 }
 
-async function expirePendingForCart(db: Db, cartId: string) {
+async function expirePendingForCart(
+  db: Db,
+  cartId: string,
+  analytics: Analytics,
+  analyticsId?: string,
+) {
   const pending = await db
     .select({ id: orders.id })
     .from(orders)
     .where(and(eq(orders.cart_id, cartId), eq(orders.status, 'pending')))
 
   for (const order of pending) {
-    await expireOrder(db, order.id)
+    await expireOrder(db, order.id, { analytics, analyticsId, reason: 'superseded' })
   }
 }
 
 export async function createCheckoutSession(
   db: Db,
   identity: CartIdentity,
-  env: { secretKey: string; webUrl: string; customerEmail?: string },
+  env: {
+    secretKey: string
+    webUrl: string
+    customerEmail?: string
+    analytics: Analytics
+    analyticsId?: string
+  },
   couponCode?: string,
 ) {
+  const { analytics, analyticsId } = env
   const cart = await findCart(db, identity)
   if (!cart) throw new AppError(400, 'cart_empty')
-  await expirePendingForCart(db, cart.id)
+  await expirePendingForCart(db, cart.id, analytics, analyticsId)
 
   const { cartId, quote } = await quoteCheckout(db, identity, couponCode)
 
@@ -316,6 +338,7 @@ export async function createCheckoutSession(
       .update(orders)
       .set({ status: 'expired', updated_at: new Date() })
       .where(eq(orders.id, order.id))
+    trackExpired({ analytics, analyticsId, reason: 'stock_failure' }, order.id)
     throw err
   }
 
@@ -340,8 +363,8 @@ export async function createCheckoutSession(
       integration_identifier: integrationIdentifier(),
       customer_email: env.customerEmail,
       success_url: `${webUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${webUrl}/cart`,
-      metadata: { order_id: order.id },
+      cancel_url: `${webUrl}/cart?cancelled=1`,
+      metadata: { order_id: order.id, ...(analyticsId ? { analytics_id: analyticsId } : {}) },
       client_reference_id: order.id,
       expires_at: Math.floor(Date.now() / 1000) + CHECKOUT_HOLD_SECONDS,
       shipping_address_collection: { allowed_countries: ['TH'] },
@@ -377,7 +400,7 @@ export async function createCheckoutSession(
     if (!session.url) throw new AppError(500, 'stripe_not_configured')
     return { url: session.url, quote }
   } catch (err) {
-    await expireOrder(db, order.id)
+    await expireOrder(db, order.id, { analytics, analyticsId, reason: 'stripe_error' })
     if (err instanceof AppError) throw err
     console.error('Stripe checkout session failed:', err)
     throw new AppError(502, 'stripe_not_configured')
@@ -440,11 +463,42 @@ function addressFromSession(session: Stripe.Checkout.Session) {
   }
 }
 
+/** Never throws: finalizePaid must still burn the coupon, clear the cart and send the email. */
+async function trackPurchase(
+  db: Db,
+  order: typeof orders.$inferSelect,
+  session: Stripe.Checkout.Session,
+  analytics: Analytics,
+) {
+  try {
+    const lines = await orderLines(db, order.id)
+    analytics.captureOrderEvent('purchase_completed', {
+      orderId: order.id,
+      analyticsId: session.metadata?.analytics_id,
+      properties: {
+        revenue: order.total,
+        subtotal: order.subtotal,
+        discount: order.discount,
+        shipping: order.shipping,
+        currency: 'THB',
+        item_count: lines.reduce((sum, line) => sum + line.quantity, 0),
+        has_coupon: Boolean(order.coupon_id),
+        product_ids: [
+          ...new Set(lines.map((line) => line.productId).filter((id): id is string => Boolean(id))),
+        ],
+      },
+    })
+  } catch (err) {
+    console.error('Purchase analytics failed:', err)
+  }
+}
+
 async function finalizePaid(
   db: Db,
   orderId: string,
   session: Stripe.Checkout.Session,
   emailEnv: { apiKey?: string; from?: string },
+  analytics: Analytics,
 ) {
   const snapshot = addressFromSession(session)
   const [paid] = await db
@@ -511,6 +565,9 @@ async function finalizePaid(
 
   if (!order) return null
 
+  // Past the early returns, so a redelivered webhook can't count a purchase twice.
+  await trackPurchase(db, order, session, analytics)
+
   if (order.coupon_id) {
     await db
       .update(coupons)
@@ -570,6 +627,7 @@ export async function handleCheckoutEvent(
   db: Db,
   event: Stripe.Event,
   emailEnv: { apiKey?: string; from?: string },
+  analytics: Analytics,
 ) {
   if (event.type !== 'checkout.session.completed' && event.type !== 'checkout.session.expired') {
     return
@@ -580,12 +638,16 @@ export async function handleCheckoutEvent(
   if (!orderId) return
 
   if (event.type === 'checkout.session.expired') {
-    await expireOrder(db, orderId)
+    await expireOrder(db, orderId, {
+      analytics,
+      analyticsId: session.metadata?.analytics_id,
+      reason: 'timeout',
+    })
     return
   }
 
   if (session.payment_status !== 'paid') return
-  await finalizePaid(db, orderId, session, emailEnv)
+  await finalizePaid(db, orderId, session, emailEnv, analytics)
 }
 
 export async function customerEmailForUser(db: Db, userId: string | undefined, jwtEmail?: string) {

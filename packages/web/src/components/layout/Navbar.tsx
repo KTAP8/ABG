@@ -169,7 +169,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
               </button>
               {user && accountMenuOpen && (
                 <div className="absolute right-0 top-full mt-3 min-w-[160px] border border-white/15 bg-charcoal p-3 text-cream">
-                  <p className="mb-2 truncate font-body text-[11px] tracking-[-0.04em] text-cream/60">
+                  <p className="ph-no-capture mb-2 truncate font-body text-[11px] tracking-[-0.04em] text-cream/60">
                     {user.email || user.name}
                   </p>
                   <Link

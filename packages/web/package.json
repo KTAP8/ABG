@@ -14,6 +14,7 @@
     "i18next": "^23.x",
     "lucide-react": "^1.69.0",
     "motion": "^11.x",
+    "posthog-js": "^1.447.1",
     "react": "^18.x",
     "react-dom": "^18.x",
     "react-i18next": "^14.x",

@@ -7,14 +7,17 @@
   // Secrets (not vars): DATABASE_URL, RESEND_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
   "vars": {
     "WEB_URL": "https://abg-web.pages.dev",
-    "NEON_AUTH_URL": "https://ep-cool-cherry-ao56rt68.neonauth.c-2.ap-southeast-1.aws.neon.tech/neondb/auth"
+    "NEON_AUTH_URL": "https://ep-cool-cherry-ao56rt68.neonauth.c-2.ap-southeast-1.aws.neon.tech/neondb/auth",
+    // Add POSTHOG_KEY (the public phc_ project token) here to turn on server events.
+    "POSTHOG_HOST": "https://eu.i.posthog.com",
+    "POSTHOG_KEY": "phc_tVNpF9hxB5MJogwGkpmPrroMbVzHb5rj7fUoD4t4eMCJ",
   },
   "env": {
     "dev": {
       "vars": {
         "WEB_URL": "http://localhost:5173",
-        "NEON_AUTH_URL": "https://ep-cool-cherry-ao56rt68.neonauth.c-2.ap-southeast-1.aws.neon.tech/neondb/auth"
-      }
-    }
-  }
+        "NEON_AUTH_URL": "https://ep-cool-cherry-ao56rt68.neonauth.c-2.ap-southeast-1.aws.neon.tech/neondb/auth",
+      },
+    },
+  },
 }

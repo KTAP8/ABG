@@ -3,6 +3,7 @@
 interface ImportMetaEnv {
   readonly VITE_API_URL?: string
   readonly VITE_NEON_AUTH_URL?: string
+  readonly VITE_POSTHOG_KEY?: string
 }
 
 interface ImportMeta {

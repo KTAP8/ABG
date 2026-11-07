@@ -5,7 +5,7 @@ export default function Privacy() {
   const { t } = useTranslation()
 
   return (
-    <LegalPageLayout title={t('legal.privacy.title')} lastUpdated="July 14, 2026">
+    <LegalPageLayout title={t('legal.privacy.title')} lastUpdated="November 7, 2026">
       <p>
         This Privacy Policy explains what personal data ABG ("we", "us", "our") collects through
         this Site, why we collect it, and how you can reach us about it.
@@ -24,12 +24,21 @@ export default function Privacy() {
             (email and/or LINE)
           </li>
           <li>
-            Name, contact details, shipping address, and size, when you submit an order through an
-            external order form linked from the Site
+            Name, contact details, shipping address, and size, when you place an order
+          </li>
+          <li>
+            Your answers to the optional survey shown after checkout
+          </li>
+          <li>
+            Usage data about how you use the Site, such as pages viewed, products viewed, items
+            added to your cart, your device and browser type, how you reached the Site, and your
+            approximate location. If you accept analytics, this can include masked recordings of
+            your visits (see section 4)
           </li>
         </ul>
         <p>
-          We don't collect payment card details on this Site — we don't process payments here.
+          Card payments are handled on Stripe's secure checkout page. We never see or store your
+          full card details.
         </p>
       </section>
 
@@ -41,6 +50,7 @@ export default function Privacy() {
           <li>Notify you about drops, waitlist updates, and discount codes you've requested</li>
           <li>Send newsletter emails, if you've subscribed</li>
           <li>Respond to support requests</li>
+          <li>Understand how the Site is used, and improve it, its products, and its promotions</li>
         </ul>
         <p>We do not sell your personal data.</p>
       </section>
@@ -52,6 +62,13 @@ export default function Privacy() {
           they process data on our behalf:
         </p>
         <ul>
+          <li>
+            <strong>Stripe</strong>, to process payments and collect shipping details at checkout
+          </li>
+          <li>
+            <strong>PostHog</strong>, to analyze how the Site is used. PostHog stores this data in
+            the European Union, which is outside Thailand
+          </li>
           <li>
             <strong>Resend</strong>, to send transactional and drop-related emails
           </li>
@@ -76,11 +93,26 @@ export default function Privacy() {
       <section>
         <h2>4. cookies</h2>
         <p>
-          The Site does not currently use analytics or advertising cookies or tracking pixels. It
-          may use essential, strictly-necessary cookies to make basic functionality work (for
-          example, remembering a language preference, or keeping you signed in after Google
-          authentication). If we add analytics or marketing cookies in the future, we'll update
-          this section and, where required, ask for your consent first.
+          The Site uses essential, strictly-necessary cookies and similar browser storage to make
+          basic functionality work (for example, keeping your cart, remembering your cookie choice,
+          or keeping you signed in after Google authentication). We don't use advertising cookies
+          or tracking pixels.
+        </p>
+        <p>
+          With your consent, we also use PostHog analytics. If you accept, PostHog stores an
+          identifier in your browser so we can understand repeat visits and link activity to your
+          account if you're signed in. Accepting also allows masked session recordings, which show
+          how pages are used. We mask what you type and hide sensitive areas such as forms, order
+          details, and discount codes.
+        </p>
+        <p>
+          If you decline, or haven't chosen yet, we don't store analytics identifiers in your
+          browser or record your session, and we only collect anonymous, aggregated usage counts.
+          We also keep a record of completed orders for reporting, which isn't linked to your
+          analytics activity.
+        </p>
+        <p>
+          You can change your choice at any time using “cookie settings” in the footer.
         </p>
       </section>
 

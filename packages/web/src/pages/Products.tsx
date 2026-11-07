@@ -5,6 +5,7 @@ import { Footer } from '../components/layout/Footer'
 import { ProductGrid } from '../components/product/ProductGrid'
 import { getDrops, sortShopProducts } from '../lib/api'
 import type { Product } from '../lib/api'
+import { track } from '../lib/analytics'
 
 const CATEGORY_KEYS = [
   { value: '', key: 'products.filter.category_all' },
@@ -29,6 +30,12 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedGender, setSelectedGender] = useState('')
   const sentinelRef = useRef<HTMLDivElement | null>(null)
+
+  const applyFilters = (category: string, gender: string) => {
+    setSelectedCategory(category)
+    setSelectedGender(gender)
+    track('product_list_filtered', { category: category || null, gender: gender || null })
+  }
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -102,7 +109,7 @@ export default function Products() {
               <div className="relative">
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => applyFilters(e.target.value, selectedGender)}
                   className="w-full cursor-pointer appearance-none border border-charcoal/15 bg-cream py-2 pr-9 pl-3 text-left font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none sm:w-auto"
                 >
                   {CATEGORY_KEYS.map((cat) => (
@@ -119,7 +126,7 @@ export default function Products() {
               <div className="relative">
                 <select
                   value={selectedGender}
-                  onChange={(e) => setSelectedGender(e.target.value)}
+                  onChange={(e) => applyFilters(selectedCategory, e.target.value)}
                   className="w-full cursor-pointer appearance-none border border-charcoal/15 bg-cream py-2 pr-9 pl-3 text-left font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal focus:outline-none sm:w-auto"
                 >
                   {GENDER_KEYS.map((gender) => (
@@ -136,10 +143,7 @@ export default function Products() {
               {hasFilters && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedCategory('')
-                    setSelectedGender('')
-                  }}
+                  onClick={() => applyFilters('', '')}
                   className="cursor-pointer px-1 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/70 transition-opacity hover:text-charcoal"
                 >
                   {t('products.filter.clear')}

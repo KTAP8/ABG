@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { track } from '../../lib/analytics'
 
 const STEPS = ['hangout', 'silhouette', 'line', 'next_piece', 'heard_from', 'age_range', 'language'] as const
 
@@ -400,10 +401,9 @@ export function BuyerGame({
       onClose()
       return
     }
-    void onSave?.({
-      answers,
-      status: Object.keys(answers).length ? 'partial' : 'skipped',
-    })
+    const status = Object.keys(answers).length ? 'partial' : 'skipped'
+    track('survey_finished', { status, steps_answered: Object.keys(answers).length })
+    void onSave?.({ answers, status })
     onClose()
   }
 
@@ -468,6 +468,11 @@ export function BuyerGame({
     const delay = reduce ? 0 : 210
     window.setTimeout(() => {
       if (step >= STEPS.length - 1) {
+        track('survey_finished', {
+          status: 'completed',
+          steps_answered: Object.keys(next).length,
+          persona: computePersona(next).key,
+        })
         void onSave?.({ answers: next, status: 'completed' })
         setBusy(false)
         setStep(STEPS.length)
@@ -525,7 +530,7 @@ export function BuyerGame({
             role="dialog"
             aria-modal="true"
             aria-labelledby="buyer-game-title"
-            className="relative z-10 flex max-h-[92svh] w-full max-w-xl flex-col overflow-hidden border border-charcoal bg-cream"
+            className="ph-no-capture relative z-10 flex max-h-[92svh] w-full max-w-xl flex-col overflow-hidden border border-charcoal bg-cream"
             initial={reduce ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduce ? { opacity: 1 } : { opacity: 0, y: 8 }}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { PENDING_AUTH_TOAST_KEY } from './auth'
 import { useAuth } from './auth-context'
 import { useToast } from './toast-context'
+import { track } from './analytics'
 
 /** Shows a toast after Google OAuth when the user lands back in the app. */
 export function AuthToasts() {
@@ -19,6 +20,7 @@ export function AuthToasts() {
 
     sessionStorage.removeItem(PENDING_AUTH_TOAST_KEY)
     handledRef.current = true
+    track('login_completed', { first_login: needsOnboarding })
 
     if (needsOnboarding) {
       showToast(t('toast.auth.welcome'))

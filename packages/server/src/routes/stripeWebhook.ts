@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { AppError } from '../middleware/errorHandler'
 import { handleCheckoutEvent } from '../lib/checkout'
 import { createStripe } from '../lib/stripe'
+import { createAnalytics } from '../lib/analytics'
 import type { Env } from '../types'
 
 const stripeWebhook = new Hono<Env>()
@@ -27,10 +28,15 @@ stripeWebhook.post('/webhook', async (c) => {
     throw new AppError(400, 'invalid_signature')
   }
 
-  await handleCheckoutEvent(c.get('db'), event, {
-    apiKey: c.env.RESEND_API_KEY,
-    from: c.env.RESEND_FROM_EMAIL,
-  })
+  await handleCheckoutEvent(
+    c.get('db'),
+    event,
+    {
+      apiKey: c.env.RESEND_API_KEY,
+      from: c.env.RESEND_FROM_EMAIL,
+    },
+    createAnalytics(c.env, (promise) => c.executionCtx.waitUntil(promise)),
+  )
 
   return c.json({ received: true })
 })

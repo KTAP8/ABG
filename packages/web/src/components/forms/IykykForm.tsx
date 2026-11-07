@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { submitIykyk } from '../../lib/api'
+import { track } from '../../lib/analytics'
 
 export function IykykForm() {
   const { t } = useTranslation()
@@ -36,6 +37,7 @@ export function IykykForm() {
       })
       setDiscountCode(response.discount_code)
       setSubmitted(true)
+      track('iykyk_signup_completed', {})
     } catch (err) {
       const errMessage = (err as Error)?.message || ''
       if (errMessage.includes('already claimed')) {
@@ -75,7 +77,7 @@ export function IykykForm() {
 
   if (revealDone && discountCode) {
     return (
-      <div className="animate-fade-in space-y-5 py-1 text-center font-body">
+      <div className="ph-no-capture animate-fade-in space-y-5 py-1 text-center font-body">
         <div className="space-y-1.5">
           <div className="font-body text-2xl font-bold leading-none tracking-[-0.05em] text-charcoal">
             {t('iykyk.ready')}
@@ -115,7 +117,7 @@ export function IykykForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto flex w-full flex-col items-center gap-3.5">
+    <form onSubmit={handleSubmit} className="ph-no-capture mx-auto flex w-full flex-col items-center gap-3.5">
       <h2 className="font-body text-xl font-bold tracking-[-0.05em] text-charcoal md:text-2xl">
         {t('iykyk.form_title')}
       </h2>

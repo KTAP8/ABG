@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { optionalAuth } from '../middleware/optionalAuth'
 import { AppError } from '../middleware/errorHandler'
 import { parseGuestId } from '../lib/cart'
+import { createAnalytics } from '../lib/analytics'
 import {
   SURVEY_AGE,
   SURVEY_HANGOUT,
@@ -21,6 +22,8 @@ import type { Env } from '../types'
 
 const bodySchema = z.object({
   coupon_code: z.string().max(80).optional(),
+  // Optional and forgiving: a bad analytics ID must never block a checkout.
+  analytics_id: z.string().max(200).optional().catch(undefined),
 })
 
 const surveySchema = z.object({
@@ -89,7 +92,13 @@ checkout.post('/session', async (c) => {
   const { url } = await createCheckoutSession(
     c.get('db'),
     identity,
-    { secretKey, webUrl: c.env.WEB_URL, customerEmail },
+    {
+      secretKey,
+      webUrl: c.env.WEB_URL,
+      customerEmail,
+      analytics: createAnalytics(c.env, (promise) => c.executionCtx.waitUntil(promise)),
+      analyticsId: parsed.data.analytics_id,
+    },
     parsed.data.coupon_code,
   )
 

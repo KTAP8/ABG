@@ -15,6 +15,7 @@ import {
 import { getProduct } from '../lib/api'
 import type { Product, ProductVariant } from '../lib/api'
 import { useCart } from '../lib/cart-context'
+import { productProps, track } from '../lib/analytics'
 import { useToast } from '../lib/toast-context'
 
 export default function ProductDetail() {
@@ -31,6 +32,7 @@ export default function ProductDetail() {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [adding, setAdding] = useState(false)
   const imageColumnRef = useRef<HTMLDivElement>(null)
+  const viewedSlug = useRef<string | null>(null)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -38,6 +40,11 @@ export default function ProductDetail() {
         if (!slug) throw new Error('No slug provided')
         const data = await getProduct(slug)
         setProduct(data)
+        // The effect also re-runs when `t` changes, which isn't a new view.
+        if (viewedSlug.current !== slug) {
+          viewedSlug.current = slug
+          track('product_viewed', productProps(data))
+        }
         if (data.variants && data.variants.length > 0) {
           const firstColorVariant = data.variants.find((v) => v.color)
           const initialColor = firstColorVariant?.color || data.variants[0].color || ''
@@ -156,6 +163,13 @@ export default function ProductDetail() {
     setAdding(true)
     try {
       await addItem(selectedVariant.id, 1)
+      track('item_added_to_cart', {
+        ...productProps(product),
+        size: selectedVariant.size,
+        sku: selectedVariant.sku,
+        quantity: 1,
+        source: 'pdp',
+      })
       showToast(t('cart.added'))
     } catch (err) {
       console.error(err)
@@ -261,7 +275,15 @@ export default function ProductDetail() {
                     <SizeSelector
                       variants={variantsForColor}
                       selectedId={selectedVariant?.id || null}
-                      onSelect={setSelectedVariant}
+                      onSelect={(variant) => {
+                        setSelectedVariant(variant)
+                        track('size_selected', {
+                          product_id: product.id,
+                          size: variant.size,
+                          sku: variant.sku,
+                          source: 'pdp',
+                        })
+                      }}
                     />
                   )}
                 </div>
@@ -344,7 +366,10 @@ export default function ProductDetail() {
                         </span>
                         <button
                           type="button"
-                          onClick={() => setShowSizeGuide(true)}
+                          onClick={() => {
+                            setShowSizeGuide(true)
+                            track('size_guide_opened', { product_id: product.id, source: 'pdp' })
+                          }}
                           className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/70 transition-opacity hover:text-charcoal"
                         >
                           {t('product.sizeguide.view')}

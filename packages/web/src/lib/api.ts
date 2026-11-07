@@ -551,12 +551,13 @@ export async function quoteCheckout(
 export async function createCheckoutSession(
   couponCode: string | undefined,
   opts: CartHeaderOptions,
+  analyticsId?: string,
 ): Promise<{ url: string }> {
   const headers = await cartHeaders(opts)
   const res = await fetch(`${API_URL}/checkout/session`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ coupon_code: couponCode || undefined }),
+    body: JSON.stringify({ coupon_code: couponCode || undefined, analytics_id: analyticsId }),
   })
   if (!res.ok) throw await checkoutError(res, 'checkout_failed')
   return res.json()

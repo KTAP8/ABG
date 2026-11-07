@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { joinWaitlist } from '../../lib/api'
 import { useAuth } from '../../lib/auth-context'
+import { track } from '../../lib/analytics'
 
 interface WaitlistFormProps {
   dropId?: string
@@ -35,6 +36,7 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
         phone: phone || undefined,
         campus: campus || undefined,
       })
+      track('waitlist_joined', { drop_id: dropId })
       setSubmitted(true)
       setPhone('')
       setCampus('')
@@ -65,7 +67,7 @@ export function WaitlistForm({ dropId }: WaitlistFormProps) {
     'w-full border-0 border-b border-charcoal/15 bg-transparent px-0 py-3 font-body text-[14px] tracking-[-0.04em] text-charcoal placeholder:text-charcoal/30 focus:border-charcoal/50 focus:outline-none'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 text-left">
+    <form onSubmit={handleSubmit} className="ph-no-capture space-y-8 text-left">
       <div className="space-y-6">
         <div className="space-y-1">
           <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">

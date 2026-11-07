@@ -15,6 +15,8 @@ export type Env = {
     RESEND_FROM_EMAIL?: string
     STRIPE_SECRET_KEY?: string
     STRIPE_WEBHOOK_SECRET?: string
+    POSTHOG_KEY?: string
+    POSTHOG_HOST?: string
   }
   Variables: {
     db: Db

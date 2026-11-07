@@ -127,7 +127,7 @@ export default function Profile() {
           </p>
         )}
 
-        <form onSubmit={(e) => void handleSave(e)} className="mt-10 space-y-10">
+        <form onSubmit={(e) => void handleSave(e)} className="ph-no-capture mt-10 space-y-10">
           <div className="space-y-6">
             <div className="space-y-1">
               <label className="block font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/55">

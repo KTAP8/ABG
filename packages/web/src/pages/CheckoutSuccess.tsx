@@ -69,7 +69,7 @@ export default function CheckoutSuccess() {
         </p>
 
         {order && order.status === 'paid' && (
-          <div className="mt-8 space-y-3 border-t border-charcoal/15 pt-6">
+          <div className="ph-no-capture mt-8 space-y-3 border-t border-charcoal/15 pt-6">
             {order.items.map((item) => (
               <div key={`${item.product_name}-${item.size}-${item.color}`} className="flex justify-between gap-4">
                 <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal">

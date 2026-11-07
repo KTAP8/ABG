@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
@@ -7,6 +7,7 @@ import { useCart } from '../lib/cart-context'
 import { useAuth } from '../lib/auth-context'
 import { createCheckoutSession, quoteCheckout, type CheckoutQuote } from '../lib/api'
 import { getGuestId } from '../lib/guest-id'
+import { getAnalyticsId, track } from '../lib/analytics'
 
 const FREE_SHIPPING_AT = 1000
 const SHIPPING_FEE = 50
@@ -18,6 +19,10 @@ const PAIR_SAVE = 190
 
 function formatPrice(price: number) {
   return `฿${price.toLocaleString('en-US')}`
+}
+
+function errorCode(err: unknown) {
+  return err instanceof Error ? err.message : 'unknown'
 }
 
 function errorText(t: (key: string) => string, err: unknown) {
@@ -40,6 +45,15 @@ export default function Cart() {
   const [addonOpen, setAddonOpen] = useState(false)
   const [addonDismissed, setAddonDismissed] = useState(false)
   const [checkingOut, setCheckingOut] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const cancelTracked = useRef(false)
+
+  useEffect(() => {
+    if (searchParams.get('cancelled') !== '1' || cancelTracked.current) return
+    cancelTracked.current = true
+    track('checkout_cancelled', {})
+    setSearchParams({}, { replace: true })
+  }, [searchParams, setSearchParams])
 
   const cartOpts = () => ({
     signedIn: Boolean(user?.id),
@@ -105,8 +119,10 @@ export default function Cart() {
       const next = await quoteCheckout(code, cartOpts())
       setAppliedCode(code)
       setQuote(next)
+      track('coupon_applied', { success: true })
     } catch (err) {
       setFormError(errorText(t, err))
+      track('coupon_applied', { success: false, error_code: errorCode(err) })
     } finally {
       setApplying(false)
     }
@@ -121,6 +137,7 @@ export default function Cart() {
   const dismissAddon = () => {
     setAddonOpen(false)
     setAddonDismissed(true)
+    track('cart_upsell_responded', { accepted: false })
   }
 
   const addPlunge = async () => {
@@ -128,6 +145,12 @@ export default function Cart() {
     setFormError('')
     try {
       await addItem(PLUNGE_VARIANT_ID, 1)
+      track('item_added_to_cart', {
+        product_id: PLUNGE_LONG_SLEEVE_ID,
+        quantity: 1,
+        source: 'cart_upsell',
+      })
+      track('cart_upsell_responded', { accepted: true })
     } catch (err) {
       setFormError(err instanceof Error ? err.message : t('cart.add_error'))
     } finally {
@@ -138,15 +161,27 @@ export default function Cart() {
   const checkout = async () => {
     if (hasSoldOut) {
       setFormError(t('checkout.error.sold_out'))
+      track('checkout_blocked', { error_code: 'sold_out' })
       return
     }
     setCheckingOut(true)
     setFormError('')
+    track('checkout_started', {
+      value: total,
+      currency: 'THB',
+      item_count: itemCount,
+      has_coupon: Boolean(appliedCode),
+    })
     try {
-      const { url } = await createCheckoutSession(appliedCode ?? undefined, cartOpts())
+      const { url } = await createCheckoutSession(
+        appliedCode ?? undefined,
+        cartOpts(),
+        getAnalyticsId(),
+      )
       window.location.assign(url)
     } catch (err) {
       setFormError(errorText(t, err))
+      track('checkout_blocked', { error_code: errorCode(err) })
       setCheckingOut(false)
     }
   }
@@ -246,7 +281,15 @@ export default function Cart() {
                       <button
                         type="button"
                         className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50 transition-opacity hover:opacity-70"
-                        onClick={() => void removeItem(item.id)}
+                        onClick={() =>
+                          void removeItem(item.id).then(() =>
+                            track('item_removed_from_cart', {
+                              product_id: item.product_id,
+                              quantity: item.quantity,
+                              size: item.size,
+                            }),
+                          )
+                        }
                       >
                         {t('cart.remove')}
                       </button>
@@ -297,7 +340,7 @@ export default function Cart() {
               )}
 
               {appliedCode ? (
-                <div className="space-y-2">
+                <div className="ph-no-capture space-y-2">
                   {(quote?.couponDiscount ?? 0) > 0 && (
                     <div className="flex items-baseline justify-between">
                       <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal/60">
@@ -318,7 +361,7 @@ export default function Cart() {
                 </div>
               ) : (
                 <form
-                  className="flex gap-2"
+                  className="ph-no-capture flex gap-2"
                   onSubmit={(event) => {
                     event.preventDefault()
                     void applyCoupon()
