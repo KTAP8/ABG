@@ -18,6 +18,59 @@ import { useCart } from '../lib/cart-context'
 import { productProps, track } from '../lib/analytics'
 import { useToast } from '../lib/toast-context'
 
+function AddToCartButton({
+  soldOut,
+  hasVariant,
+  adding,
+  onAdd,
+  labelSoldOut,
+  labelSelect,
+  labelLoading,
+  labelAdd,
+}: {
+  soldOut: boolean
+  hasVariant: boolean
+  adding: boolean
+  onAdd: () => void
+  labelSoldOut: string
+  labelSelect: string
+  labelLoading: string
+  labelAdd: string
+}) {
+  if (soldOut) {
+    return (
+      <button
+        disabled
+        type="button"
+        className="w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none"
+      >
+        {labelSoldOut}
+      </button>
+    )
+  }
+  if (!hasVariant) {
+    return (
+      <button
+        disabled
+        type="button"
+        className="w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none"
+      >
+        {labelSelect}
+      </button>
+    )
+  }
+  return (
+    <button
+      type="button"
+      disabled={adding}
+      onClick={onAdd}
+      className="w-full cursor-pointer bg-charcoal px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {adding ? labelLoading : labelAdd}
+    </button>
+  )
+}
+
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>()
   const { t } = useTranslation()
@@ -75,6 +128,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!product || filteredImages.length === 0) return
+    if (typeof window !== 'undefined' && !window.matchMedia('(min-width: 768px)').matches) return
 
     const root = imageColumnRef.current
     const observers = filteredImages.map((_, index) => {
@@ -183,7 +237,7 @@ export default function ProductDetail() {
     <div className="flex min-h-screen flex-col bg-cream md:h-svh md:overflow-hidden">
       <Navbar />
 
-      <main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col px-6 pt-6 pb-12 md:overflow-hidden md:px-8 md:pt-6 md:pb-0 lg:px-[27px]">
+      <main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col px-6 pt-6 pb-28 md:overflow-hidden md:px-8 md:pt-6 md:pb-0 lg:px-[27px]">
         <div className="grid min-h-0 flex-1 grid-cols-1 items-start gap-8 md:grid-cols-12 md:items-stretch md:gap-10 md:overflow-hidden">
           {/* Image column */}
           <div
@@ -213,13 +267,52 @@ export default function ProductDetail() {
                   ))}
               </div>
 
-              <div className="space-y-6">
+              <div className="md:hidden">
+                {filteredImages.length > 0 ? (
+                  <>
+                    <div className="relative aspect-3/4 w-full overflow-hidden bg-white">
+                      <img
+                        src={
+                          (filteredImages[activeImageIndex] ?? filteredImages[0]).url
+                        }
+                        alt={
+                          (filteredImages[activeImageIndex] ?? filteredImages[0]).alt_text ||
+                          product.name
+                        }
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    {filteredImages.length > 1 && (
+                      <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-none">
+                        {filteredImages.map((image, index) => (
+                          <button
+                            key={image.id}
+                            type="button"
+                            onClick={() => setActiveImageIndex(index)}
+                            className={`aspect-3/4 h-16 shrink-0 cursor-pointer overflow-hidden border bg-white transition-opacity duration-200 ${
+                              index === activeImageIndex
+                                ? 'border-charcoal opacity-100'
+                                : 'border-charcoal/15 opacity-45'
+                            }`}
+                          >
+                            <img src={image.url} alt="" className="h-full w-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="aspect-3/4 w-full" />
+                )}
+              </div>
+
+              <div className="hidden space-y-6 md:block">
                 {filteredImages.length > 0 ? (
                   filteredImages.map((image, index) => (
                     <div
                       key={image.id}
                       id={`product-image-${index}`}
-                      className="relative flex h-[min(72svh,calc(100vw*4/3))] w-full shrink-0 items-center justify-center md:h-[calc(100svh-6rem)]"
+                      className="relative flex h-[calc(100svh-6rem)] w-full shrink-0 items-center justify-center"
                     >
                       <img
                         src={image.url}
@@ -229,7 +322,7 @@ export default function ProductDetail() {
                     </div>
                   ))
                 ) : (
-                  <div className="h-[min(72svh,calc(100vw*4/3))] md:h-[calc(100svh-6rem)]" />
+                  <div className="h-[calc(100svh-6rem)]" />
                 )}
               </div>
             </div>
@@ -297,32 +390,16 @@ export default function ProductDetail() {
                     </p>
                   )}
 
-                  {isVariantSoldOut ? (
-                    <button
-                      disabled
-                      type="button"
-                      className="w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none"
-                    >
-                      {t('product.soldout')}
-                    </button>
-                  ) : !selectedVariant ? (
-                    <button
-                      disabled
-                      type="button"
-                      className="w-full cursor-not-allowed border border-charcoal/15 bg-charcoal/5 px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/40 select-none"
-                    >
-                      {t('product.select_variant')}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={adding}
-                      onClick={() => void handleAddToCart()}
-                      className="w-full cursor-pointer bg-charcoal px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {adding ? t('product.loading') : t('product.add_to_cart')}
-                    </button>
-                  )}
+                  <AddToCartButton
+                    soldOut={isVariantSoldOut}
+                    hasVariant={Boolean(selectedVariant)}
+                    adding={adding}
+                    onAdd={() => void handleAddToCart()}
+                    labelSoldOut={t('product.soldout')}
+                    labelSelect={t('product.select_variant')}
+                    labelLoading={t('product.loading')}
+                    labelAdd={t('product.add_to_cart')}
+                  />
                 </div>
               </div>
 
@@ -410,7 +487,27 @@ export default function ProductDetail() {
         <SizeGuideContent sizeGuide={product.size_guide} sizeChart={product.size_chart} />
       </Modal>
 
-      <div className="md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-charcoal bg-cream px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:hidden">
+        <div className="flex items-center gap-4">
+          <span className="shrink-0 font-body text-lg tracking-[-0.04em] text-charcoal">
+            {priceDisplay}
+          </span>
+          <div className="min-w-0 flex-1">
+            <AddToCartButton
+              soldOut={isVariantSoldOut}
+              hasVariant={Boolean(selectedVariant)}
+              adding={adding}
+              onAdd={() => void handleAddToCart()}
+              labelSoldOut={t('product.soldout')}
+              labelSelect={t('product.select_variant')}
+              labelLoading={t('product.loading')}
+              labelAdd={t('product.add_to_cart')}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="pb-24 md:hidden">
         <Footer />
       </div>
     </div>

@@ -200,7 +200,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
             </div>
             <Link
               to="/cart"
-              className="relative hidden cursor-pointer text-cream/85 transition-colors hover:text-cream md:flex"
+              className="relative flex cursor-pointer text-cream/85 transition-colors hover:text-cream"
               aria-label={t("nav.cart")}
             >
               <CartIcon />
@@ -233,7 +233,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
           />
 
           <div className="relative bg-charcoal text-cream">
-            {/* Header: logo + close */}
+            {/* Header: logo + cart + close */}
             <div className="flex items-center justify-between border-b border-white/15 px-5 py-3.5">
               <Link
                 to="/"
@@ -246,13 +246,28 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
                   className="h-7 w-auto"
                 />
               </Link>
-              <button
-                type="button"
-                className="cursor-pointer font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t("nav.close")}
-              </button>
+              <div className="flex items-center gap-4">
+                <Link
+                  to="/cart"
+                  className="relative flex cursor-pointer text-cream/85 transition-colors hover:text-cream"
+                  aria-label={t("nav.cart")}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <CartIcon />
+                  {itemCount > 0 && (
+                    <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center bg-red px-1 font-body text-[10px] leading-none text-cream">
+                      {itemCount > 99 ? "99+" : itemCount}
+                    </span>
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  className="cursor-pointer font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {t("nav.close")}
+                </button>
+              </div>
             </div>
 
             {/* Primary links */}
@@ -269,7 +284,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
               ))}
             </div>
 
-            {/* Account + cart */}
+            {/* Account */}
             <div className="flex flex-col gap-4 border-t border-white/15 px-5 py-5">
               <button
                 type="button"
@@ -298,20 +313,6 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
                   </button>
                 </>
               )}
-              <Link
-                to="/cart"
-                className="relative flex cursor-pointer items-center gap-2.5 font-body text-[14px] lowercase tracking-[-0.07em] text-cream transition-opacity hover:opacity-70"
-                aria-label={t("nav.cart")}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <CartIcon />
-                <span>{t("nav.cart")}</span>
-                {itemCount > 0 && (
-                  <span className="bg-red px-1.5 py-0.5 font-body text-[10px] leading-none text-cream">
-                    {itemCount > 99 ? "99+" : itemCount}
-                  </span>
-                )}
-              </Link>
             </div>
           </div>
         </div>

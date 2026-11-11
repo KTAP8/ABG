@@ -89,9 +89,9 @@ async function resolveCoupon(
   cartId: string,
   code: string | undefined,
   subtotal: number,
-): Promise<{ couponId: string | null; discount: number }> {
+): Promise<{ couponId: string | null; discount: number; freeShipping: boolean }> {
   const trimmed = code?.trim()
-  if (!trimmed) return { couponId: null, discount: 0 }
+  if (!trimmed) return { couponId: null, discount: 0, freeShipping: false }
 
   const [coupon] = await db
     .select()
@@ -133,7 +133,7 @@ async function resolveCoupon(
   }
 
   discount = Math.max(0, Math.min(discount, subtotal))
-  return { couponId: coupon.id, discount }
+  return { couponId: coupon.id, discount, freeShipping: Boolean(coupon.free_shipping) }
 }
 
 export async function quoteCheckout(
@@ -172,10 +172,15 @@ export async function quoteCheckout(
   const subtotal = lines.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0)
   const { couplePairs, bestiePairs, bundleDiscount } = pairDiscount(lines)
   const merchandise = Math.max(0, subtotal - bundleDiscount)
-  const { couponId, discount: couponDiscount } = await resolveCoupon(db, cart.id, couponCode, merchandise)
+  const { couponId, discount: couponDiscount, freeShipping } = await resolveCoupon(
+    db,
+    cart.id,
+    couponCode,
+    merchandise,
+  )
   const discount = bundleDiscount + couponDiscount
   const afterDiscount = subtotal - discount
-  const shipping = shippingFor(afterDiscount)
+  const shipping = freeShipping ? 0 : shippingFor(afterDiscount)
   const total = afterDiscount + shipping
 
   if (total <= 0) throw new AppError(400, 'zero_total')

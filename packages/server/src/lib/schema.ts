@@ -113,6 +113,7 @@ export const admin_users = pgTable('admin_users', {
  * Source of truth for all discount codes (IYKYK + bulk outreach).
  * Flat: set discount_amount, leave discount_percent null.
  * Percent: set discount_percent + max_discount_amount, leave discount_amount null.
+ * Free shipping: set free_shipping true (can combine with an amount/percent, or stand alone).
  */
 export const coupons = pgTable('coupons', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -120,6 +121,7 @@ export const coupons = pgTable('coupons', {
   discount_amount: integer('discount_amount'),
   discount_percent: integer('discount_percent'),
   max_discount_amount: integer('max_discount_amount'),
+  free_shipping: boolean('free_shipping').notNull().default(false),
   used_at: timestamp('used_at', { withTimezone: true }),
   /** Many redemptions. Single-use codes leave this false and burn used_at. */
   multi_use: boolean('multi_use').notNull().default(false),

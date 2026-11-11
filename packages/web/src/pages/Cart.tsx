@@ -343,8 +343,8 @@ export default function Cart() {
                 <div className="ph-no-capture space-y-2">
                   {(quote?.couponDiscount ?? 0) > 0 && (
                     <div className="flex items-baseline justify-between">
-                      <span className="font-body text-sm lowercase tracking-[-0.04em] text-charcoal/60">
-                        {t('cart.discount')} ({appliedCode})
+                      <span className="font-body text-sm tracking-[-0.04em] text-charcoal/60">
+                        <span className="lowercase">{t('cart.discount')}</span> ({appliedCode})
                       </span>
                       <span className="font-body text-sm tracking-[-0.04em] text-red">
                         −{formatPrice(quote?.couponDiscount ?? 0)}
@@ -371,7 +371,7 @@ export default function Cart() {
                     value={couponInput}
                     onChange={(event) => setCouponInput(event.target.value)}
                     placeholder={t('cart.coupon')}
-                    className="min-w-0 flex-1 border border-charcoal/20 bg-cream px-3 py-2 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal outline-none placeholder:text-charcoal/40"
+                    className="min-w-0 flex-1 border border-charcoal/20 bg-cream px-3 py-2 font-body text-[13px] tracking-[-0.04em] text-charcoal outline-none placeholder:text-charcoal/40"
                   />
                   <button
                     type="submit"
