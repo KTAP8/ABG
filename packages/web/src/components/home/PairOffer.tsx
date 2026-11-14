@@ -174,20 +174,20 @@ export function PairOffer({ products }: { products: Product[] }) {
           )}
         </header>
 
-        <div className="grid grid-cols-2 items-start gap-3 md:gap-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
           {shots.map(({ product, caption }) => {
             const image = product.images?.[0]
             return (
               <figure key={product.id}>
                 <Link
                   to={`/products/${product.slug}`}
-                  className="block overflow-hidden no-underline max-h-[58vw] md:max-h-[420px] lg:max-h-[460px]"
+                  className="relative block aspect-3/4 overflow-hidden no-underline"
                 >
                   {image ? (
                     <img
                       src={image.url}
                       alt={nameFor(product)}
-                      className="block h-auto w-full"
+                      className="absolute inset-0 h-full w-full object-cover object-top"
                     />
                   ) : null}
                 </Link>

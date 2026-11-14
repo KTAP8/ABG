@@ -15,6 +15,7 @@ import {
 import { getProduct } from '../lib/api'
 import type { Product, ProductVariant } from '../lib/api'
 import { useCart } from '../lib/cart-context'
+import { sortVariantsBySize } from '../lib/sizes'
 import { productProps, track } from '../lib/analytics'
 import { useToast } from '../lib/toast-context'
 
@@ -99,11 +100,12 @@ export default function ProductDetail() {
           track('product_viewed', productProps(data))
         }
         if (data.variants && data.variants.length > 0) {
-          const firstColorVariant = data.variants.find((v) => v.color)
-          const initialColor = firstColorVariant?.color || data.variants[0].color || ''
+          const ordered = sortVariantsBySize(data.variants)
+          const firstColorVariant = ordered.find((v) => v.color)
+          const initialColor = firstColorVariant?.color || ordered[0].color || ''
           setSelectedColor(initialColor)
-          const firstMatch = data.variants.find((v) => (v.color || '') === initialColor)
-          setSelectedVariant(firstMatch || data.variants[0])
+          const firstMatch = ordered.find((v) => (v.color || '') === initialColor)
+          setSelectedVariant(firstMatch || ordered[0])
         }
       } catch (err) {
         setError(t('product.not_found'))
@@ -123,8 +125,9 @@ export default function ProductDetail() {
   const filteredImages =
     product?.images?.filter((img) => !img.color || img.color === selectedColor) || []
 
-  const variantsForColor =
-    product?.variants?.filter((v) => (v.color || '') === selectedColor) || []
+  const variantsForColor = sortVariantsBySize(
+    product?.variants?.filter((v) => (v.color || '') === selectedColor) || [],
+  )
 
   useEffect(() => {
     if (!product || filteredImages.length === 0) return
@@ -162,11 +165,11 @@ export default function ProductDetail() {
     setSelectedColor(color)
     if (product?.variants) {
       const currentSize = selectedVariant?.size
-      const exactMatch = product.variants.find(
-        (v) => v.color === color && v.size === currentSize,
+      const forColor = sortVariantsBySize(
+        product.variants.filter((v) => v.color === color),
       )
-      const fallbackMatch = product.variants.find((v) => v.color === color)
-      setSelectedVariant(exactMatch || fallbackMatch || null)
+      const exactMatch = forColor.find((v) => v.size === currentSize)
+      setSelectedVariant(exactMatch || forColor[0] || null)
     }
     setActiveImageIndex(0)
   }

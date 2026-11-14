@@ -13,7 +13,7 @@ function columnVisible(rows: ProductSizeChartRow[], key: ColumnKey) {
 }
 
 export function hasStructuredSizeChart(rows: ProductSizeChartRow[] | undefined) {
-  return (rows?.length ?? 0) >= 2
+  return (rows ?? []).some((row) => row.size?.trim())
 }
 
 export function SizeGuideContent({

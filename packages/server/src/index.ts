@@ -14,6 +14,8 @@ import stripeWebhookRouter from './routes/stripeWebhook'
 import adminRouter from './routes/admin/index'
 import shopOrderRouter from './routes/shopOrder'
 import catalogRouter from './routes/catalog'
+import internalRouter from './routes/internal'
+import { sendDailyPackDigest } from './lib/packDigest'
 import type { Env } from './types'
 
 const app = new Hono<Env>()
@@ -46,6 +48,7 @@ app.route('/api/stripe', stripeWebhookRouter)
 app.route('/api/admin/shop-order', shopOrderRouter)
 app.route('/api/admin/catalog', catalogRouter)
 app.route('/api/admin', adminRouter)
+app.route('/api/internal', internalRouter)
 
 app.onError((err, c) => {
   console.error('Error:', err)
@@ -57,4 +60,11 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal server error' }, 500)
 })
 
-export default app
+const worker = {
+  fetch: app.fetch.bind(app),
+  async scheduled(_event: ScheduledEvent, env: Env['Bindings']) {
+    await sendDailyPackDigest(env)
+  },
+}
+
+export default worker

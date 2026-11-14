@@ -17,6 +17,8 @@ export type Env = {
     STRIPE_WEBHOOK_SECRET?: string
     POSTHOG_KEY?: string
     POSTHOG_HOST?: string
+    TELEGRAM_BOT_TOKEN?: string
+    TELEGRAM_CHAT_ID?: string
   }
   Variables: {
     db: Db

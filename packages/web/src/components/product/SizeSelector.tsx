@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { ProductVariant } from '../../lib/api'
+import { sortVariantsBySize } from '../../lib/sizes'
 import { SizePill } from '../ui/SizePill'
 
 interface SizeSelectorProps {
@@ -10,6 +11,7 @@ interface SizeSelectorProps {
 
 export function SizeSelector({ variants, selectedId, onSelect }: SizeSelectorProps) {
   const { t } = useTranslation()
+  const ordered = sortVariantsBySize(variants)
 
   const handleSelect = (variant: ProductVariant) => {
     if (variant.stock > 0) {
@@ -17,7 +19,7 @@ export function SizeSelector({ variants, selectedId, onSelect }: SizeSelectorPro
     }
   }
 
-  const selectedVariant = variants.find((v) => v.id === selectedId)
+  const selectedVariant = ordered.find((v) => v.id === selectedId)
 
   return (
     <div className="space-y-2">
@@ -31,7 +33,7 @@ export function SizeSelector({ variants, selectedId, onSelect }: SizeSelectorPro
       </div>
 
       <div className="flex flex-wrap gap-2 py-1">
-        {variants.map((variant) => (
+        {ordered.map((variant) => (
           <SizePill
             key={variant.id}
             size={variant.size}

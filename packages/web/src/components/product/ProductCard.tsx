@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { resolveColorValue } from './ColorSelector'
 import { useCart } from '../../lib/cart-context'
 import { productProps, track } from '../../lib/analytics'
+import { sortVariantsBySize } from '../../lib/sizes'
 import {
   SizeGuideContent,
   hasStructuredSizeChart,
@@ -38,7 +39,9 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
   const colors = Array.from(
     new Set(product.variants?.map((v) => v.color).filter(Boolean))
   ) as string[]
-  const inStock = (product.variants ?? []).filter((variant) => variant.stock > 0)
+  const inStock = sortVariantsBySize(
+    (product.variants ?? []).filter((variant) => variant.stock > 0),
+  )
   const [selectedId, setSelectedId] = useState(inStock.length === 1 ? inStock[0].id : '')
   const showColorOnPill = colors.length > 1
   const hasGuide = productHasSizeGuide(product.size_guide, product.size_chart)
