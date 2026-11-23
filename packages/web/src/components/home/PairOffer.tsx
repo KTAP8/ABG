@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../../lib/cart-context'
 import type { Product } from '../../lib/api'
 import { productProps, track } from '../../lib/analytics'
+import { useUIStore } from '../../store/ui'
 
 const UNCOMMON_HENLEY_ID = '84c31f18-564d-49c5-8591-d93a78ff1b06'
 const PLUNGE_LONG_SLEEVE_ID = '081ab031-7177-4dfb-9be8-539ea77e4e97'
@@ -33,7 +34,6 @@ function PairOfferImpression({ offer }: { offer: 'couple' | 'bestie' | 'both' })
 export function PairOffer({ products }: { products: Product[] }) {
   const { t, i18n } = useTranslation()
   const { addItem } = useCart()
-  const navigate = useNavigate()
   const [busy, setBusy] = useState<'couple' | 'bestie' | null>(null)
   const [error, setError] = useState('')
 
@@ -84,7 +84,8 @@ export function PairOffer({ products }: { products: Product[] }) {
         quantity: 1,
         source: 'pair_couple',
       })
-      navigate('/cart')
+      setBusy(null)
+      useUIStore.getState().openCart('add')
     } catch (err) {
       console.error('Failed to add the pair', err)
       setError(t('cart.add_error'))
@@ -105,7 +106,8 @@ export function PairOffer({ products }: { products: Product[] }) {
         quantity: 2,
         source: 'pair_bestie',
       })
-      navigate('/cart')
+      setBusy(null)
+      useUIStore.getState().openCart('add')
     } catch (err) {
       console.error('Failed to add two plunges', err)
       setError(t('cart.add_error'))

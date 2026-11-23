@@ -18,6 +18,7 @@ import { useCart } from '../lib/cart-context'
 import { sortVariantsBySize } from '../lib/sizes'
 import { productProps, track } from '../lib/analytics'
 import { useToast } from '../lib/toast-context'
+import { useUIStore } from '../store/ui'
 
 function AddToCartButton({
   soldOut,
@@ -227,7 +228,7 @@ export default function ProductDetail() {
         quantity: 1,
         source: 'pdp',
       })
-      showToast(t('cart.added'))
+      useUIStore.getState().openCart('add')
     } catch (err) {
       console.error(err)
       showToast(err instanceof Error ? err.message : t('cart.add_error'))

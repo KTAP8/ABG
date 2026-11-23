@@ -5,37 +5,22 @@ import { Navbar } from '../components/layout/Navbar'
 import { Footer } from '../components/layout/Footer'
 import { useCart } from '../lib/cart-context'
 import { useAuth } from '../lib/auth-context'
-import { createCheckoutSession, quoteCheckout, type CheckoutQuote } from '../lib/api'
-import { getGuestId } from '../lib/guest-id'
-import { getAnalyticsId, track } from '../lib/analytics'
-
-const FREE_SHIPPING_AT = 1000
-const SHIPPING_FEE = 50
+import { quoteCheckout, type CheckoutQuote } from '../lib/api'
+import { track } from '../lib/analytics'
+import { FREE_SHIPPING_FALLBACK, SHIPPING_FEE_FALLBACK, formatPrice } from '../lib/format'
+import { checkoutErrorCode, checkoutErrorText, useCartOpts, useCheckout } from '../lib/use-checkout'
+import { CartLineItem } from '../components/cart/CartLineItem'
+import { FreeShippingBar } from '../components/cart/FreeShippingBar'
 const UNCOMMON_HENLEY_ID = '84c31f18-564d-49c5-8591-d93a78ff1b06'
 const PLUNGE_LONG_SLEEVE_ID = '081ab031-7177-4dfb-9be8-539ea77e4e97'
 const PLUNGE_VARIANT_ID = 'a4b16246-91ac-441d-b9ed-f3b347b01257'
 const PLUNGE_IMAGE = 'https://pub-127e329007874b38b388402427a3e27f.r2.dev/women-surplice/front.webp'
 const PAIR_SAVE = 190
 
-function formatPrice(price: number) {
-  return `฿${price.toLocaleString('en-US')}`
-}
-
-function errorCode(err: unknown) {
-  return err instanceof Error ? err.message : 'unknown'
-}
-
-function errorText(t: (key: string) => string, err: unknown) {
-  const code = err instanceof Error ? err.message : ''
-  const key = `checkout.error.${code}`
-  const translated = t(key)
-  return translated === key ? t('checkout.error.generic') : translated
-}
-
 export default function Cart() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { user } = useAuth()
-  const { items, itemCount, subtotal, loading, updateQuantity, removeItem, addItem } = useCart()
+  const { items, itemCount, subtotal, loading, addItem } = useCart()
   const [couponInput, setCouponInput] = useState('')
   const [appliedCode, setAppliedCode] = useState<string | null>(null)
   const [quote, setQuote] = useState<CheckoutQuote | null>(null)
@@ -44,7 +29,6 @@ export default function Cart() {
   const [addingPlunge, setAddingPlunge] = useState(false)
   const [addonOpen, setAddonOpen] = useState(false)
   const [addonDismissed, setAddonDismissed] = useState(false)
-  const [checkingOut, setCheckingOut] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const cancelTracked = useRef(false)
 
@@ -55,10 +39,8 @@ export default function Cart() {
     setSearchParams({}, { replace: true })
   }, [searchParams, setSearchParams])
 
-  const cartOpts = () => ({
-    signedIn: Boolean(user?.id),
-    guestId: user?.id ? null : getGuestId(),
-  })
+  const cartOpts = useCartOpts()
+  const checkoutFlow = useCheckout()
 
   useEffect(() => {
     if (itemCount === 0) {
@@ -74,7 +56,7 @@ export default function Cart() {
         if (cancelled) return
         if (appliedCode) {
           setAppliedCode(null)
-          setFormError(errorText(t, err))
+          setFormError(checkoutErrorText(t, err))
         }
         setQuote(null)
       })
@@ -83,18 +65,13 @@ export default function Cart() {
     }
   }, [appliedCode, subtotal, itemCount, user?.id, t])
 
-  const nameFor = (item: (typeof items)[number]) => {
-    if (i18n.language?.startsWith('th') && item.product_name_th) {
-      return item.product_name_th
-    }
-    return item.product_name
-  }
-
   const discount = quote?.discount ?? 0
   const afterDiscount = Math.max(0, subtotal - discount)
-  const shipping = quote?.shipping ?? (afterDiscount >= FREE_SHIPPING_AT ? 0 : SHIPPING_FEE)
+  const threshold = quote?.freeShippingThreshold ?? FREE_SHIPPING_FALLBACK
+  const freeShipRemaining = quote?.freeShippingRemaining ?? Math.max(0, threshold - afterDiscount)
+  const shipping = quote?.shipping ?? (freeShipRemaining === 0 ? 0 : SHIPPING_FEE_FALLBACK)
   const total = afterDiscount + shipping
-  const hasSoldOut = items.some((item) => item.sold_out)
+  const hasSoldOut = checkoutFlow.hasSoldOut
   const quantityOf = (productId: string) =>
     items.filter((item) => item.product_id === productId).reduce((sum, item) => sum + item.quantity, 0)
   const showPlungeOffer = quantityOf(UNCOMMON_HENLEY_ID) > quantityOf(PLUNGE_LONG_SLEEVE_ID)
@@ -121,8 +98,8 @@ export default function Cart() {
       setQuote(next)
       track('coupon_applied', { success: true })
     } catch (err) {
-      setFormError(errorText(t, err))
-      track('coupon_applied', { success: false, error_code: errorCode(err) })
+      setFormError(checkoutErrorText(t, err))
+      track('coupon_applied', { success: false, error_code: checkoutErrorCode(err) })
     } finally {
       setApplying(false)
     }
@@ -158,33 +135,8 @@ export default function Cart() {
     }
   }
 
-  const checkout = async () => {
-    if (hasSoldOut) {
-      setFormError(t('checkout.error.sold_out'))
-      track('checkout_blocked', { error_code: 'sold_out' })
-      return
-    }
-    setCheckingOut(true)
-    setFormError('')
-    track('checkout_started', {
-      value: total,
-      currency: 'THB',
-      item_count: itemCount,
-      has_coupon: Boolean(appliedCode),
-    })
-    try {
-      const { url } = await createCheckoutSession(
-        appliedCode ?? undefined,
-        cartOpts(),
-        getAnalyticsId(),
-      )
-      window.location.assign(url)
-    } catch (err) {
-      setFormError(errorText(t, err))
-      track('checkout_blocked', { error_code: errorCode(err) })
-      setCheckingOut(false)
-    }
-  }
+  const checkout = () =>
+    checkoutFlow.start({ total, couponCode: appliedCode, source: 'cart_page' })
 
   return (
     <div className="flex min-h-screen flex-col bg-cream">
@@ -212,90 +164,12 @@ export default function Cart() {
           </div>
         ) : (
           <div className="mt-10 space-y-0">
+            <div className="mb-6">
+              <FreeShippingBar threshold={threshold} remaining={freeShipRemaining} />
+            </div>
             <ul className="divide-y divide-charcoal/15 border-y border-charcoal/15">
               {items.map((item) => (
-                <li key={item.id} className="flex gap-4 py-5 md:gap-6">
-                  <Link
-                    to={`/products/${item.product_slug}`}
-                    className="h-24 w-20 shrink-0 overflow-hidden bg-charcoal/5 md:h-28 md:w-24"
-                  >
-                    {item.image_url ? (
-                      <img
-                        src={item.image_url}
-                        alt={nameFor(item)}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : null}
-                  </Link>
-
-                  <div className="flex min-w-0 flex-1 flex-col gap-2">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <Link
-                          to={`/products/${item.product_slug}`}
-                          className="font-body text-sm font-medium lowercase tracking-[-0.04em] text-charcoal transition-opacity hover:opacity-70"
-                        >
-                          {nameFor(item)}
-                        </Link>
-                        <p className="mt-1 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
-                          {[item.color, item.size].filter(Boolean).join(' / ')}
-                        </p>
-                        {item.sold_out && (
-                          <p className="mt-1 font-body text-[12px] lowercase tracking-[-0.04em] text-red">
-                            {t('cart.sold_out')}
-                          </p>
-                        )}
-                      </div>
-                      <p className="shrink-0 font-body text-sm tracking-[-0.04em] text-charcoal">
-                        {formatPrice(item.price * item.quantity)}
-                      </p>
-                    </div>
-
-                    <div className="mt-auto flex items-center justify-between gap-3">
-                      <div className="flex items-center border border-charcoal/20">
-                        <button
-                          type="button"
-                          className="cursor-pointer px-3 py-1.5 font-body text-sm text-charcoal transition-opacity hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-30"
-                          disabled={item.quantity <= 1 || item.sold_out}
-                          aria-label={t('cart.quantity_decrease')}
-                          onClick={() => void updateQuantity(item.id, item.quantity - 1)}
-                        >
-                          −
-                        </button>
-                        <span className="min-w-8 text-center font-body text-[13px] tracking-[-0.04em] text-charcoal">
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          className="cursor-pointer px-3 py-1.5 font-body text-sm text-charcoal transition-opacity hover:opacity-70 disabled:cursor-not-allowed disabled:opacity-30"
-                          disabled={
-                            item.sold_out || item.quantity >= item.available_stock
-                          }
-                          aria-label={t('cart.quantity_increase')}
-                          onClick={() => void updateQuantity(item.id, item.quantity + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="cursor-pointer font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50 transition-opacity hover:opacity-70"
-                        onClick={() =>
-                          void removeItem(item.id).then(() =>
-                            track('item_removed_from_cart', {
-                              product_id: item.product_id,
-                              quantity: item.quantity,
-                              size: item.size,
-                            }),
-                          )
-                        }
-                      >
-                        {t('cart.remove')}
-                      </button>
-                    </div>
-                  </div>
-                </li>
+                <CartLineItem key={item.id} item={item} />
               ))}
             </ul>
 
@@ -401,9 +275,9 @@ export default function Cart() {
                 </span>
               </div>
 
-              {formError && (
+              {(formError || checkoutFlow.error) && (
                 <p className="font-body text-[12px] lowercase tracking-[-0.04em] text-red">
-                  {formError}
+                  {formError || checkoutFlow.error}
                 </p>
               )}
 
@@ -418,7 +292,7 @@ export default function Cart() {
 
               <button
                 type="button"
-                disabled={checkingOut || hasSoldOut}
+                disabled={checkoutFlow.loading || hasSoldOut}
                 onClick={() => void checkout()}
                 className="w-full cursor-pointer bg-charcoal px-5 py-3.5 font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
               >

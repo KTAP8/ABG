@@ -5,6 +5,7 @@ import { AppError } from '../middleware/errorHandler'
 import { parseGuestId } from '../lib/cart'
 import { createAnalytics } from '../lib/analytics'
 import {
+  FREE_SHIPPING_THRESHOLD,
   SURVEY_AGE,
   SURVEY_HANGOUT,
   SURVEY_HEARD_FROM,
@@ -72,6 +73,11 @@ checkout.post('/quote', async (c) => {
     bestiePairs: quote.bestiePairs,
     shipping: quote.shipping,
     total: quote.total,
+    freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
+    freeShippingRemaining:
+      quote.shipping === 0
+        ? 0
+        : Math.max(0, FREE_SHIPPING_THRESHOLD - (quote.subtotal - quote.discount)),
   })
 })
 

@@ -19,7 +19,13 @@ const REPLAY_BLOCKED_PATHS = ['/checkout/success']
 
 export type ConsentStatus = 'granted' | 'denied' | 'pending'
 
-export type AddSource = 'pdp' | 'listing' | 'pair_couple' | 'pair_bestie' | 'cart_upsell'
+export type AddSource =
+  | 'pdp'
+  | 'listing'
+  | 'pair_couple'
+  | 'pair_bestie'
+  | 'cart_upsell'
+  | 'cart_drawer_upsell'
 
 type ProductProps = {
   product_id: string
@@ -47,7 +53,16 @@ type EventMap = {
   pair_offer_viewed: { offer: 'couple' | 'bestie' | 'both' }
   cart_upsell_responded: { accepted: boolean }
   coupon_applied: { success: boolean; error_code?: string }
-  checkout_started: { value: number; currency: 'THB'; item_count: number; has_coupon: boolean }
+  checkout_started: {
+    value: number
+    currency: 'THB'
+    item_count: number
+    has_coupon: boolean
+    source: 'drawer' | 'cart_page'
+  }
+  cart_drawer_opened: { trigger: 'add' | 'icon'; item_count: number; subtotal: number }
+  cart_drawer_closed: { method: 'backdrop' | 'button' | 'escape' | 'swipe' | 'navigate' }
+  free_shipping_reached: { subtotal: number }
   checkout_blocked: { error_code: string }
   checkout_cancelled: Record<string, never>
   survey_finished: {

@@ -8,6 +8,7 @@ import { resolveColorValue } from './ColorSelector'
 import { useCart } from '../../lib/cart-context'
 import { productProps, track } from '../../lib/analytics'
 import { sortVariantsBySize } from '../../lib/sizes'
+import { useUIStore } from '../../store/ui'
 import {
   SizeGuideContent,
   hasStructuredSizeChart,
@@ -67,6 +68,7 @@ export function ProductCard({ product, bgClass = 'bg-cream', showAddToCart = fal
         source: 'listing',
       })
       closeSizePrompt()
+      useUIStore.getState().openCart('add')
     } catch (err) {
       console.error('Failed to add from shop card', err)
       setAddError(t('cart.add_error'))

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useUIStore } from "../../store/ui";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../lib/auth-context";
 import { useCart } from "../../lib/cart-context";
@@ -55,6 +56,17 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
   const { user, needsOnboarding, signOut } = useAuth();
   const { itemCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const openCart = useUIStore((state) => state.openCart);
+  const { pathname } = useLocation();
+
+  // Open the cart drawer on a plain click; keep /cart for modified clicks and on the cart page itself.
+  const onCartClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    setMobileMenuOpen(false);
+    if (pathname === "/cart") return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
+    openCart("icon");
+  };
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
@@ -202,6 +214,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
               to="/cart"
               className="relative flex cursor-pointer text-cream/85 transition-colors hover:text-cream"
               aria-label={t("nav.cart")}
+              onClick={onCartClick}
             >
               <CartIcon />
               {itemCount > 0 && (
@@ -251,7 +264,7 @@ export function Navbar({ bgClass, overlay = false }: NavbarProps) {
                   to="/cart"
                   className="relative flex cursor-pointer text-cream/85 transition-colors hover:text-cream"
                   aria-label={t("nav.cart")}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={onCartClick}
                 >
                   <CartIcon />
                   {itemCount > 0 && (

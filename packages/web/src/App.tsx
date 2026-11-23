@@ -3,6 +3,7 @@ import { AuthProvider } from './lib/auth-context'
 import { AuthToasts } from './lib/auth-toasts'
 import { ConsentBanner } from './components/ConsentBanner'
 import { CartProvider } from './lib/cart-context'
+import { CartDrawer } from './components/cart/CartDrawer'
 import { ToastProvider } from './lib/toast-context'
 import Home from './pages/Home'
 import DropPage from './pages/DropPage'
@@ -52,6 +53,7 @@ export default function App() {
               {import.meta.env.DEV && <Route path="/admin/shop" element={<ShopOrder />} />}
               {import.meta.env.DEV && <Route path="/admin/catalog" element={<Catalog />} />}
             </Routes>
+            <CartDrawer />
             <ConsentBanner />
           </CartProvider>
         </AuthProvider>

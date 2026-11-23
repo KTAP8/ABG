@@ -508,6 +508,8 @@ export interface CheckoutQuote {
   bestiePairs: number
   shipping: number
   total: number
+  freeShippingThreshold: number
+  freeShippingRemaining: number
 }
 
 export interface CheckoutOrder {
