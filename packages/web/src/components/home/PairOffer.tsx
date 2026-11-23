@@ -5,6 +5,7 @@ import { useCart } from '../../lib/cart-context'
 import type { Product } from '../../lib/api'
 import { productProps, track } from '../../lib/analytics'
 import { useUIStore } from '../../store/ui'
+import { ProductCard } from '../product/ProductCard'
 
 const UNCOMMON_HENLEY_ID = '84c31f18-564d-49c5-8591-d93a78ff1b06'
 const PLUNGE_LONG_SLEEVE_ID = '081ab031-7177-4dfb-9be8-539ea77e4e97'
@@ -31,12 +32,10 @@ function PairOfferImpression({ offer }: { offer: 'couple' | 'bestie' | 'both' })
   return null
 }
 
-export function PairOffer({ products }: { products: Product[] }) {
-  const { t, i18n } = useTranslation()
-  const { addItem } = useCart()
-  const [busy, setBusy] = useState<'couple' | 'bestie' | null>(null)
-  const [error, setError] = useState('')
+export type PairOfferData = NonNullable<ReturnType<typeof getPairOffer>>
 
+/** The his & hers pair, or null when it isn't in the catalog or can't be sold. */
+export function getPairOffer(products: Product[]) {
   const henley = products.find((product) => product.id === UNCOMMON_HENLEY_ID)
   const plunge = products.find((product) => product.id === PLUNGE_LONG_SLEEVE_ID)
   if (!henley || !plunge) return null
@@ -50,13 +49,23 @@ export function PairOffer({ products }: { products: Product[] }) {
   const bestieReady = Boolean(plungeVariant) && stockOf(plunge) >= 2
   if (!coupleReady && !bestieReady) return null
 
+  return { henley, plunge, henleySizes, plungeVariant, coupleReady, bestieReady }
+}
+
+/**
+ * The pair shown inside the drop grid: the two product cards plus a combo panel,
+ * laid out on the same columns as ProductGrid so it reads as part of the drop.
+ */
+export function PairOffer({ offer }: { offer: PairOfferData }) {
+  const { t } = useTranslation()
+  const { addItem } = useCart()
+  const [busy, setBusy] = useState<'couple' | 'bestie' | null>(null)
+  const [error, setError] = useState('')
+
+  const { henley, plunge, henleySizes, plungeVariant, coupleReady, bestieReady } = offer
   const henleyProps = productProps(henley)
   const plungeProps = productProps(plunge)
 
-  const nameFor = (product: Product) => {
-    if (i18n.language?.startsWith('th') && product.name_th) return product.name_th
-    return product.name
-  }
   const coupleWas = henley.price + plunge.price
   const coupleNow = coupleWas - PAIR_SAVE
   const bestieNow = plunge.price * 2 - PAIR_SAVE
@@ -118,112 +127,92 @@ export function PairOffer({ products }: { products: Product[] }) {
   const buttonClass =
     'cursor-pointer bg-charcoal px-4 py-2.5 text-center font-body text-[13px] lowercase tracking-[-0.04em] text-cream transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40'
 
-  const shots = [
-    { product: henley, caption: t('promo.his') },
-    { product: plunge, caption: t('promo.hers') },
-  ]
+  // Featured cards would span two columns and break the pair layout.
+  const cards = [henley, plunge].map((product) => ({ ...product, shop_featured: false }))
 
   return (
-    <section className="w-full bg-cream px-6 pt-12 pb-4 md:px-8 md:pt-16 lg:px-[27px]">
+    <div className="mb-3 grid grid-cols-2 gap-3 md:mb-4 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
       <PairOfferImpression
         offer={coupleReady && bestieReady ? 'both' : coupleReady ? 'couple' : 'bestie'}
       />
-      <div className="mx-auto w-full max-w-7xl lg:px-20 xl:px-32">
-        <header className="mb-6 flex flex-col gap-6 md:mb-8 md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-x-12 md:gap-y-3">
-          <h2 className="max-w-xl font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-none tracking-[-0.07em] text-charcoal md:col-start-1 md:row-start-1 md:self-end">
+      {cards.map((product) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+
+      <aside className="col-span-2 flex flex-col justify-between border border-charcoal/15 p-5 md:col-span-1 md:p-6 lg:col-span-2">
+        <div>
+          <p className="font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
+            {t('promo.his')} &amp; {t('promo.hers')}
+          </p>
+          <h3 className="mt-2 font-display text-[clamp(1.5rem,2.6vw,2.25rem)] font-bold leading-none tracking-[-0.07em] text-charcoal">
             {t('promo.name')}
-          </h2>
-          <p className="max-w-sm font-body text-[15px] leading-snug tracking-[-0.04em] text-charcoal/70 md:col-start-1 md:row-start-2 md:text-base">
+          </h3>
+          <p className="mt-3 max-w-sm font-body text-[14px] leading-snug tracking-[-0.04em] text-charcoal/70">
             {t('promo.line')}
           </p>
-
-          {coupleReady && (
-            <>
-              <p className="font-display text-4xl font-bold leading-none tracking-[-0.07em] text-charcoal md:col-start-2 md:row-start-1 md:self-end md:text-right">
-                {formatPrice(coupleNow)}
-              </p>
-              <div className="md:col-start-2 md:row-start-2 md:text-right">
-                <p className="flex flex-wrap items-baseline gap-x-3 md:justify-end">
-                  <span className="font-body text-sm tracking-[-0.04em] text-charcoal/40 line-through">
-                    {formatPrice(coupleWas)}
-                  </span>
-                  <span className="font-body text-sm tracking-[-0.04em] text-red">
-                    −{formatPrice(PAIR_SAVE)}
-                  </span>
-                  <span className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/60">
-                    {t('promo.shipping')}
-                  </span>
-                </p>
-                {singleHenleySize ? (
-                  <button
-                    type="button"
-                    disabled={busy !== null}
-                    onClick={() => void addCouple()}
-                    className={`${buttonClass} mt-4 w-full md:w-auto`}
-                  >
-                    {busy === 'couple' ? t('product.loading') : t('promo.add')}
-                  </button>
-                ) : (
-                  <Link
-                    to={`/products/${henley.slug}`}
-                    className={`${buttonClass} mt-4 block w-full no-underline md:inline-block md:w-auto`}
-                  >
-                    {t('promo.add')}
-                  </Link>
-                )}
-              </div>
-            </>
-          )}
-        </header>
-
-        <div className="grid grid-cols-2 gap-3 md:gap-4">
-          {shots.map(({ product, caption }) => {
-            const image = product.images?.[0]
-            return (
-              <figure key={product.id}>
-                <Link
-                  to={`/products/${product.slug}`}
-                  className="relative block aspect-3/4 overflow-hidden no-underline"
-                >
-                  {image ? (
-                    <img
-                      src={image.url}
-                      alt={nameFor(product)}
-                      className="absolute inset-0 h-full w-full object-cover object-top"
-                    />
-                  ) : null}
-                </Link>
-                <figcaption className="mt-2 font-body text-[12px] lowercase tracking-[-0.04em] text-charcoal/50">
-                  {caption}
-                </figcaption>
-              </figure>
-            )
-          })}
         </div>
 
-        {bestieReady && (
-          <button
-            type="button"
-            disabled={busy !== null}
-            onClick={() => void addBestie()}
-            className="mt-6 block cursor-pointer text-left font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/70 underline decoration-charcoal/30 underline-offset-4 transition-opacity hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {busy === 'bestie'
-              ? t('product.loading')
-              : t('promo.bestie', { price: formatPrice(bestieNow) })}
-          </button>
-        )}
+        <div className="mt-6">
+          {coupleReady && (
+            <>
+              <p className="font-display text-4xl font-bold leading-none tracking-[-0.07em] text-charcoal">
+                {formatPrice(coupleNow)}
+              </p>
+              <p className="mt-2 flex flex-wrap items-baseline gap-x-3">
+                <span className="font-body text-sm tracking-[-0.04em] text-charcoal/40 line-through">
+                  {formatPrice(coupleWas)}
+                </span>
+                <span className="font-body text-sm tracking-[-0.04em] text-red">
+                  −{formatPrice(PAIR_SAVE)}
+                </span>
+                <span className="font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/60">
+                  {t('promo.shipping')}
+                </span>
+              </p>
+              {singleHenleySize ? (
+                <button
+                  type="button"
+                  disabled={busy !== null}
+                  onClick={() => void addCouple()}
+                  className={`${buttonClass} mt-5 w-full`}
+                >
+                  {busy === 'couple' ? t('product.loading') : t('promo.add')}
+                </button>
+              ) : (
+                <Link
+                  to={`/products/${henley.slug}`}
+                  className={`${buttonClass} mt-5 block w-full no-underline`}
+                >
+                  {t('promo.add')}
+                </Link>
+              )}
+            </>
+          )}
 
-        {!coupleReady && bestieReady && (
-          <p className="mt-2 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/60">
-            {t('promo.shipping')}
-          </p>
-        )}
+          {bestieReady && (
+            <button
+              type="button"
+              disabled={busy !== null}
+              onClick={() => void addBestie()}
+              className="mt-4 block cursor-pointer text-left font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/70 underline decoration-charcoal/30 underline-offset-4 transition-opacity hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {busy === 'bestie'
+                ? t('product.loading')
+                : t('promo.bestie', { price: formatPrice(bestieNow) })}
+            </button>
+          )}
 
-        {error && (
-          <p className="mt-2 font-body text-[12px] lowercase tracking-[-0.04em] text-red">{error}</p>
-        )}
-      </div>
-    </section>
+          {!coupleReady && bestieReady && (
+            <p className="mt-2 font-body text-[13px] lowercase tracking-[-0.04em] text-charcoal/60">
+              {t('promo.shipping')}
+            </p>
+          )}
+
+          {error && (
+            <p className="mt-2 font-body text-[12px] lowercase tracking-[-0.04em] text-red">{error}</p>
+          )}
+        </div>
+      </aside>
+    </div>
   )
 }

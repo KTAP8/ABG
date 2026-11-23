@@ -373,6 +373,20 @@ router.patch('/', async (c) => {
     await db.insert(product_variants).values(rows)
   }
 
+  // Photos removed in the admin are deleted (same approach as size chart rows).
+  if (imageIds.length) {
+    await db.execute(sql`
+      DELETE FROM product_images
+      WHERE product_id = ${data.id}::uuid
+        AND id NOT IN (${sql.join(
+          imageIds.map((id) => sql`${id}::uuid`),
+          sql`, `,
+        )})
+    `)
+  } else if (knownImageIds.size) {
+    await db.delete(product_images).where(eq(product_images.product_id, data.id))
+  }
+
   const existingImages = data.images.flatMap((image, index) =>
     image.id ? [{ id: image.id, slot: index, alt: blankToNull(image.alt_text) }] : [],
   )

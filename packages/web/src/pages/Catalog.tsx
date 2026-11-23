@@ -196,14 +196,39 @@ export default function Catalog() {
     updateProduct(product.id, { size_chart })
   }
 
+  function findProduct(current: CatalogResponse, productId: string) {
+    return [...current.drops.flatMap((drop) => drop.products), ...current.loose].find(
+      (product) => product.id === productId,
+    )
+  }
+
+  function reorderImages(productId: string, from: number, to: number) {
+    if (from === to) return
+    setCatalog((current) => {
+      if (!current) return current
+      const product = findProduct(current, productId)
+      if (!product || to < 0 || to >= product.images.length) return current
+      const images = [...product.images]
+      const [moved] = images.splice(from, 1)
+      images.splice(to, 0, moved)
+      const mapProduct = (row: CatalogProduct) => (row.id === productId ? { ...row, images } : row)
+      return {
+        drops: current.drops.map((drop) => ({ ...drop, products: drop.products.map(mapProduct) })),
+        loose: current.loose.map(mapProduct),
+      }
+    })
+    setSavedId(null)
+  }
+
   function moveImage(product: CatalogProduct, index: number) {
     const from = dragIndex.current
     if (from === null || from === index) return
-    const images = [...product.images]
-    const [moved] = images.splice(from, 1)
-    images.splice(index, 0, moved)
     dragIndex.current = index
-    updateProduct(product.id, { images })
+    reorderImages(product.id, from, index)
+  }
+
+  function removeImage(product: CatalogProduct, index: number) {
+    updateProduct(product.id, { images: product.images.filter((_, row) => row !== index) })
   }
 
   function addPhoto(product: CatalogProduct) {
@@ -280,6 +305,8 @@ export default function Catalog() {
                         dragIndex.current = index
                       }}
                       onImageDragOver={(index) => moveImage(product, index)}
+                      onImageMove={(from, to) => reorderImages(product.id, from, to)}
+                      onImageRemove={(index) => removeImage(product, index)}
                       onImageDragEnd={() => {
                         dragIndex.current = null
                       }}
@@ -323,6 +350,8 @@ export default function Catalog() {
                         dragIndex.current = index
                       }}
                       onImageDragOver={(index) => moveImage(product, index)}
+                      onImageMove={(from, to) => reorderImages(product.id, from, to)}
+                      onImageRemove={(index) => removeImage(product, index)}
                       onImageDragEnd={() => {
                         dragIndex.current = null
                       }}
@@ -478,6 +507,8 @@ function ProductRow({
   onImageDragStart,
   onImageDragOver,
   onImageDragEnd,
+  onImageMove,
+  onImageRemove,
   onChartDragStart,
   onChartDragOver,
   onChartDragEnd,
@@ -496,11 +527,14 @@ function ProductRow({
   onImageDragStart: (index: number) => void
   onImageDragOver: (index: number) => void
   onImageDragEnd: () => void
+  onImageMove: (from: number, to: number) => void
+  onImageRemove: (index: number) => void
   onChartDragStart: (index: number) => void
   onChartDragOver: (index: number) => void
   onChartDragEnd: () => void
 }) {
   const { t } = useTranslation()
+  const [draggingImage, setDraggingImage] = useState<string | null>(null)
   const active = product.is_active !== false
   const categories = Array.from(new Set([product.category || 'accessories', ...CATEGORIES]))
   const genders = Array.from(new Set([product.gender || 'unisex', ...GENDERS]))
@@ -758,40 +792,96 @@ function ProductRow({
           <div className="mt-6">
             <p className={labelClass}>{t('admin.catalog.photos')}</p>
             <ul className="border-t border-charcoal/15">
-              {product.images.map((image, index) => (
-                <li
-                  key={image.id ?? `${image.url}-${index}`}
-                  onDragOver={(event) => {
-                    event.preventDefault()
-                    onImageDragOver(index)
-                  }}
-                  className="flex items-center gap-3 border-b border-charcoal/15 py-2"
-                >
-                  <span
-                    draggable
-                    onDragStart={() => onImageDragStart(index)}
-                    onDragEnd={onImageDragEnd}
-                    className="cursor-grab px-1 font-body text-[12px] text-charcoal/40 active:cursor-grabbing"
+              {product.images.map((image, index) => {
+                const key = image.id ?? image.url
+                const arrowClass =
+                  'flex h-7 w-7 cursor-pointer items-center justify-center border border-charcoal/20 font-body text-[12px] text-charcoal transition-opacity hover:border-charcoal disabled:cursor-not-allowed disabled:opacity-25'
+                return (
+                  <li
+                    key={key}
+                    onDragOver={(event) => {
+                      event.preventDefault()
+                      event.dataTransfer.dropEffect = 'move'
+                      onImageDragOver(index)
+                    }}
+                    onDrop={(event) => event.preventDefault()}
+                    className={`flex items-center gap-3 border-b border-charcoal/15 py-2 transition-opacity ${
+                      draggingImage === key ? 'opacity-40' : ''
+                    }`}
                   >
-                    {index + 1}
-                  </span>
-                  <img src={image.url} alt="" className="h-16 w-12 object-cover" />
-                  <label className="min-w-0 flex-1">
-                    <span className="sr-only">{t('admin.catalog.alt')}</span>
-                    <input
-                      value={image.alt_text ?? ''}
-                      placeholder={t('admin.catalog.alt')}
-                      onChange={(event) => {
-                        const images: CatalogImage[] = product.images.map((row, rowIndex) =>
-                          rowIndex === index ? { ...row, alt_text: event.target.value } : row,
-                        )
-                        onChange({ images })
+                    <div
+                      draggable
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = 'move'
+                        // Firefox only starts a drag when data is set.
+                        event.dataTransfer.setData('text/plain', String(index))
+                        setDraggingImage(key)
+                        onImageDragStart(index)
                       }}
-                      className={fieldClass}
-                    />
-                  </label>
-                </li>
-              ))}
+                      onDragEnd={() => {
+                        setDraggingImage(null)
+                        onImageDragEnd()
+                      }}
+                      title={t('admin.catalog.photo_drag')}
+                      className="flex shrink-0 cursor-grab select-none items-center gap-2 active:cursor-grabbing"
+                    >
+                      <span aria-hidden className="font-body text-[14px] leading-none text-charcoal/35">
+                        ⋮⋮
+                      </span>
+                      <span className="w-4 font-body text-[12px] text-charcoal/40">{index + 1}</span>
+                      <img
+                        src={image.url}
+                        alt=""
+                        draggable={false}
+                        className="pointer-events-none h-16 w-12 object-cover"
+                      />
+                    </div>
+                    <label className="min-w-0 flex-1">
+                      <span className="sr-only">{t('admin.catalog.alt')}</span>
+                      <input
+                        value={image.alt_text ?? ''}
+                        placeholder={t('admin.catalog.alt')}
+                        onChange={(event) => {
+                          const images: CatalogImage[] = product.images.map((row, rowIndex) =>
+                            rowIndex === index ? { ...row, alt_text: event.target.value } : row,
+                          )
+                          onChange({ images })
+                        }}
+                        className={fieldClass}
+                      />
+                    </label>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <button
+                        type="button"
+                        disabled={index === 0}
+                        onClick={() => onImageMove(index, index - 1)}
+                        aria-label={t('admin.catalog.photo_up')}
+                        className={arrowClass}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        disabled={index === product.images.length - 1}
+                        onClick={() => onImageMove(index, index + 1)}
+                        aria-label={t('admin.catalog.photo_down')}
+                        className={arrowClass}
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(t('admin.catalog.photo_remove_confirm'))) onImageRemove(index)
+                        }}
+                        className="ml-1 cursor-pointer font-body text-[11px] lowercase tracking-[-0.04em] text-charcoal/60 underline decoration-charcoal/30 underline-offset-2 hover:text-red"
+                      >
+                        {t('admin.catalog.photo_remove')}
+                      </button>
+                    </div>
+                  </li>
+                )
+              })}
             </ul>
             <div className="mt-3 flex gap-2">
               <input
